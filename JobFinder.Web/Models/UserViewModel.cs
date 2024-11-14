@@ -12,6 +12,7 @@ namespace JobFinder.Web.Models
     }
     public class UserViewModel : LoginViewModel
     {
+        public int Id { get; set; }
         [Required(ErrorMessage = "The Full Name is required")]
         public string FullName { get; set; }
         [Required(ErrorMessage = "Confirm yor password")]

@@ -1,4 +1,6 @@
-﻿using JobFinder.Web.Models;
+﻿using JobFinder.BLL.Interfaces;
+using JobFinder.Core.DTOs;
+using JobFinder.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +8,14 @@ namespace JobFinder.Web.Controllers
 {
     public class CompanyController : Controller
     {
+        private readonly ICompanyService _companyService;
+        private readonly ILogService<CompanyDTO> _logService;
+        public CompanyController(ICompanyService companyService, ILogService<CompanyDTO> logService)
+        {
+            _companyService = companyService;
+            _logService = logService;
+
+        }
         // GET: CompanyController
         public ActionResult Index()
         {
@@ -31,7 +41,26 @@ namespace JobFinder.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(registerCompanyViewModel.Password != registerCompanyViewModel.ConfirmPassword)
+                {
+                    return View(registerCompanyViewModel);
+                }
+                var company = _logService.GetByEmail(registerCompanyViewModel.Email);
+                if(company != null)
+                {
+                    return View(registerCompanyViewModel);
+                }
 
+                var companyDTO = new CompanyDTO()
+                {
+                    Name = registerCompanyViewModel.Name,
+                    Email = registerCompanyViewModel.Email,
+                    PhoneNumber = registerCompanyViewModel.PhoneNumber,
+                    Domain = registerCompanyViewModel.Domain,
+                    Password = registerCompanyViewModel.Password,
+                };
+                _companyService.AddCompany(companyDTO);
+                RedirectToAction("Details");
             }
             return View(registerCompanyViewModel);
 /*            try

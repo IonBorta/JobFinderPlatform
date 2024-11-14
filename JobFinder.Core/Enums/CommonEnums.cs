@@ -11,6 +11,7 @@ namespace JobFinder.Core.Enums
     public enum StudiesLevel
     {
         NoStudies,
+        HighSchool,
         Bachelor,
         Master,
         Doctorate

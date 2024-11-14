@@ -22,6 +22,7 @@ namespace JobFinder.Web.Models
     }
     public class CompanyViewModel: RegisterCompanyViewModel
     {
+        public int Id { get; set; }
         [Required(ErrorMessage = "A description for company is required")]
         public string Description { get; set; }
         [Required(ErrorMessage = "Nr. of workers is required")]

@@ -5,6 +5,7 @@ namespace JobFinder.Web.Models
 {
     public class JobViewModel
     {
+        public int Id { get; set; }
         [Required(ErrorMessage = "Title is required")]
         public string Title { get; set; }
         [Required(ErrorMessage = "Description is required")]

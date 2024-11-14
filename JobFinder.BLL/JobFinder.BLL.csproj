@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JobFinder.Core\JobFinder.Core.csproj" />
+    <ProjectReference Include="..\JobFinder.DAL\JobFinder.DAL.csproj" />
+  </ItemGroup>
+
+</Project>

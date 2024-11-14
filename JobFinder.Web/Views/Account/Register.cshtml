@@ -1,0 +1,53 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<section style="background-color: #508bfc; padding-bottom: 5rem;">
+    <div class="container py-5">
+        <div class="row d-flex justify-content-center align-items-center">
+            <!-- First Card - Sign In -->
+            <div class="col-12 col-md-6 col-lg-5 col-xl-4">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+                        <h3 class="" style="">Candidate</h3>
+                        <h5 class="mb-5 text-muted">Looking for a Job?</h5>
+
+@*                         <div class="form-floating mb-3">
+                            <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+                            <label for="floatingInput">Email address</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+                            <label for="floatingPassword">Password</label>
+                        </div> *@
+
+                        <form method="get" asp-controller="Account" asp-action="RegisterUser">
+                            <button class="btn btn-primary btn-lg btn-block" type="submit">I want a job</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Card - For Example, Sign Up or Forgot Password -->
+            <div class="col-12 col-md-6 col-lg-5 col-xl-4">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+                        <h3 class="">Company</h3>
+                        <h5 class="mb-5 text-muted">Looking for Employees?</h5>
+
+@*                         <!-- Sign Up Button or any other action -->
+                        <a href="/signup" class="btn btn-secondary btn-lg btn-block">Sign Up</a>
+                        <hr class="my-4">
+                        <!-- Forgot Password Button -->
+                        <a href="/forgot-password" class="btn btn-link">Forgot Password?</a> *@
+
+                        <form method="get" asp-controller="Company" asp-action="RegisterCompany">
+                            <button class="btn btn-primary btn-lg btn-block" type="submit">I want to hire</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

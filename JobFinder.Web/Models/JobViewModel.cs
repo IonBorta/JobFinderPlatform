@@ -11,7 +11,7 @@ namespace JobFinder.Web.Models
         [Required(ErrorMessage = "Description is required")]
         public required string Description { get; set; }
         [Required(ErrorMessage = "Salary is required")]
-        public decimal Salary { get; set; }
+        public int Salary { get; set; }
         [Required(ErrorMessage = "Requirements are required")]
         public string Requirements { get; set; }
         [Required(ErrorMessage = "Benefits are required")]

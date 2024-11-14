@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Repositories
 {
-    public class CompanyRepository : IRepository<Company>
+    public class CompanyRepository : IRepository<Company> , ILogRepository<Company>
     {
         public Task AddAsync(Company entity)
         {
@@ -22,6 +22,11 @@ namespace JobFinder.DAL.Repositories
         }
 
         public Task<IEnumerable<Company>> GetAllAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Company> GetByEmailAsync(string email)
         {
             throw new NotImplementedException();
         }

@@ -17,7 +17,7 @@ namespace JobFinder.DAL.Entities
         public string Description { get; set; }
         public string Requirements { get; set; }
         public string Benefits { get; set; }
-        public decimal Salary { get; set; } = 0;
+        public int Salary { get; set; } = 0;
         public WorkExperience Experience { get; set; }
         public string City { get; set; }
         public StudiesLevel Studies {  get; set; }

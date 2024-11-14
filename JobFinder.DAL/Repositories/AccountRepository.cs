@@ -1,5 +1,7 @@
 ﻿using JobFinder.Core.Interfaces;
+using JobFinder.DAL.Context;
 using JobFinder.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +12,16 @@ namespace JobFinder.DAL.Repositories
 {
     public class AccountRepository : IRepository<User>, ILogRepository<User>
     {
-        public Task AddAsync(User entity)
+        private readonly ApplicationDbContext _context;
+        public AccountRepository(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+        public async Task AddAsync(User entity)
         {
             entity.Created = DateTime.Now;
-            throw new NotImplementedException();
+            await _context.Users.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public Task DeleteAsync(int id)
@@ -26,9 +34,10 @@ namespace JobFinder.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<User> GetByEmailAsync(string email)
+        public async Task<User> GetByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            User user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+            return user;
         }
 
         public Task<User> GetByIdAsync(int id)

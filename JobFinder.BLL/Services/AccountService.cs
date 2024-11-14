@@ -38,6 +38,7 @@ namespace JobFinder.BLL.Services
         public async Task<UserDTO> GetByEmail(string email)
         {
             User user = await _logRepository.GetByEmailAsync(email);
+            if (user == null) return null;
             var userDTO = new UserDTO()
             {
                 Name = user.Name,

@@ -32,17 +32,19 @@ namespace JobFinder.Web.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult RegisterUser(UserViewModel userViewModel)
+        public async Task<IActionResult> RegisterUser(UserViewModel userViewModel)
         {
             if (ModelState.IsValid)
             {
                 if(userViewModel.Password != userViewModel.ConfirmPassword)
                 {
+                    ModelState.AddModelError("ConfirmPassword", "Password is not the same");
                     return View(userViewModel);
                 }
-                var user = _logService.GetByEmail(userViewModel.Email);
-                if (user != null)
+                var user = await _logService.GetByEmail(userViewModel.Email);
+                if (user != null && userViewModel.Email == user.Email)
                 {
+                    ModelState.AddModelError("Email", "This email is already used.");
                     return View(userViewModel);
                 }
                 var userDTO = new UserDTO()
@@ -51,7 +53,8 @@ namespace JobFinder.Web.Controllers
                     Email = userViewModel.Email,
                     Password = userViewModel.Password,
                 };
-                _accountService.AddUser(userDTO);
+                await _accountService.AddUser(userDTO);
+                RedirectToAction("Index","Home");
             }
             return View(userViewModel);
         }

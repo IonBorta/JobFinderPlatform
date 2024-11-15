@@ -1,4 +1,5 @@
-﻿using JobFinder.Core.Interfaces;
+﻿using JobFinder.Core.Enums;
+using JobFinder.Core.Interfaces;
 using JobFinder.DAL.Context;
 using JobFinder.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,8 @@ namespace JobFinder.DAL.Repositories
                 Name = entity.Name,
                 Email = entity.Email,
                 Password = entity.Password,
-                Created = entity.Created
+                Created = entity.Created,
+                UserType = UserType.Employer
             };
 
             await _context.Users.AddAsync(companyUser);

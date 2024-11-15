@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JobFinder.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,5 +13,6 @@ namespace JobFinder.Core.DTOs
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+        public UserType UserType { get; set; }
     }
 }

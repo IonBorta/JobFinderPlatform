@@ -1,0 +1,196 @@
+﻿@model JobFinder.Web.Models.JobViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+
+<div class="container">
+    <main role="main" class="pb-3">
+
+        <div class="row">
+            @*  <div class="col-md-4"> *@
+            <form asp-action="Edit">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Title" class="control-label"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Salary" class="control-label"></label>
+                            <input asp-for="Salary" class="form-control" />
+                            <span asp-validation-for="Salary" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Experience" class="control-label"></label>
+                            @* <input asp-for="Experience" class="form-control" /> *@
+
+                            @Html.DropDownListFor(
+                                     model => model.Experience,
+                                     new SelectList(Enum.GetValues(typeof(JobFinder.Core.Enums.WorkExperience))),
+                                     "-- Select Experience --",
+                                     new { @class = "form-control" })
+                            <span asp-validation-for="Experience" class="text-danger"></span>
+                        </div>
+                        @*                             <div class="form-group">
+                        <label asp-for="City" class="control-label"></label>
+                        <input asp-for="City" class="form-control" />
+                        <span asp-validation-for="City" class="text-danger"></span>
+                        </div> *@
+                        <div class="form-group">
+                            <label asp-for="Studies" class="control-label"></label>
+                            @* <input asp-for="Studies" class="form-control" /> *@
+                            @Html.DropDownListFor(
+                                     model => model.Studies,
+                                     new SelectList(Enum.GetValues(typeof(JobFinder.Core.Enums.StudiesLevel))),
+                                     "-- Select Studies --",
+                                     new { @class = "form-control" })
+                            <span asp-validation-for="Studies" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="WorkingType" class="control-label"></label>
+                            @* <input asp-for="WorkingType" class="form-control" /> *@
+                            @Html.DropDownListFor(
+                                     model => model.WorkingType,
+                                     new SelectList(Enum.GetValues(typeof(JobFinder.Core.Enums.WorkingType))),
+                                     "-- Select Working type --",
+                                     new { @class = "form-control" })
+                            <span asp-validation-for="WorkingType" class="text-danger"></span>
+                        </div>
+                        @*                             <div class="form-group">
+                        <label asp-for="Description" class="control-label"></label>
+                        <textarea asp-for="Description" class="form-control" style="min-height:150px"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                        <label asp-for="Requirements" class="control-label"></label>
+                        <textarea asp-for="Requirements" class="form-control" style="min-height:150px"></textarea>
+                        <span asp-validation-for="Requirements" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                        <label asp-for="Benefits" class="control-label"></label>
+                        <textarea asp-for="Benefits" class="form-control" style="min-height:150px"></textarea>
+                        <span asp-validation-for="Benefits" class="text-danger"></span>
+                        </div> *@
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Description" class="control-label"></label>
+                            <textarea asp-for="Description" class="form-control" style="min-height:150px"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Requirements" class="control-label"></label>
+                            <textarea asp-for="Requirements" class="form-control" style="min-height:150px"></textarea>
+                            <span asp-validation-for="Requirements" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Benefits" class="control-label"></label>
+                            <textarea asp-for="Benefits" class="form-control" style="min-height:150px"></textarea>
+                            <span asp-validation-for="Benefits" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+            @* </div> *@
+        </div>
+
+        <div>
+            <a class="text-dark" asp-action="Index">Back to List</a>
+        </div>
+
+    </main>
+</div>
+
+
+@* <h1>Edit</h1>
+
+<h4>JobViewModel</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Salary" class="control-label"></label>
+                <input asp-for="Salary" class="form-control" />
+                <span asp-validation-for="Salary" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Requirements" class="control-label"></label>
+                <input asp-for="Requirements" class="form-control" />
+                <span asp-validation-for="Requirements" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Benefits" class="control-label"></label>
+                <input asp-for="Benefits" class="form-control" />
+                <span asp-validation-for="Benefits" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Experience" class="control-label"></label>
+                <input asp-for="Experience" class="form-control" />
+                <span asp-validation-for="Experience" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Studies" class="control-label"></label>
+                <input asp-for="Studies" class="form-control" />
+                <span asp-validation-for="Studies" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WorkingType" class="control-label"></label>
+                <input asp-for="WorkingType" class="form-control" />
+                <span asp-validation-for="WorkingType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Posted" class="control-label"></label>
+                <input asp-for="Posted" class="form-control" />
+                <span asp-validation-for="Posted" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="City" class="control-label"></label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyName" class="control-label"></label>
+                <input asp-for="CompanyName" class="form-control" />
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CompanyId" class="control-label"></label>
+                <input asp-for="CompanyId" class="form-control" />
+                <span asp-validation-for="CompanyId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+ *@

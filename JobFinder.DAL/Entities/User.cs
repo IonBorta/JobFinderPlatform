@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JobFinder.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,5 +17,6 @@ namespace JobFinder.DAL.Entities
         public string Password { get; set; }
         [DataType(DataType.Date)]
         public DateTime Created { get; set; }
+        public UserType UserType { get; set; } = UserType.Employee;
     }
 }

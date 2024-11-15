@@ -3,6 +3,7 @@ using JobFinder.Core.DTOs;
 using JobFinder.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace JobFinder.Web.Controllers
 {
@@ -10,10 +11,12 @@ namespace JobFinder.Web.Controllers
     {
         private readonly ICompanyService _companyService;
         private readonly ILogService<CompanyDTO> _logService;
-        public CompanyController(ICompanyService companyService, ILogService<CompanyDTO> logService)
+        private readonly IJobService _jobService;
+        public CompanyController(ICompanyService companyService, ILogService<CompanyDTO> logService,IJobService jobService)
         {
             _companyService = companyService;
             _logService = logService;
+            _jobService = jobService;
 
         }
         // GET: CompanyController
@@ -37,6 +40,11 @@ namespace JobFinder.Web.Controllers
                 Workers = companyDTO.Workers,
                 PhoneNumber = companyDTO.PhoneNumber,
             };
+
+            var jobs = await _jobService.GetJobs();
+            jobs = jobs.Where(job => job.CompanyId == company.Id).ToList();
+            company.Jobs = jobs.Count;
+
             return View(company);
         }
 
@@ -77,14 +85,6 @@ namespace JobFinder.Web.Controllers
                 return RedirectToAction("Index","Home");
             }
             return View(registerCompanyViewModel);
-/*            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }*/
         }
 
         // GET: CompanyController/Edit/5
@@ -102,6 +102,11 @@ namespace JobFinder.Web.Controllers
                 Workers = companyDTO.Workers,
                 PhoneNumber = companyDTO.PhoneNumber,
             };
+
+            var jobs = await _jobService.GetJobs();
+            jobs = jobs.Where(job => job.CompanyId == company.Id).ToList();
+            company.Jobs = jobs.Count;
+
             return View(company);
         }
 
@@ -127,6 +132,17 @@ namespace JobFinder.Web.Controllers
             };
             await _companyService.UpdateCompany(company);
             return RedirectToAction("Details",companyViewModel.Id);
+        }
+
+        public IActionResult CompanyJobs(/*IList<JobViewModel> jobs*/)
+        {
+            if (TempData["JobList"] != null)
+            {
+                var jobs = JsonConvert.DeserializeObject<List<JobViewModel>>(TempData["JobList"].ToString());
+                return View(jobs);
+            }
+            return View(new List<JobViewModel>());
+            //return View(jobs);
         }
 
         // GET: CompanyController/Delete/5

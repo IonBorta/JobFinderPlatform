@@ -35,14 +35,25 @@ namespace JobFinder.DAL.Repositories
             return jobs;
         }
 
-        public Task<Job> GetByIdAsync(int id)
+        public async Task<Job> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Jobs.FindAsync(id);
         }
 
-        public Task UpdateAsync(Job entity)
+        public async Task UpdateAsync(Job entity)
         {
-            throw new NotImplementedException();
+            var existingJob = await _context.Jobs.FindAsync(entity.Id);
+
+            existingJob.Title = entity.Title;
+            existingJob.Description = entity.Description;
+            existingJob.Requirements = entity.Requirements;
+            existingJob.Studies = entity.Studies;
+            existingJob.Benefits = entity.Benefits;
+            existingJob.Salary = entity.Salary;
+            existingJob.WorkingType = entity.WorkingType;
+            existingJob.Experience = entity.Experience;
+
+            await _context.SaveChangesAsync();
         }
     }
 }

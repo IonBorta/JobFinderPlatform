@@ -1,4 +1,8 @@
-﻿        <!-- Header Start -->
+﻿@{
+    var userName = TempData["UserName"] as string ?? "Guest";
+    int userType = TempData["Role"] != null ? Convert.ToInt32(TempData["Role"]) : -1;
+}
+<!-- Header Start -->
 <div class="header-area header-transparrent">
     <div class="headder-top header-sticky">
         <div class="container">
@@ -16,9 +20,15 @@
                             <nav class="d-none d-lg-block">
                                 <ul id="navigation">
                                     <li><a asp-controller="Home" asp-action="Index">Home</a></li>
-                                    <li><a asp-controller="Company" asp-action="Details">My Company</a></li>
                                     <li><a asp-controller="Job" asp-action="Jobs">Find a Job </a></li>
-                                    <li><a asp-controller="Job" asp-action="AddJob">Add a Job </a></li>
+                                    @if(userType == 0)
+                                    {
+                                        <li><a asp-controller="Account" asp-action="MyApplications">My Applications</a></li>
+                                    }
+                                    else if(userType == 1){
+                                        <li><a asp-controller="Company" asp-action="Details">Our Company</a></li>
+                                    }
+                                    @* <li><a asp-controller="Job" asp-action="AddJob">Add a Job </a></li> *@
 @*                                     <li><a href="about.html">About</a></li>
                                     <li>
                                         <a href="#">Page</a>
@@ -29,15 +39,33 @@
                                             <li><a href="job_details.html">job Details</a></li>
                                         </ul>
                                     </li> *@
-                                    <li><a href="contact.html">Contact</a></li>
+                                    @* <li><a href="contact.html">Contact</a></li> *@
                                 </ul>
                             </nav>
                         </div>
                         <!-- Header-btn -->
-                        <div class="header-btn d-none f-right d-lg-block">
+                        @if (userName != "Guest")
+                        {
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-user-circle me-2" style="font-size: 1.5rem;"></i>
+                                <h6 class="mb-0 me-3">Hello, @userName</h6>
+                                <div class="header-btn d-none f-right d-sm-block">
+                                    <a asp-controller="Account" asp-action="Logou" class="genric-btn danger">Logout</a>
+                                </div>
+                            </div>
+                            
+                        }
+                        else
+                        {
+                            <div class="header-btn d-none f-right d-lg-block">
+                                <a asp-controller="Account" asp-action="Register" class="btn head-btn1">Register</a>
+                                <a asp-controller="Account" asp-action="Login" class="btn head-btn2">Login</a>
+                            </div>
+                        }
+@*                         <div class="header-btn d-none f-right d-lg-block">
                             <a asp-controller="Account" asp-action="Register" class="btn head-btn1">Register</a>
                             <a asp-controller="Account" asp-action="Login" class="btn head-btn2">Login</a>
-                        </div>
+                        </div> *@
                     </div>
                 </div>
                 <!-- Mobile Menu -->

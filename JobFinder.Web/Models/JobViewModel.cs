@@ -30,5 +30,7 @@ namespace JobFinder.Web.Models
         public string City { get; set; } = string.Empty;
         
         public string CompanyName { get; set; } = string.Empty;
+        public int CompanyId { get; set; }
+        //public CompanyViewModel Company { get; set; } = new CompanyViewModel();
     }
 }

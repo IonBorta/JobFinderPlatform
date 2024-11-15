@@ -25,7 +25,8 @@
                     </div>
                     <div class="col">
                         <h3>@Html.DisplayFor(model => model.Name)</h3>
-                        <h5>0 disponible jobs</h5>
+                        <h6><a asp-controller="Job" asp-action="Jobs" asp-route-companyId="@Model.Id" class="link-danger">@Model.Jobs disponible jobs </a></h6>
+                        <a asp-controller="Job" asp-action="AddJob" asp-route-id="@Model.Id" class="link-primary">Add a Job </a>
                     </div>
                 </div>
 

@@ -15,5 +15,7 @@ namespace JobFinder.BLL.Interfaces
         Task LoginUser(string username, string password);
         Task UpdateUser(UserDTO userDTO);
         Task DeleteUser(int id);
+/*        Task<ApplicationDTO> GetApplicationById(int id);
+        Task<IList<ApplicationDTO>> GetApplicationDTOs();*/
     }
 }

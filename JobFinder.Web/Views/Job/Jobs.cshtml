@@ -238,11 +238,11 @@
                                     <div class="single-job-items mb-30">
                                         <div class="job-items">
                                             <div class="company-img">
-                                                <a href="#"><img @* src="~/img/icon/job-list1.png" *@ src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" alt=""></a>
+                                                <a href="#"><img @* src="~/img/icon/job-list1.png" *@ src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" alt="" height="85" width="85"></a>
                                             </div>
                                             <div class="job-tittle job-tittle2">
-                                                <a href="#">
-                                                    <h4><a asp-controller="Job" asp-action="JobDetails">@job.Title</a></h4>
+                                                <a href="#" class="">
+                                                    <h4><a asp-controller="Job" asp-action="JobDetails" asp-route-id="@job.Id" onmouseover="this.style.color='black';">@job.Title</a></h4>
                                                 </a>
                                                 <ul>
                                                     <li>@job.CompanyName</li>
@@ -252,7 +252,7 @@
                                             </div>
                                         </div>
                                         <div class="items-link items-link2 f-right">
-                                            <a href="job_details.html">Full Time</a>
+                                            <a href="job_details.html">@job.WorkingType</a>
                                             <span>7 hours ago</span>
                                         </div>
                                     </div>

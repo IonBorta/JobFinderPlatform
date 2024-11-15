@@ -1,4 +1,8 @@
-﻿<main>
+﻿@model JobViewModel
+@{
+    int userType = TempData["Role"] != null ? Convert.ToInt32(TempData["Role"]) : -1;
+}
+<main>
     <!-- job post company Start -->
     <div class="job-post-company pt-120 pb-120">
         <div class="container">
@@ -9,16 +13,16 @@
                     <div class="single-job-items mb-50">
                         <div class="job-items">
                             <div class="company-img company-img-details">
-                                <a href="#"><img src="~/img/icon/job-list1.png" alt=""></a>
+                                <a href="#"><img src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" alt="" height="85" width="85"></a>
                             </div>
                             <div class="job-tittle">
                                 <a href="#">
-                                    <h4>Digital Marketer</h4>
+                                    <h4>@Model.Title</h4>
                                 </a>
                                 <ul>
-                                    <li>Creative Agency</li>
-                                    <li><i class="fas fa-map-marker-alt"></i>Athens, Greece</li>
-                                    <li>$3500 - $4000</li>
+                                    <li>@Model.CompanyName</li>
+                                    <li><i class="fas fa-map-marker-alt"></i>@Model.City</li>
+                                    <li>$@Model.Salary</li>
                                 </ul>
                             </div>
                         </div>
@@ -31,33 +35,36 @@
                             <div class="small-section-tittle">
                                 <h4>Job Description</h4>
                             </div>
-                            <p>It is a long established fact that a reader will beff distracted by vbthe creadable content of a page when looking at its layout. The pointf of using Lorem Ipsum is that it has ahf mcore or-lgess normal distribution of letters, as opposed to using, Content here content here making it look like readable.</p>
+                            <pstyle ="white-space: pre-line;">@Model.Description</pstyle>
+                            @* <p>It is a long established fact that a reader will beff distracted by vbthe creadable content of a page when looking at its layout. The pointf of using Lorem Ipsum is that it has ahf mcore or-lgess normal distribution of letters, as opposed to using, Content here content here making it look like readable.</p> *@
                         </div>
                         <div class="post-details2  mb-50">
                             <!-- Small Section Tittle -->
                             <div class="small-section-tittle">
                                 <h4>Required Knowledge, Skills, and Abilities</h4>
                             </div>
-                            <ul>
+                            <p style="white-space: pre-line;">@Model.Requirements</p>
+@*                             <ul>
                                 <li>System Software Development</li>
                                 <li>Mobile Applicationin iOS/Android/Tizen or other platform</li>
                                 <li>Research and code , libraries, APIs and frameworks</li>
                                 <li>Strong knowledge on software development life cycle</li>
                                 <li>Strong problem solving and debugging skills</li>
-                            </ul>
+                            </ul> *@
                         </div>
                         <div class="post-details2  mb-50">
                             <!-- Small Section Tittle -->
                             <div class="small-section-tittle">
                                 <h4>Education + Experience</h4>
                             </div>
-                            <ul>
+                            <p style="white-space: pre-line;">@Model.Benefits</p>
+@*                             <ul>
                                 <li>3 or more years of professional design experience</li>
                                 <li>Direct response email experience</li>
                                 <li>Ecommerce website design experience</li>
                                 <li>Familiarity with mobile and web apps preferred</li>
                                 <li>Experience using Invision a plus</li>
-                            </ul>
+                            </ul> *@
                         </div>
                     </div>
 
@@ -70,30 +77,70 @@
                             <h4>Job Overview</h4>
                         </div>
                         <ul>
-                            <li>Posted date : <span>12 Aug 2019</span></li>
-                            <li>Location : <span>New York</span></li>
+                            <li>Posted date : <span>@Model.Posted.ToString("dd MMMM yyyy")</span></li>
+                            <li>Location : <span>@* New York *@@Model.City</span></li>
                             <li>Vacancy : <span>02</span></li>
-                            <li>Job nature : <span>Full time</span></li>
-                            <li>Salary :  <span>$7,800 yearly</span></li>
-                            <li>Application date : <span>12 Sep 2020</span></li>
+                            <li>Job nature : <span>@Model.WorkingType</span></li>
+                            <li>Salary :  <span>$@Model.Salary monthly</span></li>
+                            <li>Exeperince :  <span>$@Model.Experience</span></li>
+                            <li>Studies :  <span>$@Model.Studies</span></li>
+                            @* <li>Application date : <span>12 Sep 2020</span></li> *@
                         </ul>
-                        <div class="apply-btn2">
-                            <a href="#" class="btn">Apply Now</a>
+@*                         <div class="apply-btn2">
+                             <a href="#" class="btn">Apply Now</a>
+                        </div> *@
+                        @if(userType == 1)
+                        {
+                            <div class="header-btn d-none f-right d-lg-block">
+                                <a asp-controller="Job" asp-action="Edit" asp-route-id="@Model.Id" class="btn head-btn1">Edit</a>
+                                
+                            </div>
+                        }
+                        else if (userType == 0)
+                        {
+                            <!-- Apply Now Button -->
+                            <div class="apply-btn2">
+                                <button class="btn" data-toggle="modal" data-target="#applyModal">Apply Now</button>
+                            </div>
+                        }
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="applyModal" tabindex="-1" role="dialog" aria-labelledby="applyModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-center" id="applyModalLabel">Upload your CV</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="applyForm" method="post" enctype="multipart/form-data" action="@Url.Action("Apply", "Account")">
+                                            <input type="hidden" name="JobId" value="@Model.Id" />
+                                            <div class="form-group">
+                                                <label for="pdfFile">Upload PDF:</label>
+                                                <input type="file" id="pdfFile" name="pdfFile" class="form-control" accept=".pdf" required />
+                                            </div>
+                                            <button type="submit" class="btn btn-primary text-center">Submit Application</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="post-details4  mb-50">
+@*                     <div class="post-details4  mb-50">
                         <!-- Small Section Tittle -->
                         <div class="small-section-tittle">
                             <h4>Company Information</h4>
                         </div>
-                        <span>Colorlib</span>
+                        <span>@Model.CompanyName</span>
                         <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.</p>
                         <ul>
-                            <li>Name: <span>Colorlib </span></li>
+                            <li>Name: <span>@Model.CompanyName </span></li>
                             <li>Web : <span> colorlib.com</span></li>
                             <li>Email: <span>carrier.colorlib@gmail.com</span></li>
                         </ul>
-                    </div>
+                    </div> *@
                 </div>
             </div>
         </div>
@@ -101,3 +148,6 @@
     <!-- job post company End -->
 
 </main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>

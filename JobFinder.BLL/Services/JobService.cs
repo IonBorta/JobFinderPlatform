@@ -43,17 +43,12 @@ namespace JobFinder.BLL.Services
             throw new NotImplementedException();
         }
 
-        public Task<JobDTO> GetJobById(int id)
+        public async Task<JobDTO> GetJobById(int id)
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IList<JobDTO>> GetJobs()
-        {
-            var jobs = await _jobRepository.GetAllAsync();
-            
-            var jobsDTOs = jobs.Select(job => new JobDTO()
+            var job  = await _jobRepository.GetByIdAsync(id);
+            var jobDTO = new JobDTO()
             {
+                Id = job.Id,
                 Title = job.Title,
                 Description = job.Description,
                 Requirements = job.Requirements,
@@ -62,15 +57,50 @@ namespace JobFinder.BLL.Services
                 Experience = job.Experience,
                 //City = job.City,
                 Studies = job.Studies,
-                WorkingType = job.WorkingType
+                WorkingType = job.WorkingType,
+                CompanyId = job.CompanyId,
+                Posted = job.Posted,
+            };
+            return jobDTO;
+        }
+
+        public async Task<IList<JobDTO>> GetJobs()
+        {
+            var jobs = await _jobRepository.GetAllAsync();
+            
+            var jobsDTOs = jobs.Select(job => new JobDTO()
+            {
+                Id = job.Id,
+                Title = job.Title,
+                Description = job.Description,
+                Requirements = job.Requirements,
+                Benefits = job.Benefits,
+                Salary = job.Salary,
+                Experience = job.Experience,
+                //City = job.City,
+                Studies = job.Studies,
+                WorkingType = job.WorkingType,
+                CompanyId= job.CompanyId,
             }).ToList();
 
             return jobsDTOs;
         }
 
-        public Task UpdateJob(JobDTO jobDTO)
+        public async Task UpdateJob(JobDTO jobDTO)
         {
-            throw new NotImplementedException();
+            var job = new Job()
+            {
+                Id = jobDTO.Id,
+                Title = jobDTO.Title,
+                Description = jobDTO.Description,
+                Requirements = jobDTO.Requirements,
+                Benefits = jobDTO.Benefits,
+                Salary = jobDTO.Salary,
+                Experience = jobDTO.Experience,
+                WorkingType = jobDTO.WorkingType,
+                Studies = jobDTO.Studies,
+            };
+            await _jobRepository.UpdateAsync(job);
         }
     }
 }

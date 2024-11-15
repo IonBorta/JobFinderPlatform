@@ -1,5 +1,6 @@
 ﻿using JobFinder.DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,6 @@ namespace JobFinder.DAL.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Company> Companies { get; set; }
         public DbSet<Job> Jobs { get; set; }
-
+        public DbSet<Application> Applications { get; set; }
     }
 }

@@ -17,6 +17,6 @@ namespace JobFinder.Web.Models
         public string FullName { get; set; }
         [Required(ErrorMessage = "Confirm yor password")]
         public string ConfirmPassword { get; set; }
-        public UserType UserType { get; } = UserType.Employee;
+        public UserType UserType { get; set; }
     }
 }

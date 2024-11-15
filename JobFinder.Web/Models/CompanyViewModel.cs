@@ -30,5 +30,6 @@ namespace JobFinder.Web.Models
         [Required(ErrorMessage = "City is required")]
         public string City { get; set; }
         public string Logo { get; set; }
+        public int Jobs {  get; set; }
     }
 }

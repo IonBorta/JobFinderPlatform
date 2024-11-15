@@ -14,10 +14,12 @@ namespace JobFinder.BLL.Services
     {
         private readonly IRepository<User> _userRepository;
         private readonly ILogRepository<User> _logRepository;
-        public AccountService(IRepository<User> userRepository, ILogRepository<User> logRepository)
+        //private readonly IRepository<ApplicationDTO> _applicationRepository;
+        public AccountService(IRepository<User> userRepository, ILogRepository<User> logRepository/*, IRepository<ApplicationDTO> applicationRepository*/)
         {
             _userRepository = userRepository;
            _logRepository = logRepository;
+            //_applicationRepository = applicationRepository;
         }
         public async Task AddUser(UserDTO userDTO)
         {
@@ -35,6 +37,27 @@ namespace JobFinder.BLL.Services
             throw new NotImplementedException();
         }
 
+/*        public async Task<ApplicationDTO> GetApplicationById(int id)
+        {
+            var application = await _applicationRepository.GetByIdAsync(id);
+            var applicationDTO = new ApplicationDTO()
+            {
+                Id = id,
+                CompanyName = application.CompanyName,
+                UserName = application.UserName,
+                JobName = application.JobName,
+                UserEmail = application.UserEmail,
+                FilePath = application.FilePath,
+                Submited = application.Submited,
+            };
+            return applicationDTO;
+        }*/
+
+/*        public Task<IList<ApplicationDTO>> GetApplicationDTOs()
+        {
+            throw new NotImplementedException();
+        }*/
+
         public async Task<UserDTO> GetByEmail(string email)
         {
             User user = await _logRepository.GetByEmailAsync(email);
@@ -44,6 +67,7 @@ namespace JobFinder.BLL.Services
                 Name = user.Name,
                 Email = user.Email,
                 Password = user.Password,
+                UserType = user.UserType
             };
             return userDTO;
         }

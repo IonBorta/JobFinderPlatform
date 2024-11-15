@@ -40,18 +40,42 @@ namespace JobFinder.BLL.Services
         public async Task<CompanyDTO> GetByEmail(string email)
         {
             Company company = await _logRepository.GetByEmailAsync(email);
-            var companyDTO = new CompanyDTO() { Email = email };
+            if (company == null) return null;
+            var companyDTO = new CompanyDTO() { Email = company.Email };
             return companyDTO;
         }
 
-        public Task<CompanyDTO> GetCompanyById(int id)
+        public async Task<CompanyDTO> GetCompanyById(int id)
         {
-            throw new NotImplementedException();
+            Company company = await _companyRepository.GetByIdAsync(id);
+            var dto = new CompanyDTO()
+            {
+                Id = company.Id,
+                Name = company.Name,
+                Email = company.Email,
+                PhoneNumber = company.PhoneNumber,
+                Domain = company.Domain,
+                Workers = company.Workers ?? 0,
+                Description = company.Description,
+                City = company.City
+            };
+            return dto;
         }
 
-        public Task UpdateCompany(CompanyDTO companyDTO)
+        public async Task UpdateCompany(CompanyDTO companyDTO)
         {
-            throw new NotImplementedException();
+            var company = new Company()
+            {
+                Id = companyDTO.Id,
+                Name = companyDTO.Name,
+                Email = companyDTO.Email,
+                Description = companyDTO.Description,
+                City = companyDTO.City,
+                Domain = companyDTO.Domain,
+                Workers = companyDTO.Workers,
+                PhoneNumber = companyDTO.PhoneNumber,
+            };
+            await _companyRepository.UpdateAsync(company);
         }
     }
 }

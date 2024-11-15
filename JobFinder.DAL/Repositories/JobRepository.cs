@@ -1,5 +1,7 @@
 ﻿using JobFinder.Core.Interfaces;
+using JobFinder.DAL.Context;
 using JobFinder.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +12,16 @@ namespace JobFinder.DAL.Repositories
 {
     public class JobRepository : IRepository<Job>
     {
-        public Task AddAsync(Job entity)
+        private readonly ApplicationDbContext _context;
+        public JobRepository(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+        public async Task AddAsync(Job entity)
         {
             entity.Posted = DateTime.Now;
-            throw new NotImplementedException();
+            await _context.Jobs.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public Task DeleteAsync(int id)
@@ -21,9 +29,10 @@ namespace JobFinder.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Job>> GetAllAsync()
+        public async Task<IEnumerable<Job>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            var jobs = await _context.Jobs.ToListAsync();
+            return jobs;
         }
 
         public Task<Job> GetByIdAsync(int id)

@@ -10,13 +10,16 @@ namespace JobFinder.Web.Controllers
     public class JobController : Controller
     {
         private readonly IJobService _jobService;
+        private readonly ILogService<CompanyDTO> _logService;
 
-        public JobController(IJobService jobService)
+        public JobController(IJobService jobService, ILogService<CompanyDTO> logService)
         {
             _jobService = jobService;
+            _logService = logService;
         }
         public async Task<IActionResult> Jobs()
         {
+            var company = await _logService.GetByEmail("utm@gmail.com");
             var jobDTOs = await _jobService.GetJobs();
 
             var jobViewModels = jobDTOs.Select(job => new JobViewModel()
@@ -27,9 +30,10 @@ namespace JobFinder.Web.Controllers
                 Benefits = job.Benefits,
                 Salary = job.Salary,
                 Experience = job.Experience,
-                //City = job.City,
+                City = company.City,
                 Studies = job.Studies,
-                WorkingType = job.WorkingType
+                WorkingType = job.WorkingType,
+                CompanyName = company.Name
             }).ToList();
 
             return View(jobViewModels);
@@ -60,6 +64,8 @@ namespace JobFinder.Web.Controllers
                     Studies = jobViewModel.Studies,
                     WorkingType = jobViewModel.WorkingType,
                 };
+                var company = await _logService.GetByEmail("utm@gmail.com");
+                jobDto.CompanyId = company.Id;
 
                 await _jobService.AddJob(jobDto);
 

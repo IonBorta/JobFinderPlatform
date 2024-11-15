@@ -19,7 +19,7 @@ namespace JobFinder.DAL.Entities
         public string Benefits { get; set; }
         public int Salary { get; set; } = 0;
         public WorkExperience Experience { get; set; }
-        public string City { get; set; }
+        //public string City { get; set; }
         public StudiesLevel Studies {  get; set; }
         public WorkingType WorkingType {  get; set; }
         [DataType(DataType.Date)]

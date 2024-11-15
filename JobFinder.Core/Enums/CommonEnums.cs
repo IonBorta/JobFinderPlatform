@@ -46,6 +46,7 @@ namespace JobFinder.Core.Enums
     }
     public enum CompanyDomains
     {
+        NoDomain,
         DesignCreatitve,
         DesignDevelopment,
         SalesAndMarketing,

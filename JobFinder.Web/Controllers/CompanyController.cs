@@ -23,9 +23,21 @@ namespace JobFinder.Web.Controllers
         }
 
         // GET: CompanyController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> Details(int id = 3)
         {
-            return View();
+            CompanyDTO companyDTO = await _companyService.GetCompanyById(id);
+            var company = new CompanyViewModel()
+            {
+                Id = companyDTO.Id,
+                Name = companyDTO.Name,
+                Email = companyDTO.Email,
+                Description = companyDTO.Description,
+                City = companyDTO.City,
+                Domain = companyDTO.Domain,
+                Workers = companyDTO.Workers,
+                PhoneNumber = companyDTO.PhoneNumber,
+            };
+            return View(company);
         }
 
         // GET: CompanyController/Create
@@ -37,17 +49,19 @@ namespace JobFinder.Web.Controllers
         // POST: CompanyController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult RegisterCompany(RegisterCompanyViewModel registerCompanyViewModel)
+        public async Task<ActionResult> RegisterCompany(RegisterCompanyViewModel registerCompanyViewModel)
         {
             if (ModelState.IsValid)
             {
                 if(registerCompanyViewModel.Password != registerCompanyViewModel.ConfirmPassword)
                 {
+                    ModelState.AddModelError("ConfirmPassword", "Password is not the same");
                     return View(registerCompanyViewModel);
                 }
-                var company = _logService.GetByEmail(registerCompanyViewModel.Email);
-                if(company != null)
+                var company = await _logService.GetByEmail(registerCompanyViewModel.Email);
+                if(company != null && company.Email == registerCompanyViewModel.Email)
                 {
+                    ModelState.AddModelError("Email", "This email is already used");
                     return View(registerCompanyViewModel);
                 }
 
@@ -59,8 +73,8 @@ namespace JobFinder.Web.Controllers
                     Domain = registerCompanyViewModel.Domain,
                     Password = registerCompanyViewModel.Password,
                 };
-                _companyService.AddCompany(companyDTO);
-                RedirectToAction("Details");
+                await _companyService.AddCompany(companyDTO);
+                return RedirectToAction("Index","Home");
             }
             return View(registerCompanyViewModel);
 /*            try
@@ -74,24 +88,45 @@ namespace JobFinder.Web.Controllers
         }
 
         // GET: CompanyController/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> Edit(int id)
         {
-            return View();
+            CompanyDTO companyDTO = await _companyService.GetCompanyById(id);
+            var company = new CompanyViewModel()
+            {
+                Id = companyDTO.Id,
+                Name = companyDTO.Name,
+                Email = companyDTO.Email,
+                Description = companyDTO.Description,
+                City = companyDTO.City,
+                Domain = companyDTO.Domain,
+                Workers = companyDTO.Workers,
+                PhoneNumber = companyDTO.PhoneNumber,
+            };
+            return View(company);
         }
 
         // POST: CompanyController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(/*int id, IFormCollection collection*/CompanyViewModel companyViewModel)
         {
-            try
+            //if(ModelState.IsValid)
+            if (companyViewModel.Name == "" || companyViewModel.Email == "" || companyViewModel.Domain == 0 || companyViewModel.Description == "" ||
+                    companyViewModel.PhoneNumber == "") return View(companyViewModel);
+            var company = new CompanyDTO()
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+                Id = companyViewModel.Id,
+                Name = companyViewModel.Name,
+                Email = companyViewModel.Email,
+                Description = companyViewModel.Description,
+                City = companyViewModel.City,
+                Domain = companyViewModel.Domain,
+                Workers = companyViewModel.Workers,
+                PhoneNumber = companyViewModel.PhoneNumber,
+
+            };
+            await _companyService.UpdateCompany(company);
+            return RedirectToAction("Details",companyViewModel.Id);
         }
 
         // GET: CompanyController/Delete/5

@@ -1,0 +1,91 @@
+﻿@model JobFinder.Web.Models.CompanyViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<div class="container">
+    <form method="post" asp-action="Edit" asp-controller="Company">
+    <main role="main" class="pb-3">
+@*         <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"> *@
+                <div class="row">
+                    @* <img src="https://www.lucru.md/_next/image?url=https%3A%2F%2Ffiles.rabota.md%2Fimages%2Fuploads%2F2024_07_25_16_27_36_branded_page_vac_logo.png&w=2048&q=75" /> *@
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="p-5">
+                                <img src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" height="150" />
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label asp-for="Name" class="control-label"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <p>0 disponible jobs</p>
+                            </div>
+                        </div>
+
+                        <!-- Edit Icon at the end of the row -->
+                        <div>
+                            <div class="form-group">
+                                <input type="submit" value="Save" class="genric-btn primary radius" />
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Second Card - 70% width -->
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm" style="border-radius: 1rem;">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label asp-for="Description" class="control-label"></label>
+                                    <textarea asp-for="Description" class="form-control" style="min-height:250px"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Second Card - 30% width -->
+                    <div class="col-lg-4">
+                        <div class="card shadow-sm" style="border-radius: 1rem;">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label asp-for="City" class="control-label"></label>
+                                    <input asp-for="City" class="form-control" />
+                                    <span asp-validation-for="City" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Domain" class="control-label"></label>
+                                    @* <input asp-for="Domain" class="form-control" /> *@
+                                    @Html.DropDownListFor(
+                                         model => model.Domain,
+                                         new SelectList(Enum.GetValues(typeof(JobFinder.Core.Enums.CompanyDomains))),
+                                         "-- Select Domain --",
+                                         new { @class = "form-control" })
+                                    <span asp-validation-for="Domain" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Workers" class="control-label"></label>
+                                    <input asp-for="Workers" class="form-control" />
+                                    <span asp-validation-for="Workers" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Email" class="control-label"></label>
+                                    <input asp-for="Email" class="form-control" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="PhoneNumber" class="control-label"></label>
+                                    <input asp-for="PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+@*             </div>
+        </form> *@
+    </main>
+    </form>
+</div>
+
+

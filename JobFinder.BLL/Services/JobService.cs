@@ -29,9 +29,10 @@ namespace JobFinder.BLL.Services
                 Benefits = jobDTO.Benefits,
                 Salary = jobDTO.Salary,
                 Experience = jobDTO.Experience,
-                City = jobDTO.City,
+                //City = jobDTO.City,
                 Studies = jobDTO.Studies,
                 WorkingType = jobDTO.WorkingType,
+                CompanyId = jobDTO.CompanyId,
             };
 
             await _jobRepository.AddAsync(job);
@@ -59,7 +60,7 @@ namespace JobFinder.BLL.Services
                 Benefits = job.Benefits,
                 Salary = job.Salary,
                 Experience = job.Experience,
-                City = job.City,
+                //City = job.City,
                 Studies = job.Studies,
                 WorkingType = job.WorkingType
             }).ToList();

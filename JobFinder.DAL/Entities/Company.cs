@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,15 +15,20 @@ namespace JobFinder.DAL.Entities
         [Key]
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
+        [AllowNull]
+        public string? Description { get; set; }
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        public string City {  get; set; }
-        public string Logo { get; set; }
-        public int Workers {  get; set; }
+        [AllowNull]
+        public string? City {  get; set; }
+        [AllowNull]
+        public string? Logo { get; set; }
+        [AllowNull]
+        public int? Workers {  get; set; }
         public CompanyDomains Domain { get; set; }
         [DataType(DataType.Date)]
         public DateTime Created { get; set; }
+        [NotMapped]
         public string Password {  get; set; }
 
 

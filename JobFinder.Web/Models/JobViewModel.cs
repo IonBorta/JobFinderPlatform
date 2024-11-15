@@ -26,5 +26,9 @@ namespace JobFinder.Web.Models
         public WorkingType WorkingType { get; set; }
         [Required(ErrorMessage = "Posted is required")]
         public DateTime Posted { get; set; }
+
+        public string City { get; set; } = string.Empty;
+        
+        public string CompanyName { get; set; } = string.Empty;
     }
 }

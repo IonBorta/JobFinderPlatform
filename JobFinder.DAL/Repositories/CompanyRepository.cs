@@ -1,5 +1,7 @@
 ﻿using JobFinder.Core.Interfaces;
+using JobFinder.DAL.Context;
 using JobFinder.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +10,32 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Repositories
 {
-    public class CompanyRepository : IRepository<Company> , ILogRepository<Company>
+    public class CompanyRepository : IRepository<Company>, ILogRepository<Company>
     {
-        public Task AddAsync(Company entity)
+        private readonly ApplicationDbContext _context;
+        public CompanyRepository(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+        public async Task AddAsync(Company entity)
         {
             entity.Created = DateTime.Now;
-            throw new NotImplementedException();
+            var companyUser = new User()
+            {
+                Name = entity.Name,
+                Email = entity.Email,
+                Password = entity.Password,
+                Created = entity.Created
+            };
+
+            await _context.Users.AddAsync(companyUser);
+            await _context.SaveChangesAsync();
+
+            var userAdded = await _context.Users.FirstOrDefaultAsync(user => user.Email == entity.Email);
+
+            entity.UserId = userAdded.Id;
+            await _context.Companies.AddAsync(entity);
+            await _context.SaveChangesAsync();
         }
 
         public Task DeleteAsync(int id)
@@ -26,19 +48,33 @@ namespace JobFinder.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<Company> GetByEmailAsync(string email)
+        public async Task<Company> GetByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            User user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
+            if (user == null) return null;
+            return new Company() { Email = user.Email };
         }
 
-        public Task<Company> GetByIdAsync(int id)
+        public async Task<Company> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var company = await _context.Companies.FirstOrDefaultAsync(company => company.Id == id);
+            return company;
         }
 
-        public Task UpdateAsync(Company entity)
+        public async Task UpdateAsync(Company entity)
         {
-            throw new NotImplementedException();
+            var existingCompany = await _context.Companies.FindAsync(entity.Id);
+
+            existingCompany.Name = entity.Name;
+            existingCompany.Description = entity.Description;
+            existingCompany.City = entity.City;
+            existingCompany.Domain = entity.Domain;
+            existingCompany.Workers = entity.Workers;
+            existingCompany.Email = entity.Email;
+            existingCompany.PhoneNumber = entity.PhoneNumber;
+
+            await _context.SaveChangesAsync();
+
         }
     }
 }

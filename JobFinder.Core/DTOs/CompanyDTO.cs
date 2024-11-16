@@ -19,6 +19,7 @@ namespace JobFinder.Core.DTOs
         public CompanyDomains Domain {  get; set; }
         public string City { get; set; }
         public string Password {  get; set; }
+        public int JobsCount { get; set; }
 
     }
 }

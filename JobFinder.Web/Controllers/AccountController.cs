@@ -1,5 +1,6 @@
 ﻿using JobFinder.BLL.Interfaces;
 using JobFinder.Core.DTOs;
+using JobFinder.DAL.Entities;
 using JobFinder.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,15 +15,9 @@ namespace JobFinder.Web.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        private readonly IApplicationService _applicationService;
-        private readonly ILogService<UserDTO> _logService;
-        private readonly IConfiguration _configuration;
-        public AccountController(IAccountService accountService, ILogService<UserDTO> logService, IApplicationService applicationService, IConfiguration configuration)
+        public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
-            _logService = logService;
-            _applicationService = applicationService;
-            _configuration = configuration;
         }
         public IActionResult Index()
         {
@@ -31,21 +26,24 @@ namespace JobFinder.Web.Controllers
         [HttpGet]
         public IActionResult Login()
         {
-            //ViewBag.UserName = TempData["UserName"]?.ToString();
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            var user = await _logService.GetByEmail(loginViewModel.Email);
-            if(user != null)
+            if (ModelState.IsValid)
             {
+                var result = await _accountService.LoginUser(loginViewModel.Email, loginViewModel.Password);
+                if (!result.IsSuccess)
+                {
+                    ModelState.AddModelError("Email", result.ErrorMessage);
+                    return View(loginViewModel);
+                }
                 // Stochează informațiile în sesiune
-                HttpContext.Session.SetString("UserName", user.Name);
-                HttpContext.Session.SetString("UserEmail", user.Email);
-                HttpContext.Session.SetInt32("UserId", user.Id);
-                HttpContext.Session.SetInt32("UserRole", (int)user.UserType);
-
+                HttpContext.Session.SetString("UserName", result.Data.Name);
+                HttpContext.Session.SetString("UserEmail", result.Data.Email);
+                HttpContext.Session.SetInt32("UserId", result.Data.Id);
+                HttpContext.Session.SetInt32("UserRole", (int)result.Data.UserType);
                 return RedirectToAction("Index", "Home");
             }
             return View(loginViewModel);
@@ -74,79 +72,20 @@ namespace JobFinder.Web.Controllers
                     ModelState.AddModelError("ConfirmPassword", "Password is not the same");
                     return View(userViewModel);
                 }
-                var user = await _logService.GetByEmail(userViewModel.Email);
-                if (user != null && userViewModel.Email == user.Email)
-                {
-                    ModelState.AddModelError("Email", "This email is already used.");
-                    return View(userViewModel);
-                }
-                var userDTO = new UserDTO()
+                var result = await _accountService.AddUser(new UserDTO
                 {
                     Name = userViewModel.FullName,
                     Email = userViewModel.Email,
                     Password = userViewModel.Password,
-                };
-                await _accountService.AddUser(userDTO);
-                RedirectToAction("Index","Home");
+                });
+
+                if (!result.IsSuccess)
+                {
+                    ModelState.AddModelError("Email", result.ErrorMessage);
+                    return View(userViewModel);
+                }
             }
             return View(userViewModel);
-        }
-        [HttpPost]
-        public async Task<IActionResult> Apply(int jobId,IFormFile pdfFile)
-        {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (userId == null) return RedirectToAction("Login");
-            if (pdfFile != null && pdfFile.Length > 0)
-            {
-
-                using (var memoryStream = new MemoryStream())
-                {
-                    await pdfFile.CopyToAsync(memoryStream); // Citește fișierul în memorie
-
-                    var application = new ApplicationDTO
-                    {
-                        JobId = jobId,
-                        UserId = (int)userId,
-                        UserName = HttpContext.Session.GetString("UserName")!,
-                        FileContent = memoryStream.ToArray(), // Convertește fluxul în array de bytes
-                        FileName = pdfFile.FileName, // Numele fișierului
-                        ContentType = pdfFile.ContentType // Tipul MIME
-                    };
-
-                    await _applicationService.AddApplication(application); // Salvare în baza de date
-                }
-
-                TempData["Message"] = "Application submitted successfully!";
-                return RedirectToAction("MyApplications","Account");
-            }
-
-            TempData["Message"] = "File upload failed.";
-            return RedirectToAction("JobDetails"); // redirect to the same or another page
-        }
-        public async Task<IActionResult> MyApplications()
-        {
-            var applications = await _applicationService.GetApplications();
-            var viewmodels = applications.Select(app => new ApplicationViewModel()
-            {
-                Id = app.Id,
-                CompanyName = app.CompanyName,
-                UserEmail = app.UserEmail,
-                UserName = app.UserName,
-                JobName = app.JobName,
-                Submited = app.Submited,
-            }).ToList();
-            return View(viewmodels);
-        }
-        public async Task<IActionResult> ViewPDF(int id)
-        {
-            var application = await _applicationService.GetApplcationById(id);
-
-            if (application != null)
-            {
-                return File(application.FileContent, application.ContentType);
-            }
-
-            return NotFound();
         }
     }
 }

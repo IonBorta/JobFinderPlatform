@@ -1,4 +1,5 @@
 ﻿using JobFinder.BLL.Interfaces;
+using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
 using JobFinder.Core.Interfaces;
 using JobFinder.DAL.Entities;
@@ -13,14 +14,21 @@ namespace JobFinder.BLL.Services
     public class ApplicationService : IApplicationService
     {
         private readonly IRepository<Application> _applicationRepository;
-        private readonly IRepository<Job> _jobRepository;
-        public ApplicationService(IRepository<Application> applicationRepository, IRepository<Job> jobRepository)
+        public ApplicationService(IRepository<Application> applicationRepository)
         {
             _applicationRepository = applicationRepository;
-            _jobRepository = jobRepository;
         }
-        public async Task AddApplication(ApplicationDTO applicationDTO)
+        public async Task<Result> AddApplication(ApplicationDTO applicationDTO)
         {
+            var applications = await _applicationRepository.GetAllAsync();
+            if(applications.Count() > 0)
+            {
+                var applied = applications.FirstOrDefault(x => x.JobId == applicationDTO.JobId);
+                if(applied != null)
+                {
+                    return Result.Failure("You already applied for this");
+                }
+            }
             var application = new Application()
             {
                 UserName = applicationDTO.UserName,
@@ -31,7 +39,9 @@ namespace JobFinder.BLL.Services
                 ContentType = applicationDTO.ContentType,
             };
 
-            await _applicationRepository.AddAsync(application);
+            
+            var added = await _applicationRepository.AddAsync(application);
+            return added ? Result.Success() : Result.Failure($"Failed to add application for {application.JobName} job");
         }
 
         public Task DeleteApplication(int id)
@@ -39,9 +49,13 @@ namespace JobFinder.BLL.Services
             throw new NotImplementedException();
         }
 
-        public async Task<ApplicationDTO> GetApplcationById(int id)
+        public async Task<Result<ApplicationDTO>> GetApplcationById(int id)
         {
             var application = await _applicationRepository.GetByIdAsync(id);
+            if (application == null)
+            {
+                return Result<ApplicationDTO>.Failure($"Application with {id} id not found");
+            }
             var dto = new ApplicationDTO()
             {
                 //Id = application.Id,
@@ -50,13 +64,12 @@ namespace JobFinder.BLL.Services
                 JobName = application.JobName,
                 JobId = application.JobId,
                 UserEmail = application.UserEmail,
-                //FilePath = application.FilePath,
                 Submited = application.Submitted,
                 FileContent = application.FileContent,
                 FileName = application.FileName,
                 ContentType = application.ContentType,
             };
-            return dto;
+            return Result<ApplicationDTO>.Success(dto);
         }
 
         public async Task<IList<ApplicationDTO>> GetApplications()
@@ -70,7 +83,6 @@ namespace JobFinder.BLL.Services
                 JobName = x.JobName,
                 JobId = x.JobId,
                 UserEmail = x.UserEmail,
-                //FilePath = x.FilePath,
                 Submited = x.Submitted,
                 FileContent = x.FileContent,
                 FileName = x.FileName,
@@ -92,7 +104,6 @@ namespace JobFinder.BLL.Services
                 JobName = x.JobName,
                 JobId = x.JobId,
                 UserEmail = x.UserEmail,
-                //FilePath = x.FilePath,
                 Submited = x.Submitted,
                 FileContent = x.FileContent,
                 FileName = x.FileName,

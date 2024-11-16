@@ -1,4 +1,5 @@
 ﻿using JobFinder.BLL.Interfaces;
+using JobFinder.BLL.Services;
 using JobFinder.Core.DTOs;
 using JobFinder.Web.Models;
 using Microsoft.AspNetCore.Http;
@@ -28,9 +29,15 @@ namespace JobFinder.Web.Controllers
         }
 
         // GET: CompanyController/Details/5
-        public async Task<ActionResult> Details(int id = 3)
+        public async Task<ActionResult> Details(int id,bool byUserId = false)
         {
-            CompanyDTO companyDTO = await _companyService.GetCompanyById(id);
+            var result = await _companyService.GetCompanyById(id,byUserId);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                return View("Error");
+            }
+            CompanyDTO companyDTO = result.Data;
             var company = new CompanyViewModel()
             {
                 Id = companyDTO.Id,
@@ -41,11 +48,8 @@ namespace JobFinder.Web.Controllers
                 Domain = companyDTO.Domain,
                 Workers = companyDTO.Workers,
                 PhoneNumber = companyDTO.PhoneNumber,
+                Jobs = companyDTO.JobsCount
             };
-
-            var jobs = await _jobService.GetJobs();
-            jobs = jobs.Where(job => job.CompanyId == company.Id).ToList();
-            company.Jobs = jobs.Count;
 
             return View(company);
         }
@@ -68,22 +72,20 @@ namespace JobFinder.Web.Controllers
                     ModelState.AddModelError("ConfirmPassword", "Password is not the same");
                     return View(registerCompanyViewModel);
                 }
-                var company = await _logService.GetByEmail(registerCompanyViewModel.Email);
-                if(company != null && company.Email == registerCompanyViewModel.Email)
-                {
-                    ModelState.AddModelError("Email", "This email is already used");
-                    return View(registerCompanyViewModel);
-                }
-
-                var companyDTO = new CompanyDTO()
+                var result = await _companyService.AddCompany(new CompanyDTO
                 {
                     Name = registerCompanyViewModel.Name,
                     Email = registerCompanyViewModel.Email,
                     PhoneNumber = registerCompanyViewModel.PhoneNumber,
                     Domain = registerCompanyViewModel.Domain,
                     Password = registerCompanyViewModel.Password,
-                };
-                await _companyService.AddCompany(companyDTO);
+                });
+
+                if (!result.IsSuccess)
+                {
+                    ModelState.AddModelError("Email", result.ErrorMessage);
+                    return View(registerCompanyViewModel);
+                }
                 return RedirectToAction("Index","Home");
             }
             return View(registerCompanyViewModel);
@@ -92,7 +94,13 @@ namespace JobFinder.Web.Controllers
         // GET: CompanyController/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-            CompanyDTO companyDTO = await _companyService.GetCompanyById(id);
+            var result = await _companyService.GetCompanyById(id);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                return View("Error");
+            }
+            CompanyDTO companyDTO = result.Data;
             var company = new CompanyViewModel()
             {
                 Id = companyDTO.Id,
@@ -103,11 +111,8 @@ namespace JobFinder.Web.Controllers
                 Domain = companyDTO.Domain,
                 Workers = companyDTO.Workers,
                 PhoneNumber = companyDTO.PhoneNumber,
+                Jobs =  companyDTO.JobsCount
             };
-
-            var jobs = await _jobService.GetJobs();
-            jobs = jobs.Where(job => job.CompanyId == company.Id).ToList();
-            company.Jobs = jobs.Count;
 
             return View(company);
         }
@@ -115,11 +120,14 @@ namespace JobFinder.Web.Controllers
         // POST: CompanyController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(/*int id, IFormCollection collection*/CompanyViewModel companyViewModel)
+        public async Task<ActionResult> Edit(CompanyViewModel companyViewModel)
         {
-            //if(ModelState.IsValid)
-            if (companyViewModel.Name == "" || companyViewModel.Email == "" || companyViewModel.Domain == 0 || companyViewModel.Description == "" ||
-                    companyViewModel.PhoneNumber == "") return View(companyViewModel);
+            if (companyViewModel.Name == "" || companyViewModel.Email == "" ||
+                companyViewModel.Domain == 0 || companyViewModel.Description == "" ||
+                    companyViewModel.PhoneNumber == "")
+            {
+                return View(companyViewModel);
+            }
             var company = new CompanyDTO()
             {
                 Id = companyViewModel.Id,
@@ -132,19 +140,13 @@ namespace JobFinder.Web.Controllers
                 PhoneNumber = companyViewModel.PhoneNumber,
 
             };
-            await _companyService.UpdateCompany(company);
-            return RedirectToAction("Details",companyViewModel.Id);
-        }
-
-        public IActionResult CompanyJobs(/*IList<JobViewModel> jobs*/)
-        {
-            if (TempData["JobList"] != null)
+            var result = await _companyService.UpdateCompany(company);
+            if (!result.IsSuccess)
             {
-                var jobs = JsonConvert.DeserializeObject<List<JobViewModel>>(TempData["JobList"].ToString());
-                return View(jobs);
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                return View(companyViewModel);
             }
-            return View(new List<JobViewModel>());
-            //return View(jobs);
+            return RedirectToAction("Details",companyViewModel.Id);
         }
 
         // GET: CompanyController/Delete/5
@@ -166,20 +168,6 @@ namespace JobFinder.Web.Controllers
             {
                 return View();
             }
-        }
-        public async Task<IActionResult> CompanyApplications(int id)
-        {
-            var dtos = await _applicationService.GetApplicationsByCompany(id);
-            var models = dtos.Select(dto => new ApplicationViewModel()
-            {
-                Id = dto.Id,
-                CompanyName = dto.CompanyName,
-                UserEmail = dto.UserEmail,
-                UserName = dto.UserName,
-                JobName = dto.JobName,
-                Submited = dto.Submited,
-            }).ToList();
-            return View(models);
         }
     }
 }

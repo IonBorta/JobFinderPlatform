@@ -69,6 +69,7 @@ builder.Services.AddScoped<IRepository<Application>, ApplicationRepository>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<ILogService<CompanyDTO>, CompanyService>();
 builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
+builder.Services.AddScoped<IGetByUserRepository<Company>, CompanyRepository>();
 builder.Services.AddScoped<ILogRepository<Company>, CompanyRepository>();
 
 var app = builder.Build();

@@ -1,10 +1,12 @@
 ﻿using JobFinder.BLL.Interfaces;
+using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
 using JobFinder.Core.Interfaces;
 using JobFinder.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,49 +16,32 @@ namespace JobFinder.BLL.Services
     {
         private readonly IRepository<User> _userRepository;
         private readonly ILogRepository<User> _logRepository;
-        //private readonly IRepository<ApplicationDTO> _applicationRepository;
-        public AccountService(IRepository<User> userRepository, ILogRepository<User> logRepository/*, IRepository<ApplicationDTO> applicationRepository*/)
+        public AccountService(IRepository<User> userRepository, ILogRepository<User> logRepository)
         {
             _userRepository = userRepository;
            _logRepository = logRepository;
-            //_applicationRepository = applicationRepository;
         }
-        public async Task AddUser(UserDTO userDTO)
+        public async Task<Result> AddUser(UserDTO userDTO)
         {
+            var existingUser = await _logRepository.GetByEmailAsync( userDTO.Email );
+            if (existingUser != null)
+            {
+                return Result.Failure("This email is already used.");
+            }
             var user = new User()
             {
                 Name = userDTO.Name,
                 Email = userDTO.Email,
                 Password = userDTO.Password,
             };
-            await _userRepository.AddAsync(user);
+            var success = await _userRepository.AddAsync(user);
+            return success ? Result.Success() : Result.Failure("Failed to register user.");
         }
 
         public Task DeleteUser(int id)
         {
             throw new NotImplementedException();
         }
-
-/*        public async Task<ApplicationDTO> GetApplicationById(int id)
-        {
-            var application = await _applicationRepository.GetByIdAsync(id);
-            var applicationDTO = new ApplicationDTO()
-            {
-                Id = id,
-                CompanyName = application.CompanyName,
-                UserName = application.UserName,
-                JobName = application.JobName,
-                UserEmail = application.UserEmail,
-                FilePath = application.FilePath,
-                Submited = application.Submited,
-            };
-            return applicationDTO;
-        }*/
-
-/*        public Task<IList<ApplicationDTO>> GetApplicationDTOs()
-        {
-            throw new NotImplementedException();
-        }*/
 
         public async Task<UserDTO> GetByEmail(string email)
         {
@@ -83,9 +68,24 @@ namespace JobFinder.BLL.Services
             throw new NotImplementedException();
         }
 
-        public Task LoginUser(string username, string password)
+        public async Task<Result<UserDTO>> LoginUser(string username, string password)
         {
-            throw new NotImplementedException();
+            var existingUser = await _logRepository.GetByEmailAsync(username);
+            if (existingUser == null)
+            {
+                return Result<UserDTO>.Failure("This email is invalid.");
+            }
+            if(existingUser != null && existingUser.Password != password)
+            {
+                return Result<UserDTO>.Failure("Password is invalid.");
+            }
+            return Result<UserDTO>.Success(new UserDTO() {
+                Id = existingUser.Id,
+                Name = existingUser.Name,
+                Email = existingUser.Email,
+                Password = existingUser.Password,
+                UserType = existingUser.UserType
+            });
         }
 
         public Task UpdateUser(UserDTO userDTO)

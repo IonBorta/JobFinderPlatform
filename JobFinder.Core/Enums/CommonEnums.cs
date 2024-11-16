@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace JobFinder.Core.Enums
 {
-    // Core/Enums/StudiesLevel.cs
     public enum StudiesLevel
     {
         NoStudies,
@@ -17,7 +16,6 @@ namespace JobFinder.Core.Enums
         Doctorate
     }
 
-    // Core/Enums/WorkingType.cs
     public enum WorkingType
     {
         FullTime,

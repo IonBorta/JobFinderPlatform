@@ -1,4 +1,5 @@
-﻿using JobFinder.Core.DTOs;
+﻿using JobFinder.Core.Common;
+using JobFinder.Core.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +12,8 @@ namespace JobFinder.BLL.Interfaces
     {
         Task<IList<ApplicationDTO>> GetApplications();
         Task<IList<ApplicationDTO>> GetApplicationsByCompany(int id);
-        Task<ApplicationDTO> GetApplcationById(int id);
-        Task AddApplication(ApplicationDTO applicationDTO);
+        Task<Result<ApplicationDTO>> GetApplcationById(int id);
+        Task<Result> AddApplication(ApplicationDTO applicationDTO);
         Task UpdateApplication(CompanyDTO applicationDTO);
         Task DeleteApplication(int id);
     }

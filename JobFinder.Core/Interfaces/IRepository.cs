@@ -8,10 +8,10 @@ namespace JobFinder.Core.Interfaces
 {
     public interface IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync();        // Obține toate entitățile
-        Task<T> GetByIdAsync(int id);              // Obține entitatea după ID
-        Task AddAsync(T entity);                   // Adaugă o entitate
-        Task UpdateAsync(T entity);                // Actualizează o entitate
-        Task DeleteAsync(int id);                  // Șterge o entitate
+        Task<IEnumerable<T>> GetAllAsync();      
+        Task<T> GetByIdAsync(int id);            
+        Task<bool> AddAsync(T entity);               
+        Task<bool> UpdateAsync(T entity);               
+        Task DeleteAsync(int id);                 
     }
 }

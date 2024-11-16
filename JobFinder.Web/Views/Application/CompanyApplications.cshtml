@@ -24,7 +24,7 @@
                     </div>
                     <div class="col">
                         <h3>@companyName</h3>
-                        <h6><a asp-controller="Job" asp-action="CompanyJobs" asp-route-id="" class="link-danger">Disponible jobs </a></h6>
+                        <h6><a asp-controller="Job" asp-action="JobsByCompany" asp-route-id="" class="link-danger">Disponible jobs </a></h6>
                         <h6><a asp-controller="Company" asp-action="CompanyApplications" asp-route-id="" class="link-danger">See applications </a></h6>
                         <a asp-controller="Job" asp-action="AddJob" asp-route-id="" class="link-primary">Add a Job </a>
                     </div>
@@ -40,7 +40,7 @@
                     </form>
                 </div>
             </div>
-            @await Html.PartialAsync("Applications");
+            @await Html.PartialAsync("Applications")
         </div>
     </main>
 </div>

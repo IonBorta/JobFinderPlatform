@@ -1,6 +1,8 @@
 ﻿using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
+using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
+using JobFinder.DAL.Entities;
 using JobFinder.DAL.Repositories;
 using JobFinder.Web.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -11,24 +13,17 @@ namespace JobFinder.Web.Controllers
     public class JobController : Controller
     {
         private readonly IJobService _jobService;
-        private readonly ICompanyService _companyService;
-        //private int companyId = 0;
 
-        public JobController(IJobService jobService, ICompanyService companyService)
+        public JobController(IJobService jobService)
         {
             _jobService = jobService;
-            _companyService = companyService;
         }
-        public async Task<IActionResult> Jobs(int companyId = 0)
+        public async Task<IActionResult> Jobs()
         {
 
 
             var jobDTOs = await _jobService.GetJobs();
 
-            if(companyId != 0)
-            {
-                jobDTOs = jobDTOs.Where(job => job.CompanyId == companyId).ToList();
-            }
 
             var jobViewModels = jobDTOs.Select(job => new JobViewModel()
             {
@@ -39,30 +34,46 @@ namespace JobFinder.Web.Controllers
                 Benefits = job.Benefits,
                 Salary = job.Salary,
                 Experience = job.Experience,
-                //City = companyCity,
+                City = job.City,
                 Studies = job.Studies,
                 WorkingType = job.WorkingType,
-                CompanyId = job.CompanyId
+                CompanyId = job.CompanyId,
+                CompanyName = job.CompanyName,
+
             }).ToList();
-            foreach (var job in jobViewModels)
-            {
-                var company = await _companyService.GetCompanyById(job.CompanyId);
-                job.CompanyName = company.Name;
-                job.City = company.City;
-            }
 
-            if(companyId != 0)
+            return View(jobViewModels);
+        }
+        public async Task<IActionResult> JobsByCompany(int id)
+        {
+            var jobDTOs = await _jobService.GetJobsByCompany(id);
+            var jobViewModels = jobDTOs.Select(job => new JobViewModel()
             {
-                TempData["JobList"] = JsonConvert.SerializeObject(jobViewModels);
-                return RedirectToAction("CompanyJobs", "Company");
-                //return RedirectToAction("CompanyJobs", "Company", new { jobs = jobViewModels });
-            }
+                Id = job.Id,
+                Title = job.Title,
+                Description = job.Description,
+                Requirements = job.Requirements,
+                Benefits = job.Benefits,
+                Salary = job.Salary,
+                Experience = job.Experience,
+                City = job.City,
+                Studies = job.Studies,
+                WorkingType = job.WorkingType,
+                CompanyId = job.CompanyId,
+                CompanyName = job.CompanyName,
 
+            }).ToList();
             return View(jobViewModels);
         }
         public async Task<IActionResult> JobDetails(int id)
         {
-            var jobDTO = await _jobService.GetJobById(id);
+            var result = await _jobService.GetJobById(id);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                return View("Error");
+            }
+            var jobDTO = result.Data;
             var job = new JobViewModel()
             {
                 Id = jobDTO.Id,
@@ -75,12 +86,11 @@ namespace JobFinder.Web.Controllers
                 Studies = jobDTO.Studies,
                 WorkingType = jobDTO.WorkingType,
                 CompanyId = jobDTO.CompanyId,
-                Posted = jobDTO.Posted
+                Posted = jobDTO.Posted,
+                CompanyName = jobDTO.CompanyName,
+                City = jobDTO.City,
             };
 
-            var company = await _companyService.GetCompanyById(job.CompanyId);
-            job.CompanyName = company.Name;
-            job.City = company.City;
 
             return View(job);
         }
@@ -108,11 +118,14 @@ namespace JobFinder.Web.Controllers
                     Studies = jobViewModel.Studies,
                     WorkingType = jobViewModel.WorkingType,
                     CompanyId = companyId
-            };
-                //var company = await _logService.GetByEmail("utm@gmail.com");
-                //jobDto.CompanyId = company.Id;
+                };
 
-                await _jobService.AddJob(jobDto);
+                var result = await _jobService.AddJob(jobDto);
+                if (!result.IsSuccess)
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    return View(jobViewModel);
+                }
 
                 return RedirectToAction("Jobs");
             }
@@ -120,7 +133,13 @@ namespace JobFinder.Web.Controllers
         }
         public async Task<ActionResult> Edit(int id)
         {
-            var jobDTO = await _jobService.GetJobById(id);
+            var result = await _jobService.GetJobById(id);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                return View("Error");
+            }
+            JobDTO jobDTO = result.Data;
             var job = new JobViewModel()
             {
                 Id = jobDTO.Id,
@@ -139,9 +158,6 @@ namespace JobFinder.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(JobViewModel jobViewModel)
         {
-            //if(ModelState.IsValid)
-            /*            if (companyViewModel.Name == "" || companyViewModel.Email == "" || companyViewModel.Domain == 0 || companyViewModel.Description == "" ||
-                                companyViewModel.PhoneNumber == "") return View(companyViewModel);*/
             if (ModelState.IsValid)
             {
                 var job = new JobDTO(){
@@ -155,7 +171,12 @@ namespace JobFinder.Web.Controllers
                     WorkingType = jobViewModel.WorkingType,
                     Studies = jobViewModel.Studies,
                 };
-                await _jobService.UpdateJob(job);
+                var result = await _jobService.UpdateJob(job);
+                if (!result.IsSuccess)
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    return View(jobViewModel);
+                }
                 return RedirectToAction("JobDetails", new {id = job.Id});
             }
             return View(jobViewModel);

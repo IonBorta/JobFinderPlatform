@@ -17,11 +17,11 @@ namespace JobFinder.DAL.Repositories
         {
             _context = context;
         }
-        public async Task AddAsync(Job entity)
+        public async Task<bool> AddAsync(Job entity)
         {
             entity.Posted = DateTime.Now;
             await _context.Jobs.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
 
         public Task DeleteAsync(int id)
@@ -40,7 +40,7 @@ namespace JobFinder.DAL.Repositories
             return await _context.Jobs.FindAsync(id);
         }
 
-        public async Task UpdateAsync(Job entity)
+        public async Task<bool> UpdateAsync(Job entity)
         {
             var existingJob = await _context.Jobs.FindAsync(entity.Id);
 
@@ -53,7 +53,7 @@ namespace JobFinder.DAL.Repositories
             existingJob.WorkingType = entity.WorkingType;
             existingJob.Experience = entity.Experience;
 
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

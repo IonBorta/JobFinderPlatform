@@ -15,7 +15,6 @@ namespace JobFinder.Core.DTOs
         public int JobId { get; set; }
         public int UserId {  get; set; }
         public string UserEmail { get; set; }
-        //public string FilePath { get; set; }
         public string FileName { get; set; }
         public string ContentType { get; set; }
         public byte[] FileContent { get; set; }

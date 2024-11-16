@@ -11,14 +11,14 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Repositories
 {
-    public class CompanyRepository : IRepository<Company>, ILogRepository<Company>
+    public class CompanyRepository : IRepository<Company>, ILogRepository<Company> , IGetByUserRepository<Company>
     {
         private readonly ApplicationDbContext _context;
         public CompanyRepository(ApplicationDbContext context)
         {
             _context = context;
         }
-        public async Task AddAsync(Company entity)
+        public async Task<bool> AddAsync(Company entity)
         {
             entity.Created = DateTime.Now;
             var companyUser = new User()
@@ -31,13 +31,14 @@ namespace JobFinder.DAL.Repositories
             };
 
             await _context.Users.AddAsync(companyUser);
-            await _context.SaveChangesAsync();
+            var asUseradded = await _context.SaveChangesAsync() > 0;
 
             var userAdded = await _context.Users.FirstOrDefaultAsync(user => user.Email == entity.Email);
 
             entity.UserId = userAdded.Id;
             await _context.Companies.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            var asCompanyAdded =  await _context.SaveChangesAsync() > 0;
+            return asCompanyAdded == asUseradded;
         }
 
         public Task DeleteAsync(int id)
@@ -63,7 +64,14 @@ namespace JobFinder.DAL.Repositories
             return company;
         }
 
-        public async Task UpdateAsync(Company entity)
+
+        public async Task<IList<Company>> GetByUserIdAsync(int id)
+        {
+            var company = await _context.Companies.Where(company => company.UserId == id).ToListAsync();
+            return company;
+        }
+
+        public async Task<bool> UpdateAsync(Company entity)
         {
             var existingCompany = await _context.Companies.FindAsync(entity.Id);
 
@@ -79,8 +87,8 @@ namespace JobFinder.DAL.Repositories
             existingUser.Name = entity.Name;
             existingUser.Email = entity.Email;
 
-            await _context.SaveChangesAsync();
-
+            return await _context.SaveChangesAsync() > 0;
         }
+
     }
 }

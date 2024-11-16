@@ -85,8 +85,8 @@
                             <li>Vacancy : <span>02</span></li>
                             <li>Job nature : <span>@Model.WorkingType</span></li>
                             <li>Salary :  <span>$@Model.Salary monthly</span></li>
-                            <li>Exeperince :  <span>$@Model.Experience</span></li>
-                            <li>Studies :  <span>$@Model.Studies</span></li>
+                            <li>Exeperince :  <span>@Model.Experience</span></li>
+                            <li>Studies :  <span>@Model.Studies</span></li>
                             @* <li>Application date : <span>12 Sep 2020</span></li> *@
                         </ul>
 @*                         <div class="apply-btn2">
@@ -118,7 +118,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="applyForm" method="post" enctype="multipart/form-data" action="@Url.Action("Apply", "Account")">
+                                        <form id="applyForm" method="post" enctype="multipart/form-data" action="@Url.Action("Apply", "Application")">
                                             <input type="hidden" name="JobId" value="@Model.Id" />
                                             <div class="form-group">
                                                 <label for="pdfFile">Upload PDF:</label>

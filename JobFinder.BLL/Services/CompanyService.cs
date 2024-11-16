@@ -1,7 +1,9 @@
 ﻿using JobFinder.BLL.Interfaces;
+using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
 using JobFinder.Core.Interfaces;
 using JobFinder.DAL.Entities;
+using JobFinder.DAL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +15,28 @@ namespace JobFinder.BLL.Services
     public class CompanyService : ICompanyService , ILogService<CompanyDTO>
     {
         private readonly IRepository<Company> _companyRepository;
+        private readonly IGetByUserRepository<Company> _getByUserRepository;
+        private readonly IRepository<Job> _jobRepository;
         private readonly ILogRepository<Company> _logRepository;
-        public CompanyService(IRepository<Company> companyRepository, ILogRepository<Company> logRepository) 
+        public CompanyService(
+            IRepository<Company> companyRepository, 
+            ILogRepository<Company> logRepository,
+            IRepository<Job> jobRepository,
+            IGetByUserRepository<Company> getByUserRepository
+            ) 
         {
             _companyRepository = companyRepository;
             _logRepository = logRepository;
+            _jobRepository = jobRepository;
+            _getByUserRepository = getByUserRepository;
         }
-        public async Task AddCompany(CompanyDTO companyDTO)
-        {
+        public async Task<Result> AddCompany(CompanyDTO companyDTO)
+        { 
+            var existingCompanyUser = await _logRepository.GetByEmailAsync(companyDTO.Email);
+            if(existingCompanyUser != null)
+            {
+                return Result.Failure("This email is already used.");
+            }
             var company = new Company()
             {
                 Name = companyDTO.Name,
@@ -29,7 +45,8 @@ namespace JobFinder.BLL.Services
                 Domain = companyDTO.Domain,
                 Password = companyDTO.Password,
             };
-            await _companyRepository.AddAsync(company);
+            var added = await _companyRepository.AddAsync(company);
+            return added ? Result.Success() : Result.Failure("Failed to register company.");
         }
 
         public Task DeleteCompany(int id)
@@ -45,9 +62,24 @@ namespace JobFinder.BLL.Services
             return companyDTO;
         }
 
-        public async Task<CompanyDTO> GetCompanyById(int id)
+        public async Task<Result<CompanyDTO>> GetCompanyById(int id, bool byUserId)
         {
-            Company company = await _companyRepository.GetByIdAsync(id);
+            Company company = null;
+            if (byUserId)
+            {
+                var companies = await _getByUserRepository.GetByUserIdAsync(id);
+                company = companies.FirstOrDefault();
+            }
+            else
+            {
+                company = await _companyRepository.GetByIdAsync(id);
+            }
+            if(company == null)
+            {
+                return Result<CompanyDTO>.Failure($"Company with {id} id not found");
+            }
+            var jobs = await _jobRepository.GetAllAsync();
+            var jobsCount = jobs.Select(job => job.CompanyId == company.Id).ToList().Count();
             var dto = new CompanyDTO()
             {
                 Id = company.Id,
@@ -57,13 +89,19 @@ namespace JobFinder.BLL.Services
                 Domain = company.Domain,
                 Workers = company.Workers ?? 0,
                 Description = company.Description,
-                City = company.City
+                City = company.City,
+                JobsCount = jobsCount,
             };
-            return dto;
+            return Result<CompanyDTO>.Success(dto);
         }
 
-        public async Task UpdateCompany(CompanyDTO companyDTO)
+        public async Task<Result> UpdateCompany(CompanyDTO companyDTO)
         {
+            var existingCompany = await _companyRepository.GetByIdAsync(companyDTO.Id);
+            if(existingCompany == null)
+            {
+                return Result.Failure($"Company not found");
+            }
             var company = new Company()
             {
                 Id = companyDTO.Id,
@@ -75,7 +113,8 @@ namespace JobFinder.BLL.Services
                 Workers = companyDTO.Workers,
                 PhoneNumber = companyDTO.PhoneNumber,
             };
-            await _companyRepository.UpdateAsync(company);
+            var updated =  await _companyRepository.UpdateAsync(company);
+            return updated ? Result.Success() : Result.Failure($"Failed to update {companyDTO.Name} company");
         }
     }
 }

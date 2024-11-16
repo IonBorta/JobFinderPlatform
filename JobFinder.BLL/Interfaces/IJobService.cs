@@ -1,4 +1,5 @@
-﻿using JobFinder.Core.DTOs;
+﻿using JobFinder.Core.Common;
+using JobFinder.Core.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,10 @@ namespace JobFinder.BLL.Interfaces
     public interface IJobService
     {
         Task<IList<JobDTO>> GetJobs();
-        Task<JobDTO> GetJobById(int id);
-        Task AddJob(JobDTO jobDTO);
-        Task UpdateJob(JobDTO jobDTO);
+        Task<IList<JobDTO>> GetJobsByCompany(int id);
+        Task<Result<JobDTO>> GetJobById(int id);
+        Task<Result> AddJob(JobDTO jobDTO);
+        Task<Result> UpdateJob(JobDTO jobDTO);
         Task DeleteJob(int id);
     }
 }

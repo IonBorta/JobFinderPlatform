@@ -17,11 +17,12 @@ namespace JobFinder.DAL.Repositories
         {
             _context = context;
         }
-        public async Task AddAsync(User entity)
+        public async Task<bool> AddAsync(User entity)
         {
             entity.Created = DateTime.Now;
             await _context.Users.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            var result = await _context.SaveChangesAsync() > 0;
+            return result;
         }
 
         public Task DeleteAsync(int id)
@@ -45,7 +46,7 @@ namespace JobFinder.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public Task UpdateAsync(User entity)
+        public Task<bool> UpdateAsync(User entity)
         {
             throw new NotImplementedException();
         }

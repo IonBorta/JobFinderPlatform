@@ -1,4 +1,5 @@
-﻿using JobFinder.Core.DTOs;
+﻿using JobFinder.Core.Common;
+using JobFinder.Core.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +12,9 @@ namespace JobFinder.BLL.Interfaces
     {
         Task<IList<UserDTO>> GetUsers();
         Task<UserDTO> GetUserById(int id);
-        Task AddUser(UserDTO userDTO);
-        Task LoginUser(string username, string password);
+        Task<Result> AddUser(UserDTO userDTO);
+        Task<Result<UserDTO>> LoginUser(string username, string password);
         Task UpdateUser(UserDTO userDTO);
         Task DeleteUser(int id);
-/*        Task<ApplicationDTO> GetApplicationById(int id);
-        Task<IList<ApplicationDTO>> GetApplicationDTOs();*/
     }
 }

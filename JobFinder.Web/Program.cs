@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 // JWT Authentication
-builder.Services.AddAuthentication( options =>
+/*builder.Services.AddAuthentication( options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -35,7 +35,17 @@ builder.Services.AddAuthentication( options =>
             IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
-    });
+    });*/
+
+builder.Services.AddMemoryCache();
+builder.Services.AddDistributedMemoryCache();  // Required for session state
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);  // Set session timeout duration
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;  // Make sure session is always available
+});
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
 // Configure ApplicationDbContext with connection string
@@ -43,9 +53,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
                             b => b.MigrationsAssembly("JobFinder.DAL")
     ));
-/*services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"),
-    b => b.MigrationsAssembly("JobFinder.DAL"))); // Specify the migrations assembly*/
 
 
 builder.Services.AddScoped<IJobService, JobService>();
@@ -72,6 +79,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
 }
 app.UseStaticFiles();
+
+app.UseSession();
 
 app.UseRouting();
 

@@ -1,6 +1,12 @@
-﻿@{
+﻿@* @{
     var userName = TempData["UserName"] as string ?? "Guest";
     int userType = TempData["Role"] != null ? Convert.ToInt32(TempData["Role"]) : -1;
+} *@
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var userName = @HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Unknown";
+    var userType = @HttpContextAccessor.HttpContext.Session.GetInt32("UserRole") ?? -1;
 }
 <!-- Header Start -->
 <div class="header-area header-transparrent">
@@ -44,13 +50,13 @@
                             </nav>
                         </div>
                         <!-- Header-btn -->
-                        @if (userName != "Guest")
+                        @if (userName != "Unknown")
                         {
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-user-circle me-2" style="font-size: 1.5rem;"></i>
                                 <h6 class="mb-0 me-3">Hello, @userName</h6>
                                 <div class="header-btn d-none f-right d-sm-block">
-                                    <a asp-controller="Account" asp-action="Logou" class="genric-btn danger">Logout</a>
+                                    <a asp-controller="Account" asp-action="Logout" class="genric-btn danger">Logout</a>
                                 </div>
                             </div>
                             

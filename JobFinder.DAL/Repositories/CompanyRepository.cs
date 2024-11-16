@@ -75,6 +75,10 @@ namespace JobFinder.DAL.Repositories
             existingCompany.Email = entity.Email;
             existingCompany.PhoneNumber = entity.PhoneNumber;
 
+            var existingUser = await _context.Users.FindAsync(existingCompany.UserId);
+            existingUser.Name = entity.Name;
+            existingUser.Email = entity.Email;
+
             await _context.SaveChangesAsync();
 
         }

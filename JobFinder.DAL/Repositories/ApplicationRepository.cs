@@ -20,12 +20,8 @@ namespace JobFinder.DAL.Repositories
         public async Task AddAsync(Application entity)
         {
             entity.Submitted = DateTime.Now;
-
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Name == entity.UserName);
-            //var job = await _context.Jobs.FirstOrDefaultAsync(j => j.Id == entity.JobId);
-
-            entity.UserId = user.Id;
-            //entity.JobId = job.Id;
+            var job = await _context.Jobs.FirstOrDefaultAsync(j => j.Id == entity.JobId);
+            entity.CompanyId = job.CompanyId;
 
             await _context.Applications.AddAsync(entity);
             await _context.SaveChangesAsync();

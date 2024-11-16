@@ -12,11 +12,13 @@ namespace JobFinder.Web.Controllers
         private readonly ICompanyService _companyService;
         private readonly ILogService<CompanyDTO> _logService;
         private readonly IJobService _jobService;
-        public CompanyController(ICompanyService companyService, ILogService<CompanyDTO> logService,IJobService jobService)
+        private readonly IApplicationService _applicationService;
+        public CompanyController(ICompanyService companyService, ILogService<CompanyDTO> logService,IJobService jobService, IApplicationService applicationService)
         {
             _companyService = companyService;
             _logService = logService;
             _jobService = jobService;
+            _applicationService = applicationService;
 
         }
         // GET: CompanyController
@@ -164,6 +166,20 @@ namespace JobFinder.Web.Controllers
             {
                 return View();
             }
+        }
+        public async Task<IActionResult> CompanyApplications(int id)
+        {
+            var dtos = await _applicationService.GetApplicationsByCompany(id);
+            var models = dtos.Select(dto => new ApplicationViewModel()
+            {
+                Id = dto.Id,
+                CompanyName = dto.CompanyName,
+                UserEmail = dto.UserEmail,
+                UserName = dto.UserName,
+                JobName = dto.JobName,
+                Submited = dto.Submited,
+            }).ToList();
+            return View(models);
         }
     }
 }

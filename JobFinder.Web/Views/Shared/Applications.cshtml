@@ -1,0 +1,47 @@
+﻿@model IList<ApplicationViewModel>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var userName = @HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Unknown";
+    var userType = @HttpContextAccessor.HttpContext.Session.GetInt32("UserRole") ?? -1;
+}
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Company Name</th>
+                <th>Job Name</th>
+                @if(userType == 1)
+                {
+                    <th>User Name</th>
+                    <th>User Email</th>
+                }
+                <th>Applied on</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var app in Model)
+            {
+                <tr>
+                    <td class="align-middle">@app.CompanyName</td>
+                    <td class="align-middle">@app.JobName</td>
+                    @if (userType == 1)
+                    {
+                        <td class="align-middle">@app.UserName</td>
+                        <td class="align-middle">@app.UserEmail</td>
+                    }
+                    <td class="align-middle">@app.Submited.ToString("dd MMMM yyyy")</td>
+                    <td>
+                        <a asp-action="ViewPDF" asp-route-id="@app.Id" target="_blank" class="genric-btn danger@* btn btn-info btn-sm *@">View PDF</a>
+                        <a asp-action="DownloadPDF" asp-route-id="@* @app.ApplicationId *@" class="genric-btn danger@* btn btn-primary btn-sm *@">Download PDF</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-center text-black">There are no applications</p>
+}

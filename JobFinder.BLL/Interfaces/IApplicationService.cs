@@ -10,6 +10,7 @@ namespace JobFinder.BLL.Interfaces
     public interface IApplicationService
     {
         Task<IList<ApplicationDTO>> GetApplications();
+        Task<IList<ApplicationDTO>> GetApplicationsByCompany(int id);
         Task<ApplicationDTO> GetApplcationById(int id);
         Task AddApplication(ApplicationDTO applicationDTO);
         Task UpdateApplication(CompanyDTO applicationDTO);

@@ -65,6 +65,7 @@ namespace JobFinder.Web.Controllers
             var jobDTO = await _jobService.GetJobById(id);
             var job = new JobViewModel()
             {
+                Id = jobDTO.Id,
                 Title = jobDTO.Title,
                 Description = jobDTO.Description,
                 Requirements = jobDTO.Requirements,

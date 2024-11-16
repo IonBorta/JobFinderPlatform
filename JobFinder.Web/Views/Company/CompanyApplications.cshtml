@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var companyName = @HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Unknown";
+    var userType = @HttpContextAccessor.HttpContext.Session.GetInt32("UserRole") ?? -1;
+}
+<div class="container">
+    <main role="main" class="pb-3">
+        <div class="row">
+            @* <img src="https://www.lucru.md/_next/image?url=https%3A%2F%2Ffiles.rabota.md%2Fimages%2Fuploads%2F2024_07_25_16_27_36_branded_page_vac_logo.png&w=2048&q=75" /> *@
+            @*             <div class="d-flex align-items-center justify-content-start">
+            <div class="p-5">
+            <img src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" height="150" />
+            </div>
+            <div class="col">
+            <h3>@Html.DisplayFor(model => model.Name)</h3>
+            <h5> 0 disponible Jobs</h5>
+            </div>
+            </div> *@
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="p-5">
+                        <img src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" height="150" />
+                    </div>
+                    <div class="col">
+                        <h3>@companyName</h3>
+                        <h6><a asp-controller="Job" asp-action="CompanyJobs" asp-route-id="" class="link-danger">Disponible jobs </a></h6>
+                        <h6><a asp-controller="Company" asp-action="CompanyApplications" asp-route-id="" class="link-danger">See applications </a></h6>
+                        <a asp-controller="Job" asp-action="AddJob" asp-route-id="" class="link-primary">Add a Job </a>
+                    </div>
+                </div>
+
+                <!-- Edit Icon at the end of the row -->
+                <div>
+                    <form asp-action="Edit" asp-controller="Company" asp-route-id="model.FirstOrDefault().CompanyId" method="get">
+                        <button type="submit" class="genric-btn danger radius" title="Edit Company">
+                            @* <i class="fas fa-edit fa-lg text-primary"></i> <!-- FontAwesome edit icon --> *@
+                            Edit
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @await Html.PartialAsync("Applications");
+        </div>
+    </main>
+</div>

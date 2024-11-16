@@ -13,20 +13,19 @@ namespace JobFinder.BLL.Services
     public class ApplicationService : IApplicationService
     {
         private readonly IRepository<Application> _applicationRepository;
-        public ApplicationService(IRepository<Application> applicationRepository)
+        private readonly IRepository<Job> _jobRepository;
+        public ApplicationService(IRepository<Application> applicationRepository, IRepository<Job> jobRepository)
         {
             _applicationRepository = applicationRepository;
+            _jobRepository = jobRepository;
         }
         public async Task AddApplication(ApplicationDTO applicationDTO)
         {
             var application = new Application()
             {
-                //Id = applicationDTO.Id,
-                CompanyName = applicationDTO.CompanyName,
                 UserName = applicationDTO.UserName,
                 JobId = applicationDTO.JobId,
-                UserEmail = applicationDTO.UserEmail,
-                //FilePath = applicationDTO.FilePath,
+                UserId = applicationDTO.UserId,
                 FileContent = applicationDTO.FileContent,
                 FileName = applicationDTO.FileName,
                 ContentType = applicationDTO.ContentType,
@@ -76,6 +75,29 @@ namespace JobFinder.BLL.Services
                 FileContent = x.FileContent,
                 FileName = x.FileName,
                 ContentType = x.ContentType,
+            }).ToList();
+            return dtos;
+        }
+
+        public async Task<IList<ApplicationDTO>> GetApplicationsByCompany(int id)
+        {
+            var applications = await _applicationRepository.GetAllAsync();
+
+            var companyApp = applications.Where(app => app.CompanyId == id).ToList();
+            var dtos = companyApp.Select(x => new ApplicationDTO()
+            {
+                Id = x.Id,
+                CompanyName = x.CompanyName,
+                UserName = x.UserName,
+                JobName = x.JobName,
+                JobId = x.JobId,
+                UserEmail = x.UserEmail,
+                //FilePath = x.FilePath,
+                Submited = x.Submitted,
+                FileContent = x.FileContent,
+                FileName = x.FileName,
+                ContentType = x.ContentType,
+
             }).ToList();
             return dtos;
         }

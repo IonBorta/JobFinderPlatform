@@ -64,6 +64,7 @@ namespace JobFinder.BLL.Services
             if (user == null) return null;
             var userDTO = new UserDTO()
             {
+                Id = user.Id,
                 Name = user.Name,
                 Email = user.Email,
                 Password = user.Password,

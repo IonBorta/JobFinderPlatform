@@ -1,6 +1,9 @@
 ﻿@model JobViewModel
+@using Microsoft.AspNetCore.Http
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
-    int userType = TempData["Role"] != null ? Convert.ToInt32(TempData["Role"]) : -1;
+    var userName = @HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Unknown";
+    var userType = @HttpContextAccessor.HttpContext.Session.GetInt32("UserRole") ?? -1;
 }
 <main>
     <!-- job post company Start -->

@@ -40,32 +40,21 @@ namespace JobFinder.Web.Controllers
             var user = await _logService.GetByEmail(loginViewModel.Email);
             if(user != null)
             {
-/*                var claims = new[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, _configuration["JWT.Subject"]),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    //new Claim(ClaimTypes.NameIdentifier, user!.Id.ToString()),
-                    new Claim(ClaimTypes.Name, user!.Name),
-                    new Claim(ClaimTypes.Email, user!.Email)
-                };*/
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                var token = new JwtSecurityToken(
-                    issuer: _configuration["Jwt:Issuer"],
-                    audience: _configuration["Jwt:Audience"],
-                    //claims: claims,
-                    expires: DateTime.Now.AddHours(1),
-                    signingCredentials: creds
-                );
-                string tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
-                // Save the token in TempData
-                TempData["Token"] = tokenValue;
-                TempData["UserName"] = user.Name;
-                TempData["Role"] = user.UserType;
+                // Stochează informațiile în sesiune
+                HttpContext.Session.SetString("UserName", user.Name);
+                HttpContext.Session.SetString("UserEmail", user.Email);
+                HttpContext.Session.SetInt32("UserId", user.Id);
+                HttpContext.Session.SetInt32("UserRole", (int)user.UserType);
 
                 return RedirectToAction("Index", "Home");
             }
             return View(loginViewModel);
+        }
+        public IActionResult Logout()
+        {
+            // Șterge informațiile de sesiune
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login");
         }
         public IActionResult Register()
         {
@@ -105,6 +94,8 @@ namespace JobFinder.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Apply(int jobId,IFormFile pdfFile)
         {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (userId == null) return RedirectToAction("Login");
             if (pdfFile != null && pdfFile.Length > 0)
             {
 
@@ -115,7 +106,8 @@ namespace JobFinder.Web.Controllers
                     var application = new ApplicationDTO
                     {
                         JobId = jobId,
-                        //UserId = GetUserId(), // O metodă care obține ID-ul utilizatorului curent
+                        UserId = (int)userId,
+                        UserName = HttpContext.Session.GetString("UserName")!,
                         FileContent = memoryStream.ToArray(), // Convertește fluxul în array de bytes
                         FileName = pdfFile.FileName, // Numele fișierului
                         ContentType = pdfFile.ContentType // Tipul MIME
@@ -125,11 +117,36 @@ namespace JobFinder.Web.Controllers
                 }
 
                 TempData["Message"] = "Application submitted successfully!";
-                return RedirectToAction("Jobs","Job");
+                return RedirectToAction("MyApplications","Account");
             }
 
             TempData["Message"] = "File upload failed.";
             return RedirectToAction("JobDetails"); // redirect to the same or another page
+        }
+        public async Task<IActionResult> MyApplications()
+        {
+            var applications = await _applicationService.GetApplications();
+            var viewmodels = applications.Select(app => new ApplicationViewModel()
+            {
+                Id = app.Id,
+                CompanyName = app.CompanyName,
+                UserEmail = app.UserEmail,
+                UserName = app.UserName,
+                JobName = app.JobName,
+                Submited = app.Submited,
+            }).ToList();
+            return View(viewmodels);
+        }
+        public async Task<IActionResult> ViewPDF(int id)
+        {
+            var application = await _applicationService.GetApplcationById(id);
+
+            if (application != null)
+            {
+                return File(application.FileContent, application.ContentType);
+            }
+
+            return NotFound();
         }
     }
 }

@@ -23,7 +23,7 @@ namespace JobFinder.BLL.Services
             var applications = await _applicationRepository.GetAllAsync();
             if(applications.Count() > 0)
             {
-                var applied = applications.FirstOrDefault(x => x.JobId == applicationDTO.JobId);
+                var applied = applications.FirstOrDefault(x => x.JobId == applicationDTO.JobId && x.UserId == applicationDTO.UserId);
                 if(applied != null)
                 {
                     return Result.Failure("You already applied for this");

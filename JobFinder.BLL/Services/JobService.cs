@@ -27,7 +27,7 @@ namespace JobFinder.BLL.Services
         public async Task<Result> AddJob(JobDTO jobDTO)
         {
             var jobs = await _jobRepository.GetAllAsync();
-            var existingJob = jobs.FirstOrDefault(j => j.CompanyId == jobDTO.CompanyId);
+            var existingJob = jobs.FirstOrDefault(j => j.CompanyId == jobDTO.CompanyId && j.Title == jobDTO.Title);
             if (existingJob != null)
             {
                 return Result.Failure("This job already exists");

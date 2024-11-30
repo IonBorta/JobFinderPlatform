@@ -31,7 +31,7 @@ namespace JobFinder.DAL.Repositories
 
         public async Task<IEnumerable<Job>> GetAllAsync()
         {
-            var jobs = await _context.Jobs.ToListAsync();
+            var jobs = await _context.Jobs.OrderByDescending(job => job.Posted).ToListAsync();
             return jobs;
         }
 

@@ -79,7 +79,8 @@ namespace JobFinder.BLL.Services
                 return Result<CompanyDTO>.Failure($"Company with {id} id not found");
             }
             var jobs = await _jobRepository.GetAllAsync();
-            var jobsCount = jobs.Select(job => job.CompanyId == company.Id).ToList().Count();
+            //var jobsCount = jobs.Select(job => job.CompanyId == company.Id).ToList().Count();
+            var jobsCount = jobs.Where(job => job.CompanyId == company.Id).Count();
             var dto = new CompanyDTO()
             {
                 Id = company.Id,

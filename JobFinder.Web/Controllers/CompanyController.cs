@@ -146,7 +146,7 @@ namespace JobFinder.Web.Controllers
                 ModelState.AddModelError(string.Empty, result.ErrorMessage);
                 return View(companyViewModel);
             }
-            return RedirectToAction("Details",companyViewModel.Id);
+            return RedirectToAction("Details",new { id = companyViewModel.Id });
         }
 
         // GET: CompanyController/Delete/5

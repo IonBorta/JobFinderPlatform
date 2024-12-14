@@ -10,33 +10,21 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Entities
 {
-    public class Company
+    public class Company: BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        public string Name { get; set; }
-        [AllowNull]
         public string? Description { get; set; }
-        public string Email { get; set; }
         public string PhoneNumber { get; set; }
-        [AllowNull]
         public string? City {  get; set; }
-        [AllowNull]
         public string? Logo { get; set; }
-        [AllowNull]
-        public int? Workers {  get; set; }
+        public int? WorkersCount {  get; set; }
         public CompanyDomains Domain { get; set; }
-        [DataType(DataType.Date)]
-        public DateTime Created { get; set; }
-        [NotMapped]
-        public string Password {  get; set; }
 
-
+        // Foreign Keys
         [ForeignKey("User")]
         public int UserId {  get; set; }
-        public User User { get; set; } // Navigation property
 
-        // Collection of jobs
-        public ICollection<Job> Jobs { get; set; } = new List<Job>();
+        // Navigation property
+        public virtual User User { get; set; } 
+        public virtual ICollection<Job> Jobs { get; set; } = new List<Job>();
     }
 }

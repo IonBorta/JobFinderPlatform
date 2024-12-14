@@ -8,30 +8,23 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Entities
 {
-    public class Application
+    public class Application : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        //[ForeignKey("Job")]
-        public int JobId { get; set; }
-        //[ForeignKey("User")]
-        public int UserId { get; set; }
-        public int CompanyId { get; set; }
-        public DateTime Submitted { get; set; }
         public string FileName { get; set; }
         public string ContentType { get; set; }
         public byte[] FileContent { get; set; }
 
-/*        // Navigation properties (optional)
-        public Job Job { get; set; }
-        public User User { get; set; }*/
+        // Foreign Keys
+        [ForeignKey("Jobs")]
+        public int JobId { get; set; }
+        [ForeignKey("User")]
+        public int UserId { get; set; }
+        [ForeignKey("Company")]
+        public int CompanyId { get; set; }
 
-        [NotMapped]
-        public string CompanyName { get; set; }
-        public string UserName { get; set;}
-        [NotMapped]
-        public string UserEmail { get; set;}
-        [NotMapped]
-        public string JobName { get; set; } 
+        // Navigation Properties
+        public virtual Job Job { get; set; }
+        public virtual User User { get; set; }
+        public virtual Company Company { get; set; }
     }
 }

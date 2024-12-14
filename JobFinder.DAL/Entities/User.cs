@@ -8,15 +8,11 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Entities
 {
-    public class User
+    public class User: BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        [DataType(DataType.Date)]
-        public DateTime Created { get; set; }
-        public UserType UserType { get; set; } = UserType.Employee;
+        public UserType UserType { get; set; }
     }
 }

@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Entities
 {
-    public class Job
+    public class Job: BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public string Requirements { get; set; }
@@ -21,10 +19,11 @@ namespace JobFinder.DAL.Entities
         public WorkExperience Experience { get; set; }
         public StudiesLevel Studies {  get; set; }
         public WorkingType WorkingType {  get; set; }
-        [DataType(DataType.Date)]
-        public DateTime Posted { get; set; }
+
+        // Foreign Keys
         [ForeignKey("Company")]
         public int CompanyId { get; set; }
-        public Company Company { get; set; }
+        // Navigation Properties
+        public virtual Company Company { get; set; }
     }
 }

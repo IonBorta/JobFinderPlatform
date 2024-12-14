@@ -19,7 +19,7 @@ namespace JobFinder.DAL.Repositories
         }
         public async Task<bool> AddAsync(Job entity)
         {
-            entity.Posted = DateTime.Now;
+            //entity.Posted = DateTime.Now;
             await _context.Jobs.AddAsync(entity);
             return await _context.SaveChangesAsync() > 0;
         }
@@ -31,7 +31,7 @@ namespace JobFinder.DAL.Repositories
 
         public async Task<IEnumerable<Job>> GetAllAsync()
         {
-            var jobs = await _context.Jobs.OrderByDescending(job => job.Posted).ToListAsync();
+            var jobs = await _context.Jobs.OrderByDescending(job => job.Created).ToListAsync();
             return jobs;
         }
 

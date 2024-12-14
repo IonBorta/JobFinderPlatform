@@ -23,9 +23,9 @@ namespace JobFinder.DAL.Repositories
             entity.Created = DateTime.Now;
             var companyUser = new User()
             {
-                Name = entity.Name,
+/*                Name = entity.Name,
                 Email = entity.Email,
-                Password = entity.Password,
+                Password = entity.Password,*/
                 Created = entity.Created,
                 UserType = UserType.Employer
             };
@@ -33,9 +33,9 @@ namespace JobFinder.DAL.Repositories
             await _context.Users.AddAsync(companyUser);
             var asUseradded = await _context.SaveChangesAsync() > 0;
 
-            var userAdded = await _context.Users.FirstOrDefaultAsync(user => user.Email == entity.Email);
+/*            var userAdded = await _context.Users.FirstOrDefaultAsync(user => user.Email == entity.Email);
 
-            entity.UserId = userAdded.Id;
+            entity.UserId = userAdded.Id;*/
             await _context.Companies.AddAsync(entity);
             var asCompanyAdded =  await _context.SaveChangesAsync() > 0;
             return asCompanyAdded == asUseradded;
@@ -55,7 +55,7 @@ namespace JobFinder.DAL.Repositories
         {
             User user = await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
             if (user == null) return null;
-            return new Company() { Email = user.Email };
+            return new Company() { /*Email = user.Email*/ };
         }
 
         public async Task<Company> GetByIdAsync(int id)
@@ -75,17 +75,17 @@ namespace JobFinder.DAL.Repositories
         {
             var existingCompany = await _context.Companies.FindAsync(entity.Id);
 
-            existingCompany.Name = entity.Name;
+            //existingCompany.Name = entity.Name;
             existingCompany.Description = entity.Description;
             existingCompany.City = entity.City;
             existingCompany.Domain = entity.Domain;
-            existingCompany.Workers = entity.Workers;
-            existingCompany.Email = entity.Email;
+            //existingCompany.Workers = entity.Workers;
+            //existingCompany.Email = entity.Email;
             existingCompany.PhoneNumber = entity.PhoneNumber;
 
             var existingUser = await _context.Users.FindAsync(existingCompany.UserId);
-            existingUser.Name = entity.Name;
-            existingUser.Email = entity.Email;
+/*            existingUser.Name = entity.Name;
+            existingUser.Email = entity.Email;*/
 
             return await _context.SaveChangesAsync() > 0;
         }

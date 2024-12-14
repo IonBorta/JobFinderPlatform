@@ -39,11 +39,11 @@ namespace JobFinder.BLL.Services
             }
             var company = new Company()
             {
-                Name = companyDTO.Name,
-                Email = companyDTO.Email,
+                //Name = companyDTO.Name,
+                //Email = companyDTO.Email,
                 PhoneNumber = companyDTO.PhoneNumber,
                 Domain = companyDTO.Domain,
-                Password = companyDTO.Password,
+                //Password = companyDTO.Password,
             };
             var added = await _companyRepository.AddAsync(company);
             return added ? Result.Success() : Result.Failure("Failed to register company.");
@@ -58,7 +58,7 @@ namespace JobFinder.BLL.Services
         {
             Company company = await _logRepository.GetByEmailAsync(email);
             if (company == null) return null;
-            var companyDTO = new CompanyDTO() { Email = company.Email };
+            var companyDTO = new CompanyDTO() { /*Email = company.Email*/ };
             return companyDTO;
         }
 
@@ -84,11 +84,11 @@ namespace JobFinder.BLL.Services
             var dto = new CompanyDTO()
             {
                 Id = company.Id,
-                Name = company.Name,
-                Email = company.Email,
+                //Name = company.Name,
+                //Email = company.Email,
                 PhoneNumber = company.PhoneNumber,
                 Domain = company.Domain,
-                Workers = company.Workers ?? 0,
+                //Workers = company.Workers ?? 0,
                 Description = company.Description,
                 City = company.City,
                 JobsCount = jobsCount,
@@ -106,12 +106,12 @@ namespace JobFinder.BLL.Services
             var company = new Company()
             {
                 Id = companyDTO.Id,
-                Name = companyDTO.Name,
-                Email = companyDTO.Email,
+                //Name = companyDTO.Name,
+                //Email = companyDTO.Email,
                 Description = companyDTO.Description,
                 City = companyDTO.City,
                 Domain = companyDTO.Domain,
-                Workers = companyDTO.Workers,
+                //Workers = companyDTO.Workers,
                 PhoneNumber = companyDTO.PhoneNumber,
             };
             var updated =  await _companyRepository.UpdateAsync(company);

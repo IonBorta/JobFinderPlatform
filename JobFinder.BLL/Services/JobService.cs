@@ -79,8 +79,8 @@ namespace JobFinder.BLL.Services
                 Studies = job.Studies,
                 WorkingType = job.WorkingType,
                 CompanyId = job.CompanyId,
-                Posted = job.Posted,
-                CompanyName = company.Name
+                Posted = job.Created,
+                //CompanyName = company.Name
             };
             return Result<JobDTO>.Success(jobDTO);
         }
@@ -105,7 +105,7 @@ namespace JobFinder.BLL.Services
             foreach (var job in jobsDTOs)
             {
                 var company = await _companyRepository.GetByIdAsync(job.CompanyId);
-                job.CompanyName = company.Name;
+                //job.CompanyName = company.Name;
                 job.City = company.City;
             }
             return jobsDTOs;

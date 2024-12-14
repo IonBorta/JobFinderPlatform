@@ -31,7 +31,7 @@ namespace JobFinder.BLL.Services
             }
             var application = new Application()
             {
-                UserName = applicationDTO.UserName,
+                //UserName = applicationDTO.UserName,
                 JobId = applicationDTO.JobId,
                 UserId = applicationDTO.UserId,
                 FileContent = applicationDTO.FileContent,
@@ -41,7 +41,7 @@ namespace JobFinder.BLL.Services
 
             
             var added = await _applicationRepository.AddAsync(application);
-            return added ? Result.Success() : Result.Failure($"Failed to add application for {application.JobName} job");
+            return added ? Result.Success() : Result.Failure($"Failed to add application for {application.Id} job");
         }
 
         public Task DeleteApplication(int id)
@@ -59,12 +59,12 @@ namespace JobFinder.BLL.Services
             var dto = new ApplicationDTO()
             {
                 //Id = application.Id,
-                CompanyName = application.CompanyName,
-                UserName = application.UserName,
-                JobName = application.JobName,
+                // CompanyName = application.CompanyName,
+                // UserName = application.UserName,
+                // JobName = application.JobName,
                 JobId = application.JobId,
-                UserEmail = application.UserEmail,
-                Submited = application.Submitted,
+                // UserEmail = application.UserEmail,
+                // Submited = application.Submitted,
                 FileContent = application.FileContent,
                 FileName = application.FileName,
                 ContentType = application.ContentType,
@@ -78,12 +78,12 @@ namespace JobFinder.BLL.Services
             var dtos = applications.Select(x => new ApplicationDTO()
             {
                 Id = x.Id,
-                CompanyName = x.CompanyName,
-                UserName = x.UserName,
-                JobName = x.JobName,
+                // CompanyName = x.CompanyName,
+                // UserName = x.UserName,
+                // JobName = x.JobName,
                 JobId = x.JobId,
-                UserEmail = x.UserEmail,
-                Submited = x.Submitted,
+                // UserEmail = x.UserEmail,
+                // Submited = x.Submitted,
                 FileContent = x.FileContent,
                 FileName = x.FileName,
                 ContentType = x.ContentType,
@@ -99,12 +99,12 @@ namespace JobFinder.BLL.Services
             var dtos = companyApp.Select(x => new ApplicationDTO()
             {
                 Id = x.Id,
-                CompanyName = x.CompanyName,
-                UserName = x.UserName,
-                JobName = x.JobName,
+                // CompanyName = x.CompanyName,
+                // UserName = x.UserName,
+                // JobName = x.JobName,
                 JobId = x.JobId,
-                UserEmail = x.UserEmail,
-                Submited = x.Submitted,
+                // UserEmail = x.UserEmail,
+                // Submited = x.Submitted,
                 FileContent = x.FileContent,
                 FileName = x.FileName,
                 ContentType = x.ContentType,

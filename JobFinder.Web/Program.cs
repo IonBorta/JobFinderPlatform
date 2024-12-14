@@ -72,6 +72,8 @@ builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
 builder.Services.AddScoped<IGetByUserRepository<Company>, CompanyRepository>();
 builder.Services.AddScoped<ILogRepository<Company>, CompanyRepository>();
 
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

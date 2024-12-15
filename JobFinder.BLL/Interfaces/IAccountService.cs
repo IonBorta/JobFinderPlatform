@@ -8,14 +8,9 @@ using System.Threading.Tasks;
 
 namespace JobFinder.BLL.Interfaces
 {
-    public interface IAccountService
+    public interface IAccountService:IBaseService<UserDTO>
     {
-        Task<IList<UserDTO>> GetUsers();
-        Task<UserDTO> GetUserById(int id);
-        Task<Result> AddUser(UserDTO userDTO);
         Task<Result<UserDTO>> LoginUser(string username, string password);
-        Task UpdateUser(UserDTO userDTO);
-        Task DeleteUser(int id);
         Task<UserDTO> GetByEmail(string email);
     }
 }

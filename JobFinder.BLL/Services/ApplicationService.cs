@@ -2,7 +2,8 @@
 using JobFinder.BLL.Interfaces;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
-using JobFinder.Core.Interfaces;
+using JobFinder.DAL.AbstractFactory.Abstract.Factory;
+using JobFinder.DAL.AbstractFactory.Abstract.Product;
 using JobFinder.DAL.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,26 +16,23 @@ namespace JobFinder.BLL.Services
 {
     public class ApplicationService : IApplicationService
     {
-        private readonly IRepository<ApplicationEntity> _applicationRepository;
-        private readonly IRepository<Company> _companyRepository;
-        private readonly IRepository<User> _userRepository;
-        private readonly IRepository<Job> _jobRepository;
+        private readonly IApplicationRepository _applicationRepository;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IJobRepository _jobRepository;
         private readonly IMapper _mapper;
         public ApplicationService(
-            IRepository<ApplicationEntity> applicationRepository, 
-            IMapper mapper,
-            IRepository<Company> companyRepository,
-            IRepository<User> userRepository,
-            IRepository<Job> jobRepository
+            IRepositoryFactory repositoryFactory,
+            IMapper mapper
             )
         {
-            _applicationRepository = applicationRepository;
+            _applicationRepository = repositoryFactory.CreateApplicationRepository();
             _mapper = mapper;
-            _companyRepository = companyRepository;
-            _userRepository = userRepository;
-            _jobRepository = jobRepository;
+            _companyRepository = repositoryFactory.CreateCompanyRepository();
+            _userRepository = repositoryFactory.CreateUserRepository();
+            _jobRepository = repositoryFactory.CreateJobRepository();
         }
-        public async Task<Result> AddApplication(ApplicationDTO applicationDTO)
+        public async Task<Result> Add(ApplicationDTO applicationDTO)
         {
             var applications = await _applicationRepository.GetAllAsync();
             if(applications.Count() > 0)
@@ -52,12 +50,12 @@ namespace JobFinder.BLL.Services
             return added ? Result.Success() : Result.Failure($"Failed to add application for {application.Id} job");
         }
 
-        public Task DeleteApplication(int id)
+        public Task<Result> Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<ApplicationDTO>> GetApplcationById(int id)
+        public async Task<Result<ApplicationDTO>> GetById(int id)
         {
             var application = await _applicationRepository.GetByIdAsync(id);
             if (application == null)
@@ -68,7 +66,7 @@ namespace JobFinder.BLL.Services
             return Result<ApplicationDTO>.Success(dto);
         }
 
-        public async Task<IList<ApplicationDTO>> GetApplications()
+        public async Task<IList<ApplicationDTO>> GetAll()
         {
             var applications = await _applicationRepository.GetAllAsync();
             var dtos = applications.Select(x => _mapper.Map<ApplicationDTO>(x)).ToList();
@@ -114,7 +112,7 @@ namespace JobFinder.BLL.Services
             return dtos;
         }
 
-        public Task UpdateApplication(CompanyDTO applicationDTO)
+        public Task<Result> Update(ApplicationDTO applicationDTO)
         {
             throw new NotImplementedException();
         }

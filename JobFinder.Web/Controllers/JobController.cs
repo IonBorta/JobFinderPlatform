@@ -24,11 +24,7 @@ namespace JobFinder.Web.Controllers
         }
         public async Task<IActionResult> Jobs()
         {
-
-
-            var jobDTOs = await _jobService.GetJobs();
-
-
+            var jobDTOs = await _jobService.GetAll();
             var jobViewModels = jobDTOs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
 
             return View(jobViewModels);
@@ -41,7 +37,7 @@ namespace JobFinder.Web.Controllers
         }
         public async Task<IActionResult> JobDetails(int id)
         {
-            var result = await _jobService.GetJobById(id);
+            var result = await _jobService.GetById(id);
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.ErrorMessage);
@@ -67,7 +63,7 @@ namespace JobFinder.Web.Controllers
                 var jobDto = _mapper.Map<JobDTO>(createJobViewModel);
                 jobDto.CompanyId = companyId;
 
-                var result = await _jobService.AddJob(jobDto);
+                var result = await _jobService.Add(jobDto);
                 if (!result.IsSuccess)
                 {
                     ModelState.AddModelError(string.Empty, result.ErrorMessage);
@@ -80,7 +76,7 @@ namespace JobFinder.Web.Controllers
         }
         public async Task<ActionResult> Edit(int id)
         {
-            var result = await _jobService.GetJobById(id);
+            var result = await _jobService.GetById(id);
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.ErrorMessage);
@@ -97,7 +93,7 @@ namespace JobFinder.Web.Controllers
             if (ModelState.IsValid)
             {
                 var job = _mapper.Map<JobDTO>(editJobViewModel);
-                var result = await _jobService.UpdateJob(job);
+                var result = await _jobService.Update(job);
                 if (!result.IsSuccess)
                 {
                     ModelState.AddModelError(string.Empty, result.ErrorMessage);

@@ -44,7 +44,7 @@ namespace JobFinder.Web.Controllers
                     };
 
                     
-                    var result = await _applicationService.AddApplication(application);
+                    var result = await _applicationService.Add(application);
                     if (!result.IsSuccess)
                     {
                         ModelState.AddModelError(string.Empty, result.ErrorMessage);
@@ -60,7 +60,7 @@ namespace JobFinder.Web.Controllers
         }
         public async Task<IActionResult> UserApplications()
         {
-            var applications = await _applicationService.GetApplications();
+            var applications = await _applicationService.GetAll();
             var viewmodels = applications.Select(app => _mapper.Map<GetApplicationViewModel>(app)).ToList();
             return View(viewmodels);
         }
@@ -72,7 +72,7 @@ namespace JobFinder.Web.Controllers
         }
         public async Task<IActionResult> ViewPDF(int id)
         {
-            var result = await _applicationService.GetApplcationById(id);
+            var result = await _applicationService.GetById(id);
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.ErrorMessage);

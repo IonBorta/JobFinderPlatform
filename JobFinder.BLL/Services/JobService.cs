@@ -2,7 +2,8 @@
 using JobFinder.BLL.Interfaces;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
-using JobFinder.Core.Interfaces;
+using JobFinder.DAL.AbstractFactory.Abstract.Factory;
+using JobFinder.DAL.AbstractFactory.Abstract.Product;
 using JobFinder.DAL.Entities;
 using JobFinder.DAL.Repositories;
 using System;
@@ -17,30 +18,24 @@ namespace JobFinder.BLL.Services
 {
     public class JobService : IJobService
     {
-        private readonly IRepository<Job> _jobRepository;
-        private readonly IJobRepository<Job> _jobRepo;
-        private readonly IRepository<Company> _companyRepository;
-        private readonly IRepository<User> _userRepository;
+        private readonly IJobRepository _jobRepository;
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
         public JobService(
-            IRepository<Job> jobRepository, 
-            IJobRepository<Job> jobRepo,
-            IRepository<Company> companyRepository,
-            IRepository<User> userRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IRepositoryFactory repositoryFactory
+            )
         {
-            _jobRepository = jobRepository;
-            _companyRepository = companyRepository;
-            _userRepository = userRepository;
-            _jobRepo = jobRepo;
+            _jobRepository = repositoryFactory.CreateJobRepository();
+            _companyRepository = repositoryFactory.CreateCompanyRepository();
+            _userRepository = repositoryFactory.CreateUserRepository();
             _mapper = mapper;
         }
-        public async Task<Result> AddJob(JobDTO jobDTO)
+        public async Task<Result> Add(JobDTO jobDTO)
         {
-            //var jobs = await _jobRepository.GetAllAsync();
-            //var existingJob = jobs.FirstOrDefault(j => j.CompanyId == jobDTO.CompanyId && j.Title == jobDTO.Title);
-            var existingJob = await _jobRepo.GetByName(jobDTO.Title);
+            var existingJob = await _jobRepository.GetJobByNameAsync(jobDTO.Title);
             if (existingJob != null)
             {
                 return Result.Failure("This job already exists");
@@ -51,12 +46,12 @@ namespace JobFinder.BLL.Services
             return added ? Result.Success() : Result.Failure($"Failed to add {jobDTO.Title} job");
         }
 
-        public Task DeleteJob(int id)
+        public Task<Result> Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<JobDTO>> GetJobById(int id)
+        public async Task<Result<JobDTO>> GetById(int id)
         {
             var job  = await _jobRepository.GetByIdAsync(id);
             if (job == null)
@@ -76,7 +71,7 @@ namespace JobFinder.BLL.Services
             return Result<JobDTO>.Success(jobDTO);
         }
 
-        public async Task<IList<JobDTO>> GetJobs()
+        public async Task<IList<JobDTO>> GetAll()
         {
             var jobs = await _jobRepository.GetAllAsync();
             
@@ -93,12 +88,12 @@ namespace JobFinder.BLL.Services
 
         public async Task<IList<JobDTO>> GetJobsByCompany(int id)
         {
-            var jobs = await GetJobs();
+            var jobs = await GetAll();
             jobs = jobs.Where(job => job.CompanyId ==  id).ToList();
             return jobs;
         }
 
-        public async Task<Result> UpdateJob(JobDTO jobDTO)
+        public async Task<Result> Update(JobDTO jobDTO)
         {
             var existingJob = await _jobRepository.GetByIdAsync(jobDTO.Id);
             if (existingJob == null)

@@ -8,13 +8,8 @@ using System.Threading.Tasks;
 
 namespace JobFinder.BLL.Interfaces
 {
-    public interface IJobService
+    public interface IJobService:IBaseService<JobDTO>
     {
-        Task<IList<JobDTO>> GetJobs();
         Task<IList<JobDTO>> GetJobsByCompany(int id);
-        Task<Result<JobDTO>> GetJobById(int id);
-        Task<Result> AddJob(JobDTO jobDTO);
-        Task<Result> UpdateJob(JobDTO jobDTO);
-        Task DeleteJob(int id);
     }
 }

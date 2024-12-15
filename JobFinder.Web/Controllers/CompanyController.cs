@@ -13,20 +13,17 @@ namespace JobFinder.Web.Controllers
     public class CompanyController : Controller
     {
         private readonly ICompanyService _companyService;
-        //private readonly ILogService<CompanyDTO> _logService;
         private readonly IJobService _jobService;
         private readonly IApplicationService _applicationService;
         private readonly IMapper _mapper;
         public CompanyController(
             ICompanyService companyService, 
-            //ILogService<CompanyDTO> logService,
             IJobService jobService, 
             IApplicationService applicationService,
             IMapper mapper
             )
         {
             _companyService = companyService;
-            //_logService = logService;
             _jobService = jobService;
             _applicationService = applicationService;
             _mapper = mapper;
@@ -41,7 +38,7 @@ namespace JobFinder.Web.Controllers
         // GET: CompanyController/Details/5
         public async Task<ActionResult> Details(int id,bool byUserId = false)
         {
-            var result = await _companyService.GetCompanyById(id,byUserId);
+            var result = await _companyService.GetCompanyByUserId(id,byUserId);
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.ErrorMessage);
@@ -72,7 +69,7 @@ namespace JobFinder.Web.Controllers
                     return View(registerCompanyViewModel);
                 }
                 var companyDTO = _mapper.Map<CompanyDTO>(registerCompanyViewModel);
-                var result = await _companyService.AddCompany(companyDTO);
+                var result = await _companyService.Add(companyDTO);
 
                 if (!result.IsSuccess)
                 {
@@ -87,7 +84,7 @@ namespace JobFinder.Web.Controllers
         // GET: CompanyController/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-            var result = await _companyService.GetCompanyById(id);
+            var result = await _companyService.GetCompanyByUserId(id);
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.ErrorMessage);
@@ -104,31 +101,18 @@ namespace JobFinder.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(EditCompanyViewModel companyViewModel)
         {
-            if (companyViewModel.User.Name == "" || companyViewModel.User.Email == "" ||
-                companyViewModel.Domain == 0 || companyViewModel.Description == "" ||
-                    companyViewModel.PhoneNumber == "")
+            if (ModelState.IsValid)
             {
-                return View(companyViewModel);
+                var company = _mapper.Map<CompanyDTO>(companyViewModel);
+                var result = await _companyService.Update(company);
+                if (!result.IsSuccess)
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    return View(companyViewModel);
+                }
+                return RedirectToAction("Details", new { id = companyViewModel.Id });
             }
-            var company = _mapper.Map<CompanyDTO>(companyViewModel);
-/*            var company = new CompanyDTO()
-            {
-                Id = companyViewModel.Id,
-                Name = companyViewModel.Name,
-                Email = companyViewModel.Email,
-                Description = companyViewModel.Description,
-                City = companyViewModel.City,
-                Domain = companyViewModel.Domain,
-                Workers = companyViewModel.Workers,
-                PhoneNumber = companyViewModel.PhoneNumber,
-            };*/
-            var result = await _companyService.UpdateCompany(company);
-            if (!result.IsSuccess)
-            {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                return View(companyViewModel);
-            }
-            return RedirectToAction("Details",new { id = companyViewModel.Id });
+            return View(companyViewModel);
         }
 
         // GET: CompanyController/Delete/5

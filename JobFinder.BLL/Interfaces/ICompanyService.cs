@@ -8,11 +8,8 @@ using System.Threading.Tasks;
 
 namespace JobFinder.BLL.Interfaces
 {
-    public interface ICompanyService
+    public interface ICompanyService: IBaseService<CompanyDTO>
     {
-        Task<Result<CompanyDTO>> GetCompanyById(int id,bool byUserId = false);
-        Task<Result> AddCompany(CompanyDTO companyDTO);
-        Task<Result> UpdateCompany(CompanyDTO companyDTO);
-        Task DeleteCompany(int id);
+        Task<Result<CompanyDTO>> GetCompanyByUserId(int id,bool byUserId = false);
     }
 }

@@ -77,7 +77,7 @@ namespace JobFinder.Web.Controllers
                     return View(registerViewModel);
                 }
                 var userDTO = _mapper.Map<UserDTO>(registerViewModel);
-                var result = await _accountService.AddUser(userDTO);
+                var result = await _accountService.Add(userDTO);
 
                 if (!result.IsSuccess)
                 {

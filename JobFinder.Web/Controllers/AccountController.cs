@@ -1,7 +1,9 @@
-﻿using JobFinder.BLL.Interfaces;
+﻿using AutoMapper;
+using JobFinder.BLL.Interfaces;
 using JobFinder.Core.DTOs;
 using JobFinder.DAL.Entities;
 using JobFinder.Web.Models;
+using JobFinder.Web.Models.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,9 +17,11 @@ namespace JobFinder.Web.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService)
+        private readonly IMapper _mapper;
+        public AccountController(IAccountService accountService, IMapper mapper)
         {
             _accountService = accountService;
+            _mapper = mapper;
         }
         public IActionResult Index()
         {
@@ -63,29 +67,25 @@ namespace JobFinder.Web.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> RegisterUser(UserViewModel userViewModel)
+        public async Task<IActionResult> RegisterUser(RegisterViewModel registerViewModel)
         {
             if (ModelState.IsValid)
             {
-                if(userViewModel.Password != userViewModel.ConfirmPassword)
+                if(registerViewModel.Password != registerViewModel.ConfirmPassword)
                 {
                     ModelState.AddModelError("ConfirmPassword", "Password is not the same");
-                    return View(userViewModel);
+                    return View(registerViewModel);
                 }
-                var result = await _accountService.AddUser(new UserDTO
-                {
-                    Name = userViewModel.FullName,
-                    Email = userViewModel.Email,
-                    Password = userViewModel.Password,
-                });
+                var userDTO = _mapper.Map<UserDTO>(registerViewModel);
+                var result = await _accountService.AddUser(userDTO);
 
                 if (!result.IsSuccess)
                 {
                     ModelState.AddModelError("Email", result.ErrorMessage);
-                    return View(userViewModel);
+                    return View(registerViewModel);
                 }
             }
-            return View(userViewModel);
+            return View(registerViewModel);
         }
     }
 }

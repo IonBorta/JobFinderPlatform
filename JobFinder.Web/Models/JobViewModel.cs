@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JobFinder.Web.Models
 {
-    public class JobViewModel
+/*    public class JobViewModel
     {
         public int Id { get; set; }
         [Required(ErrorMessage = "Title is required")]
@@ -18,8 +18,6 @@ namespace JobFinder.Web.Models
         public string Benefits { get; set; }
         [Required(ErrorMessage = "Experience is required")]
         public WorkExperience Experience { get; set; }
-/*        [Required(ErrorMessage = "City is required")]
-        public string City { get; set; }*/
         [Required(ErrorMessage = "Studies are required")]
         public StudiesLevel Studies { get; set; }
         [Required(ErrorMessage = "WorkingType is required")]
@@ -31,6 +29,5 @@ namespace JobFinder.Web.Models
         
         public string CompanyName { get; set; } = string.Empty;
         public int CompanyId { get; set; }
-        //public CompanyViewModel Company { get; set; } = new CompanyViewModel();
-    }
+    }*/
 }

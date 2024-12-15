@@ -1,4 +1,4 @@
-﻿@model IList<JobFinder.Web.Models.JobViewModel>
+﻿@model IList<JobFinder.Web.Models.Job.GetJobViewModel>
 
 @{
     ViewData["Title"] = "Details";
@@ -45,11 +45,11 @@
                 <p class="text-center">Disponible Jobs</p>
                 foreach (var job in Model)
                 {
-                    <div class="single-job-items mb-30 align-items-center justify-content-around">
+                    <div class="single-job-items mb-30 align-items-center justify-content-around" style="border: 1px solid black;">
+@*                         <div class="company-img">
+                            <a href="#"><img src="https://www.clipartmax.com/png/middle/145-1452527_job-yaz-ltd-job-offer-icon-png.png" alt="" height="85" width="85"></a>
+                        </div> *@
                         <div class="job-items">
-                            <div class="company-img">
-                                <a href="#"><img @* src="~/img/icon/job-list1.png" *@ src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" alt="" height="85" width="85"></a>
-                            </div>
                             <div class="job-tittle job-tittle2">
                                 <a href="#" class="">
                                     <h4><a asp-controller="Job" asp-action="JobDetails" asp-route-id="@job.Id" onmouseover="this.style.color='black';">@job.Title</a></h4>

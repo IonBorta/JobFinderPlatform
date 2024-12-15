@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JobFinder.Web.Models
 {
-    public class RegisterCompanyViewModel
+/*    public class RegisterCompanyViewModel
     {
         [Required(ErrorMessage = "The Company Name is required")]
         public string Name { get; set; }
@@ -31,5 +31,5 @@ namespace JobFinder.Web.Models
         public string City { get; set; }
         public string Logo { get; set; }
         public int Jobs {  get; set; }
-    }
+    }*/
 }

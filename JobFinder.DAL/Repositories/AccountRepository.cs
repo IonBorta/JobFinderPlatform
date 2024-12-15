@@ -19,7 +19,7 @@ namespace JobFinder.DAL.Repositories
         }
         public async Task<bool> AddAsync(User entity)
         {
-            entity.Created = DateTime.Now;
+            //entity.Created = DateTime.Now;
             await _context.Users.AddAsync(entity);
             var result = await _context.SaveChangesAsync() > 0;
             return result;
@@ -41,14 +41,19 @@ namespace JobFinder.DAL.Repositories
             return user;
         }
 
-        public Task<User> GetByIdAsync(int id)
+        public async Task<User> GetByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.FirstOrDefaultAsync(user => user.Id == id);
+            return user;
         }
 
-        public Task<bool> UpdateAsync(User entity)
+        public async Task<bool> UpdateAsync(User entity)
         {
-            throw new NotImplementedException();
+            var existingUser = await _context.Users.FindAsync(entity.Id);
+            existingUser.Name = entity.Name;
+            existingUser.Email = entity.Email;
+
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

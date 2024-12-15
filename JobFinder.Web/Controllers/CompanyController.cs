@@ -1,7 +1,9 @@
-﻿using JobFinder.BLL.Interfaces;
+﻿using AutoMapper;
+using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
 using JobFinder.Core.DTOs;
 using JobFinder.Web.Models;
+using JobFinder.Web.Models.Company;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -11,15 +13,23 @@ namespace JobFinder.Web.Controllers
     public class CompanyController : Controller
     {
         private readonly ICompanyService _companyService;
-        private readonly ILogService<CompanyDTO> _logService;
+        //private readonly ILogService<CompanyDTO> _logService;
         private readonly IJobService _jobService;
         private readonly IApplicationService _applicationService;
-        public CompanyController(ICompanyService companyService, ILogService<CompanyDTO> logService,IJobService jobService, IApplicationService applicationService)
+        private readonly IMapper _mapper;
+        public CompanyController(
+            ICompanyService companyService, 
+            //ILogService<CompanyDTO> logService,
+            IJobService jobService, 
+            IApplicationService applicationService,
+            IMapper mapper
+            )
         {
             _companyService = companyService;
-            _logService = logService;
+            //_logService = logService;
             _jobService = jobService;
             _applicationService = applicationService;
+            _mapper = mapper;
 
         }
         // GET: CompanyController
@@ -38,18 +48,7 @@ namespace JobFinder.Web.Controllers
                 return View("Error");
             }
             CompanyDTO companyDTO = result.Data;
-            var company = new CompanyViewModel()
-            {
-                Id = companyDTO.Id,
-                Name = companyDTO.Name,
-                Email = companyDTO.Email,
-                Description = companyDTO.Description,
-                City = companyDTO.City,
-                Domain = companyDTO.Domain,
-                Workers = companyDTO.Workers,
-                PhoneNumber = companyDTO.PhoneNumber,
-                Jobs = companyDTO.JobsCount
-            };
+            var company = _mapper.Map<GetCompanyViewModel>(companyDTO);
 
             return View(company);
         }
@@ -63,7 +62,7 @@ namespace JobFinder.Web.Controllers
         // POST: CompanyController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> RegisterCompany(RegisterCompanyViewModel registerCompanyViewModel)
+        public async Task<ActionResult> RegisterCompany(CreateCompanyViewModel registerCompanyViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -72,14 +71,8 @@ namespace JobFinder.Web.Controllers
                     ModelState.AddModelError("ConfirmPassword", "Password is not the same");
                     return View(registerCompanyViewModel);
                 }
-                var result = await _companyService.AddCompany(new CompanyDTO
-                {
-                    Name = registerCompanyViewModel.Name,
-                    Email = registerCompanyViewModel.Email,
-                    PhoneNumber = registerCompanyViewModel.PhoneNumber,
-                    Domain = registerCompanyViewModel.Domain,
-                    Password = registerCompanyViewModel.Password,
-                });
+                var companyDTO = _mapper.Map<CompanyDTO>(registerCompanyViewModel);
+                var result = await _companyService.AddCompany(companyDTO);
 
                 if (!result.IsSuccess)
                 {
@@ -101,18 +94,7 @@ namespace JobFinder.Web.Controllers
                 return View("Error");
             }
             CompanyDTO companyDTO = result.Data;
-            var company = new CompanyViewModel()
-            {
-                Id = companyDTO.Id,
-                Name = companyDTO.Name,
-                Email = companyDTO.Email,
-                Description = companyDTO.Description,
-                City = companyDTO.City,
-                Domain = companyDTO.Domain,
-                Workers = companyDTO.Workers,
-                PhoneNumber = companyDTO.PhoneNumber,
-                Jobs =  companyDTO.JobsCount
-            };
+            var company = _mapper.Map<EditCompanyViewModel>(companyDTO);
 
             return View(company);
         }
@@ -120,15 +102,16 @@ namespace JobFinder.Web.Controllers
         // POST: CompanyController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(CompanyViewModel companyViewModel)
+        public async Task<ActionResult> Edit(EditCompanyViewModel companyViewModel)
         {
-            if (companyViewModel.Name == "" || companyViewModel.Email == "" ||
+            if (companyViewModel.User.Name == "" || companyViewModel.User.Email == "" ||
                 companyViewModel.Domain == 0 || companyViewModel.Description == "" ||
                     companyViewModel.PhoneNumber == "")
             {
                 return View(companyViewModel);
             }
-            var company = new CompanyDTO()
+            var company = _mapper.Map<CompanyDTO>(companyViewModel);
+/*            var company = new CompanyDTO()
             {
                 Id = companyViewModel.Id,
                 Name = companyViewModel.Name,
@@ -138,8 +121,7 @@ namespace JobFinder.Web.Controllers
                 Domain = companyViewModel.Domain,
                 Workers = companyViewModel.Workers,
                 PhoneNumber = companyViewModel.PhoneNumber,
-
-            };
+            };*/
             var result = await _companyService.UpdateCompany(company);
             if (!result.IsSuccess)
             {

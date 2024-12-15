@@ -57,20 +57,21 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IRepository<Job>, JobRepository>();
+builder.Services.AddScoped<IJobRepository<Job>, JobRepository>();
 
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddScoped<ILogService<UserDTO>, AccountService>();
+//builder.Services.AddScoped<ILogService<UserDTO>, AccountService>();
 builder.Services.AddScoped<IRepository<User>, AccountRepository>();
 builder.Services.AddScoped<ILogRepository<User>, AccountRepository>();
 
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
-builder.Services.AddScoped<IRepository<Application>, ApplicationRepository>();
+builder.Services.AddScoped<IRepository<ApplicationEntity>, ApplicationRepository>();
 
 builder.Services.AddScoped<ICompanyService, CompanyService>();
-builder.Services.AddScoped<ILogService<CompanyDTO>, CompanyService>();
+//builder.Services.AddScoped<ILogService<CompanyDTO>, CompanyService>();
 builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
 builder.Services.AddScoped<IGetByUserRepository<Company>, CompanyRepository>();
-builder.Services.AddScoped<ILogRepository<Company>, CompanyRepository>();
+//builder.Services.AddScoped<ILogRepository<Company>, CompanyRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

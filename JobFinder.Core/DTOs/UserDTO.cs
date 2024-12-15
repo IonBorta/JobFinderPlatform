@@ -14,5 +14,16 @@ namespace JobFinder.Core.DTOs
         public string Email { get; set; }
         public string Password { get; set; }
         public UserType UserType { get; set; }
+
+/*        public override bool Equals(object obj)
+        {
+            if (obj is UserDTO userDTO)
+            {
+                return this.Name == userDTO.Name
+                    && this.Email == userDTO.Email
+                    && this.UserType == userDTO.UserType;
+            }
+            return false;
+        }*/
     }
 }

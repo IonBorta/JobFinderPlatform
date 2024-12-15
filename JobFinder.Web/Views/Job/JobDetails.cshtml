@@ -1,4 +1,4 @@
-﻿@model JobViewModel
+﻿@model JobFinder.Web.Models.Job.GetJobViewModel
 @using Microsoft.AspNetCore.Http
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
@@ -24,7 +24,7 @@
                                 </a>
                                 <ul>
                                     <li>@Model.CompanyName</li>
-                                    <li><i class="fas fa-map-marker-alt"></i>@Model.City</li>
+                                    <li><i class="fas fa-map-marker-alt"></i>Model City</li>
                                     <li>$@Model.Salary</li>
                                 </ul>
                             </div>
@@ -80,7 +80,7 @@
                             <h4>Job Overview</h4>
                         </div>
                         <ul>
-                            <li>Posted date : <span>@Model.Posted.ToString("dd MMMM yyyy")</span></li>
+                            <li>Posted date : <span>@Model.Created.ToString("dd MMMM yyyy")</span></li>
                             <li>Location : <span>@* New York *@@Model.City</span></li>
                             <li>Vacancy : <span>02</span></li>
                             <li>Job nature : <span>@Model.WorkingType</span></li>
@@ -99,7 +99,7 @@
                                 
                             </div>
                         }
-                        else if (userType == 0)
+                        else @* if (userType == 0) *@
                         {
                             <!-- Apply Now Button -->
                             <div class="apply-btn2">

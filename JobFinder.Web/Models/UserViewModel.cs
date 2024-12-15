@@ -1,9 +1,10 @@
 ﻿using JobFinder.Core.Enums;
+using JobFinder.Web.Models.Auth;
 using System.ComponentModel.DataAnnotations;
 
 namespace JobFinder.Web.Models
 {
-    public class LoginViewModel
+/*    public class LoginViewModel
     {
         [Required(ErrorMessage = "Email is required")]
         public string Email { get; set; }
@@ -18,5 +19,5 @@ namespace JobFinder.Web.Models
         [Required(ErrorMessage = "Confirm yor password")]
         public string ConfirmPassword { get; set; }
         public UserType UserType { get; set; }
-    }
+    }*/
 }

@@ -12,6 +12,7 @@ namespace JobFinder.Web.AutoMapperProfiles
         {
             // ViewModel to DTOs
             CreateMap<RegisterViewModel, UserDTO>(); // Register inherits CreateUser
+            CreateMap<GetUserViewModel, UserDTO>();
             // DTO to Entity
             CreateMap<UserDTO, User>();
             // Entity to DTO

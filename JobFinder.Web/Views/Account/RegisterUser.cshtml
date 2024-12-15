@@ -3,7 +3,7 @@
 *@
 @{
 }
-@model JobFinder.Web.Models.UserViewModel
+@model JobFinder.Web.Models.Auth.RegisterViewModel
 <!-- slider Area Start-->
 <div class="slider-area mb-5">
     <!-- Mobile Menu -->
@@ -24,9 +24,9 @@
                                 <span asp-validation-for="Title" class="text-danger"></span>
                             </div> *@
                             <div class="form-floating mb-3">
-                                <input asp-for="FullName" type="text" class="form-control" id="floatingInput" placeholder="Borta Ion">
-                                <label asp-for="FullName" for="floatingInput">Full Name</label>
-                                <span asp-validation-for="FullName" class="text-danger"></span>
+                                <input asp-for="Name" type="text" class="form-control" id="floatingInput" placeholder="Borta Ion">
+                                <label asp-for="Name" for="floatingInput">Full Name</label>
+                                <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                             <div class="form-floating mb-3">
                                 <input asp-for="Email" type="email" class="form-control" id="floatingInput" placeholder="name@example.com">

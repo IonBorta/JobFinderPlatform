@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Entities
 {
-    public class Application : BaseEntity
+    public class ApplicationEntity : BaseEntity
     {
         public string FileName { get; set; }
         public string ContentType { get; set; }

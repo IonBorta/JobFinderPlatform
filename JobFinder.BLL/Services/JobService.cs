@@ -1,4 +1,5 @@
-﻿using JobFinder.BLL.Interfaces;
+﻿using AutoMapper;
+using JobFinder.BLL.Interfaces;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
 using JobFinder.Core.Interfaces;
@@ -17,33 +18,34 @@ namespace JobFinder.BLL.Services
     public class JobService : IJobService
     {
         private readonly IRepository<Job> _jobRepository;
+        private readonly IJobRepository<Job> _jobRepo;
         private readonly IRepository<Company> _companyRepository;
+        private readonly IRepository<User> _userRepository;
+        private readonly IMapper _mapper;
 
-        public JobService(IRepository<Job> jobRepository, IRepository<Company> companyRepository)
+        public JobService(
+            IRepository<Job> jobRepository, 
+            IJobRepository<Job> jobRepo,
+            IRepository<Company> companyRepository,
+            IRepository<User> userRepository,
+            IMapper mapper)
         {
             _jobRepository = jobRepository;
             _companyRepository = companyRepository;
+            _userRepository = userRepository;
+            _jobRepo = jobRepo;
+            _mapper = mapper;
         }
         public async Task<Result> AddJob(JobDTO jobDTO)
         {
-            var jobs = await _jobRepository.GetAllAsync();
-            var existingJob = jobs.FirstOrDefault(j => j.CompanyId == jobDTO.CompanyId && j.Title == jobDTO.Title);
+            //var jobs = await _jobRepository.GetAllAsync();
+            //var existingJob = jobs.FirstOrDefault(j => j.CompanyId == jobDTO.CompanyId && j.Title == jobDTO.Title);
+            var existingJob = await _jobRepo.GetByName(jobDTO.Title);
             if (existingJob != null)
             {
                 return Result.Failure("This job already exists");
             }
-            var job = new Job()
-            {
-                Title = jobDTO.Title,
-                Description = jobDTO.Description,
-                Requirements = jobDTO.Requirements,
-                Benefits = jobDTO.Benefits,
-                Salary = jobDTO.Salary,
-                Experience = jobDTO.Experience,
-                Studies = jobDTO.Studies,
-                WorkingType = jobDTO.WorkingType,
-                CompanyId = jobDTO.CompanyId,
-            };
+            var job = _mapper.Map<Job>(jobDTO);
 
             var added = await _jobRepository.AddAsync(job);
             return added ? Result.Success() : Result.Failure($"Failed to add {jobDTO.Title} job");
@@ -66,22 +68,11 @@ namespace JobFinder.BLL.Services
             {
                 return Result<JobDTO>.Failure($"Company with {job.CompanyId} id for job with {id} id not found");
             }
-            var jobDTO = new JobDTO()
-            {
-                Id = job.Id,
-                Title = job.Title,
-                Description = job.Description,
-                Requirements = job.Requirements,
-                Benefits = job.Benefits,
-                Salary = job.Salary,
-                Experience = job.Experience,
-                City = company.City,
-                Studies = job.Studies,
-                WorkingType = job.WorkingType,
-                CompanyId = job.CompanyId,
-                Posted = job.Created,
-                //CompanyName = company.Name
-            };
+            var jobDTO = _mapper.Map<JobDTO>(job);
+            jobDTO.City = company.City;
+
+            var user = await _userRepository.GetByIdAsync(company.UserId);
+            jobDTO.CompanyName = user.Name;
             return Result<JobDTO>.Success(jobDTO);
         }
 
@@ -89,23 +80,12 @@ namespace JobFinder.BLL.Services
         {
             var jobs = await _jobRepository.GetAllAsync();
             
-            var jobsDTOs = jobs.Select(job => new JobDTO()
-            {
-                Id = job.Id,
-                Title = job.Title,
-                Description = job.Description,
-                Requirements = job.Requirements,
-                Benefits = job.Benefits,
-                Salary = job.Salary,
-                Experience = job.Experience,
-                Studies = job.Studies,
-                WorkingType = job.WorkingType,
-                CompanyId= job.CompanyId,
-            }).ToList();
+            var jobsDTOs = jobs.Select(job => _mapper.Map<JobDTO>(job)).ToList();
             foreach (var job in jobsDTOs)
             {
                 var company = await _companyRepository.GetByIdAsync(job.CompanyId);
-                //job.CompanyName = company.Name;
+                var user = await _userRepository.GetByIdAsync(company.UserId);
+                job.CompanyName = user.Name;
                 job.City = company.City;
             }
             return jobsDTOs;
@@ -125,18 +105,7 @@ namespace JobFinder.BLL.Services
             {
                 return Result.Failure($"Job not found");
             }
-            var job = new Job()
-            {
-                Id = jobDTO.Id,
-                Title = jobDTO.Title,
-                Description = jobDTO.Description,
-                Requirements = jobDTO.Requirements,
-                Benefits = jobDTO.Benefits,
-                Salary = jobDTO.Salary,
-                Experience = jobDTO.Experience,
-                WorkingType = jobDTO.WorkingType,
-                Studies = jobDTO.Studies,
-            };
+            var job = _mapper.Map<Job>(jobDTO);
             var updated = await _jobRepository.UpdateAsync(job);
             return updated ? Result.Success() : Result.Failure($"Failed to update {jobDTO.Title} job");
         }

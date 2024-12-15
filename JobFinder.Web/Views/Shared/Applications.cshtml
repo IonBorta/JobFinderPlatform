@@ -1,4 +1,4 @@
-﻿@model IList<ApplicationViewModel>
+﻿@model IList<JobFinder.Web.Models.Application.GetApplicationViewModel>
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     var userName = @HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Unknown";
@@ -31,7 +31,7 @@
                         <td class="align-middle">@app.UserName</td>
                         <td class="align-middle">@app.UserEmail</td>
                     }
-                    <td class="align-middle">@app.Submited.ToString("dd MMMM yyyy")</td>
+                    <td class="align-middle">@app.Created.ToString("dd MMMM yyyy")</td>
                     <td>
                         <a asp-action="ViewPDF" asp-route-id="@app.Id" target="_blank" class="genric-btn danger@* btn btn-info btn-sm *@">View PDF</a>
                         <a asp-action="DownloadPDF" asp-route-id="@* @app.ApplicationId *@" class="genric-btn danger@* btn btn-primary btn-sm *@">Download PDF</a>

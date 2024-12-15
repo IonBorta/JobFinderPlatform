@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Repositories
 {
-    public class ApplicationRepository : IRepository<Application> , IGetByUserRepository<Application>
+    public class ApplicationRepository : IRepository<ApplicationEntity> , IGetByUserRepository<ApplicationEntity>
     {
         private readonly ApplicationDbContext _context;
         public ApplicationRepository(ApplicationDbContext context)
         {
             _context = context;
         }
-        public async Task<bool> AddAsync(Application entity)
+        public async Task<bool> AddAsync(ApplicationEntity entity)
         {
             //entity.Submitted = DateTime.Now;
             var job = await _context.Jobs.FirstOrDefaultAsync(j => j.Id == entity.JobId);
@@ -32,7 +32,7 @@ namespace JobFinder.DAL.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Application>> GetAllAsync()
+        public async Task<IEnumerable<ApplicationEntity>> GetAllAsync()
         {
             var applications = await _context.Applications.ToListAsync();
 /*            foreach (var application in applications)
@@ -47,14 +47,14 @@ namespace JobFinder.DAL.Repositories
             }*/
             return applications;
         }
-        public async Task<IList<Application>> GetByUserIdAsync(int id)
+        public async Task<IList<ApplicationEntity>> GetByUserIdAsync(int id)
         {
             var allApplications = await GetAllAsync();
             var userapplications = allApplications.Where(a => a.UserId == id).ToList();
             return userapplications;
         }
 
-        public async Task<Application> GetByIdAsync(int id)
+        public async Task<ApplicationEntity> GetByIdAsync(int id)
         {
             var application = await _context.Applications.FirstOrDefaultAsync(a => a.Id == id);
 /*            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == application.UserId);
@@ -67,7 +67,7 @@ namespace JobFinder.DAL.Repositories
             return application;
         }
 
-        public Task<bool> UpdateAsync(Application entity)
+        public Task<bool> UpdateAsync(ApplicationEntity entity)
         {
             throw new NotImplementedException();
         }

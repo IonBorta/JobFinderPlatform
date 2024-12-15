@@ -1,4 +1,5 @@
-﻿using JobFinder.BLL.Interfaces;
+﻿using AutoMapper;
+using JobFinder.BLL.Interfaces;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
 using JobFinder.Core.Interfaces;
@@ -12,14 +13,16 @@ using System.Threading.Tasks;
 
 namespace JobFinder.BLL.Services
 {
-    public class AccountService : IAccountService, ILogService<UserDTO>
+    public class AccountService : IAccountService//, ILogService<UserDTO>
     {
         private readonly IRepository<User> _userRepository;
         private readonly ILogRepository<User> _logRepository;
-        public AccountService(IRepository<User> userRepository, ILogRepository<User> logRepository)
+        private readonly IMapper _mapper;
+        public AccountService(IRepository<User> userRepository, ILogRepository<User> logRepository,IMapper mapper)
         {
             _userRepository = userRepository;
            _logRepository = logRepository;
+            _mapper = mapper;
         }
         public async Task<Result> AddUser(UserDTO userDTO)
         {
@@ -28,12 +31,7 @@ namespace JobFinder.BLL.Services
             {
                 return Result.Failure("This email is already used.");
             }
-            var user = new User()
-            {
-                Name = userDTO.Name,
-                Email = userDTO.Email,
-                Password = userDTO.Password,
-            };
+            var user = _mapper.Map<User>(userDTO);
             var success = await _userRepository.AddAsync(user);
             return success ? Result.Success() : Result.Failure("Failed to register user.");
         }
@@ -47,14 +45,7 @@ namespace JobFinder.BLL.Services
         {
             User user = await _logRepository.GetByEmailAsync(email);
             if (user == null) return null;
-            var userDTO = new UserDTO()
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Password = user.Password,
-                UserType = user.UserType
-            };
+            var userDTO = _mapper.Map<UserDTO>(user);
             return userDTO;
         }
 
@@ -79,13 +70,8 @@ namespace JobFinder.BLL.Services
             {
                 return Result<UserDTO>.Failure("Password is invalid.");
             }
-            return Result<UserDTO>.Success(new UserDTO() {
-                Id = existingUser.Id,
-                Name = existingUser.Name,
-                Email = existingUser.Email,
-                Password = existingUser.Password,
-                UserType = existingUser.UserType
-            });
+            var userDTO = _mapper.Map<UserDTO>(existingUser);
+            return Result<UserDTO>.Success(userDTO);
         }
 
         public Task UpdateUser(UserDTO userDTO)

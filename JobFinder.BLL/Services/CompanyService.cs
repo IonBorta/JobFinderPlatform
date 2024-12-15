@@ -1,4 +1,5 @@
-﻿using JobFinder.BLL.Interfaces;
+﻿using AutoMapper;
+using JobFinder.BLL.Interfaces;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
 using JobFinder.Core.Interfaces;
@@ -12,23 +13,29 @@ using System.Threading.Tasks;
 
 namespace JobFinder.BLL.Services
 {
-    public class CompanyService : ICompanyService , ILogService<CompanyDTO>
+    public class CompanyService : ICompanyService
     {
         private readonly IRepository<Company> _companyRepository;
+        private readonly IRepository<User> _userRepository;
         private readonly IGetByUserRepository<Company> _getByUserRepository;
         private readonly IRepository<Job> _jobRepository;
-        private readonly ILogRepository<Company> _logRepository;
+        private readonly ILogRepository<User> _logRepository;
+        private readonly IMapper _mapper;
         public CompanyService(
             IRepository<Company> companyRepository, 
-            ILogRepository<Company> logRepository,
+            IRepository<User> userRepository,
+            ILogRepository<User> logRepository,
             IRepository<Job> jobRepository,
-            IGetByUserRepository<Company> getByUserRepository
+            IGetByUserRepository<Company> getByUserRepository,
+            IMapper mapper
             ) 
         {
             _companyRepository = companyRepository;
+            _userRepository = userRepository;
             _logRepository = logRepository;
             _jobRepository = jobRepository;
             _getByUserRepository = getByUserRepository;
+            _mapper = mapper;
         }
         public async Task<Result> AddCompany(CompanyDTO companyDTO)
         { 
@@ -37,29 +44,28 @@ namespace JobFinder.BLL.Services
             {
                 return Result.Failure("This email is already used.");
             }
-            var company = new Company()
+            var user = _mapper.Map<User>(companyDTO.UserDTO);
+/*            var user = new User()
             {
-                //Name = companyDTO.Name,
-                //Email = companyDTO.Email,
-                PhoneNumber = companyDTO.PhoneNumber,
-                Domain = companyDTO.Domain,
-                //Password = companyDTO.Password,
-            };
-            var added = await _companyRepository.AddAsync(company);
-            return added ? Result.Success() : Result.Failure("Failed to register company.");
+                Name = companyDTO.Name,
+                Email = companyDTO.Email,
+                Password = companyDTO.Password,
+            };*/
+            var addedUser = await _userRepository.AddAsync(user);
+            if(addedUser == true)
+            {
+                var userAdded = await _logRepository.GetByEmailAsync(companyDTO.Email);
+                companyDTO.UserId = userAdded.Id;
+            }
+            else return Result.Failure("Failed to register company.");
+            var company = _mapper.Map<Company>(companyDTO);
+            var addedCompany = await _companyRepository.AddAsync(company);
+            return addedCompany == addedUser ? Result.Success() : Result.Failure("Failed to register company.");
         }
 
         public Task DeleteCompany(int id)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<CompanyDTO> GetByEmail(string email)
-        {
-            Company company = await _logRepository.GetByEmailAsync(email);
-            if (company == null) return null;
-            var companyDTO = new CompanyDTO() { /*Email = company.Email*/ };
-            return companyDTO;
         }
 
         public async Task<Result<CompanyDTO>> GetCompanyById(int id, bool byUserId)
@@ -78,21 +84,14 @@ namespace JobFinder.BLL.Services
             {
                 return Result<CompanyDTO>.Failure($"Company with {id} id not found");
             }
+            var dto = _mapper.Map<CompanyDTO>(company);
             var jobs = await _jobRepository.GetAllAsync();
-            //var jobsCount = jobs.Select(job => job.CompanyId == company.Id).ToList().Count();
             var jobsCount = jobs.Where(job => job.CompanyId == company.Id).Count();
-            var dto = new CompanyDTO()
-            {
-                Id = company.Id,
-                //Name = company.Name,
-                //Email = company.Email,
-                PhoneNumber = company.PhoneNumber,
-                Domain = company.Domain,
-                //Workers = company.Workers ?? 0,
-                Description = company.Description,
-                City = company.City,
-                JobsCount = jobsCount,
-            };
+            dto.JobsCount = jobsCount;
+            var user = await _userRepository.GetByIdAsync(company.UserId);
+            dto.Name = user.Name;
+            dto.Email = user.Email;
+            dto.UserDTO = _mapper.Map<UserDTO>(user);
             return Result<CompanyDTO>.Success(dto);
         }
 
@@ -103,19 +102,16 @@ namespace JobFinder.BLL.Services
             {
                 return Result.Failure($"Company not found");
             }
-            var company = new Company()
+            var existingCompanyUser = await _userRepository.GetByIdAsync(companyDTO.UserId);
+            if (existingCompanyUser == null)
             {
-                Id = companyDTO.Id,
-                //Name = companyDTO.Name,
-                //Email = companyDTO.Email,
-                Description = companyDTO.Description,
-                City = companyDTO.City,
-                Domain = companyDTO.Domain,
-                //Workers = companyDTO.Workers,
-                PhoneNumber = companyDTO.PhoneNumber,
-            };
-            var updated =  await _companyRepository.UpdateAsync(company);
-            return updated ? Result.Success() : Result.Failure($"Failed to update {companyDTO.Name} company");
+                return Result.Failure($"Company as User not found");
+            }
+            var user = _mapper.Map<User>(companyDTO.UserDTO);
+            var updatedUser = await _userRepository.UpdateAsync(user);
+            var company = _mapper.Map<Company>(companyDTO);
+            var updatedCompany =  await _companyRepository.UpdateAsync(company);
+            return updatedCompany || updatedUser ? Result.Success() : Result.Failure($"Failed to update {companyDTO.Name} company");
         }
     }
 }

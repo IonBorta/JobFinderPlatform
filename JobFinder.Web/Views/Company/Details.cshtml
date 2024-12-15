@@ -1,4 +1,4 @@
-﻿@model JobFinder.Web.Models.CompanyViewModel
+﻿@model JobFinder.Web.Models.Company.GetCompanyViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -24,8 +24,8 @@
                         <img src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" height="150" />
                     </div>
                     <div class="col">
-                        <h3>@Html.DisplayFor(model => model.Name)</h3>
-                        <h6><a asp-controller="Job" asp-action="JobsByCompany" asp-route-id="@Model.Id" class="link-danger">@Model.Jobs disponible jobs </a></h6>
+                        <h3>@Html.DisplayFor(model => model.User.Name)</h3>
+                        <h6><a asp-controller="Job" asp-action="JobsByCompany" asp-route-id="@Model.Id" class="link-danger">@Model.JobsCount disponible jobs </a></h6>
                         <h6><a asp-controller="Application" asp-action="CompanyApplications" asp-route-id="@Model.Id" class="link-danger">See applications </a></h6>
                         <a asp-controller="Job" asp-action="AddJob" asp-route-id="@Model.Id" class="link-primary">Add a Job </a>
                     </div>
@@ -63,7 +63,7 @@
                         <h5>@Html.DisplayNameFor(model => model.Workers)</h5>
                         <p>@Html.DisplayFor(model => model.Workers)</p>
                         <h5>Contacts</h5>
-                        <p>Email: @Html.DisplayFor(model => model.Email)</p>
+                        <p>Email: @Html.DisplayFor(model => model.User.Email)</p>
                         <p>Telephone: @Html.DisplayFor(model => model.PhoneNumber)</p>
 @*                         <h4>Additional Information</h4>
                         <p>This section can contain more details about the company, job offerings, or any other relevant information.</p> *@

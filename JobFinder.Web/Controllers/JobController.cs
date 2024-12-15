@@ -1,10 +1,12 @@
-﻿using JobFinder.BLL.Interfaces;
+﻿using AutoMapper;
+using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
 using JobFinder.DAL.Entities;
 using JobFinder.DAL.Repositories;
 using JobFinder.Web.Models;
+using JobFinder.Web.Models.Job;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -13,10 +15,12 @@ namespace JobFinder.Web.Controllers
     public class JobController : Controller
     {
         private readonly IJobService _jobService;
+        private readonly IMapper _mapper;
 
-        public JobController(IJobService jobService)
+        public JobController(IJobService jobService, IMapper mapper)
         {
             _jobService = jobService;
+            _mapper = mapper;
         }
         public async Task<IActionResult> Jobs()
         {
@@ -25,44 +29,14 @@ namespace JobFinder.Web.Controllers
             var jobDTOs = await _jobService.GetJobs();
 
 
-            var jobViewModels = jobDTOs.Select(job => new JobViewModel()
-            {
-                Id = job.Id,
-                Title = job.Title,
-                Description = job.Description,
-                Requirements = job.Requirements,
-                Benefits = job.Benefits,
-                Salary = job.Salary,
-                Experience = job.Experience,
-                City = job.City,
-                Studies = job.Studies,
-                WorkingType = job.WorkingType,
-                CompanyId = job.CompanyId,
-                CompanyName = job.CompanyName,
-
-            }).ToList();
+            var jobViewModels = jobDTOs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
 
             return View(jobViewModels);
         }
         public async Task<IActionResult> JobsByCompany(int id)
         {
             var jobDTOs = await _jobService.GetJobsByCompany(id);
-            var jobViewModels = jobDTOs.Select(job => new JobViewModel()
-            {
-                Id = job.Id,
-                Title = job.Title,
-                Description = job.Description,
-                Requirements = job.Requirements,
-                Benefits = job.Benefits,
-                Salary = job.Salary,
-                Experience = job.Experience,
-                City = job.City,
-                Studies = job.Studies,
-                WorkingType = job.WorkingType,
-                CompanyId = job.CompanyId,
-                CompanyName = job.CompanyName,
-
-            }).ToList();
+            var jobViewModels = jobDTOs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
             return View(jobViewModels);
         }
         public async Task<IActionResult> JobDetails(int id)
@@ -74,23 +48,7 @@ namespace JobFinder.Web.Controllers
                 return View("Error");
             }
             var jobDTO = result.Data;
-            var job = new JobViewModel()
-            {
-                Id = jobDTO.Id,
-                Title = jobDTO.Title,
-                Description = jobDTO.Description,
-                Requirements = jobDTO.Requirements,
-                Benefits = jobDTO.Benefits,
-                Salary = jobDTO.Salary,
-                Experience = jobDTO.Experience,
-                Studies = jobDTO.Studies,
-                WorkingType = jobDTO.WorkingType,
-                CompanyId = jobDTO.CompanyId,
-                Posted = jobDTO.Posted,
-                CompanyName = jobDTO.CompanyName,
-                City = jobDTO.City,
-            };
-
+            var job = _mapper.Map<GetJobViewModel>(jobDTO);
 
             return View(job);
         }
@@ -101,35 +59,24 @@ namespace JobFinder.Web.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> AddJobAsync(JobViewModel jobViewModel)
+        public async Task<IActionResult> AddJobAsync(CreateJobViewModel createJobViewModel)
         {
             if (ModelState.IsValid)
             {
                 int companyId = Convert.ToInt32(TempData["CompanyId"]);
-                var jobDto = new JobDTO()
-                {
-                    Title = jobViewModel.Title,
-                    Description = jobViewModel.Description,
-                    Requirements = jobViewModel.Requirements,
-                    Benefits    = jobViewModel.Benefits,
-                    Salary = jobViewModel.Salary,
-                    Experience = jobViewModel.Experience,
-                    //City = jobViewModel.City,
-                    Studies = jobViewModel.Studies,
-                    WorkingType = jobViewModel.WorkingType,
-                    CompanyId = companyId
-                };
+                var jobDto = _mapper.Map<JobDTO>(createJobViewModel);
+                jobDto.CompanyId = companyId;
 
                 var result = await _jobService.AddJob(jobDto);
                 if (!result.IsSuccess)
                 {
                     ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                    return View(jobViewModel);
+                    return View(createJobViewModel);
                 }
 
                 return RedirectToAction("Jobs");
             }
-            return View(jobViewModel);
+            return View(createJobViewModel);
         }
         public async Task<ActionResult> Edit(int id)
         {
@@ -140,46 +87,25 @@ namespace JobFinder.Web.Controllers
                 return View("Error");
             }
             JobDTO jobDTO = result.Data;
-            var job = new JobViewModel()
-            {
-                Id = jobDTO.Id,
-                Title = jobDTO.Title,
-                Description = jobDTO.Description,
-                Requirements = jobDTO.Requirements,
-                Benefits= jobDTO.Benefits,
-                Salary = jobDTO.Salary,
-                Experience = jobDTO.Experience,
-                WorkingType= jobDTO.WorkingType,
-                Studies= jobDTO.Studies,
-            };
+            var job = _mapper.Map<GetJobViewModel>(jobDTO);
             return View(job);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(JobViewModel jobViewModel)
+        public async Task<ActionResult> Edit(EditJobViewModel editJobViewModel)
         {
             if (ModelState.IsValid)
             {
-                var job = new JobDTO(){
-                    Id = jobViewModel.Id,
-                    Title = jobViewModel.Title,
-                    Description = jobViewModel.Description,
-                    Requirements = jobViewModel.Requirements,
-                    Benefits = jobViewModel.Benefits,
-                    Salary = jobViewModel.Salary,
-                    Experience = jobViewModel.Experience,
-                    WorkingType = jobViewModel.WorkingType,
-                    Studies = jobViewModel.Studies,
-                };
+                var job = _mapper.Map<JobDTO>(editJobViewModel);
                 var result = await _jobService.UpdateJob(job);
                 if (!result.IsSuccess)
                 {
                     ModelState.AddModelError(string.Empty, result.ErrorMessage);
-                    return View(jobViewModel);
+                    return View(editJobViewModel);
                 }
                 return RedirectToAction("JobDetails", new {id = job.Id});
             }
-            return View(jobViewModel);
+            return View(editJobViewModel);
         }
     }
 }

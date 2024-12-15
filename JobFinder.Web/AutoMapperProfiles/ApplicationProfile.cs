@@ -13,9 +13,9 @@ namespace JobFinder.Web.AutoMapperProfiles
             // ViewModel to DTO
             CreateMap<CreateApplicationViewModel, ApplicationDTO>();
             // DTO to Entity
-            CreateMap<ApplicationDTO, Application>();
+            CreateMap<ApplicationDTO, ApplicationEntity>();
             // Entity to DTO
-            CreateMap<Application, ApplicationDTO>();
+            CreateMap<ApplicationEntity, ApplicationDTO>();
             // DTO to ViewModel
             CreateMap<ApplicationDTO, GetApplicationViewModel>();
         }

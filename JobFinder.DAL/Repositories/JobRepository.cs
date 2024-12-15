@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace JobFinder.DAL.Repositories
 {
-    public class JobRepository : IRepository<Job>
+    public class JobRepository : IRepository<Job>,IJobRepository<Job>
     {
         private readonly ApplicationDbContext _context;
         public JobRepository(ApplicationDbContext context)
@@ -38,6 +38,11 @@ namespace JobFinder.DAL.Repositories
         public async Task<Job> GetByIdAsync(int id)
         {
             return await _context.Jobs.FindAsync(id);
+        }
+
+        public async Task<Job> GetByName(string name)
+        {
+            return await _context.Jobs.FirstOrDefaultAsync(job => job.Title == name);
         }
 
         public async Task<bool> UpdateAsync(Job entity)

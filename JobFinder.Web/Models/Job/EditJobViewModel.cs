@@ -2,5 +2,6 @@
 {
     public class EditJobViewModel: CreateJobViewModel
     {
+        public int Id { get; set; }
     }
 }

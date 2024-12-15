@@ -1,4 +1,5 @@
-﻿using JobFinder.BLL.Interfaces;
+﻿using AutoMapper;
+using JobFinder.BLL.Interfaces;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
 using JobFinder.Core.Interfaces;
@@ -8,15 +9,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace JobFinder.BLL.Services
 {
     public class ApplicationService : IApplicationService
     {
-        private readonly IRepository<Application> _applicationRepository;
-        public ApplicationService(IRepository<Application> applicationRepository)
+        private readonly IRepository<ApplicationEntity> _applicationRepository;
+        private readonly IRepository<Company> _companyRepository;
+        private readonly IRepository<User> _userRepository;
+        private readonly IRepository<Job> _jobRepository;
+        private readonly IMapper _mapper;
+        public ApplicationService(
+            IRepository<ApplicationEntity> applicationRepository, 
+            IMapper mapper,
+            IRepository<Company> companyRepository,
+            IRepository<User> userRepository,
+            IRepository<Job> jobRepository
+            )
         {
             _applicationRepository = applicationRepository;
+            _mapper = mapper;
+            _companyRepository = companyRepository;
+            _userRepository = userRepository;
+            _jobRepository = jobRepository;
         }
         public async Task<Result> AddApplication(ApplicationDTO applicationDTO)
         {
@@ -29,15 +45,7 @@ namespace JobFinder.BLL.Services
                     return Result.Failure("You already applied for this");
                 }
             }
-            var application = new Application()
-            {
-                //UserName = applicationDTO.UserName,
-                JobId = applicationDTO.JobId,
-                UserId = applicationDTO.UserId,
-                FileContent = applicationDTO.FileContent,
-                FileName = applicationDTO.FileName,
-                ContentType = applicationDTO.ContentType,
-            };
+            var application = _mapper.Map<ApplicationEntity>(applicationDTO);
 
             
             var added = await _applicationRepository.AddAsync(application);
@@ -56,38 +64,29 @@ namespace JobFinder.BLL.Services
             {
                 return Result<ApplicationDTO>.Failure($"Application with {id} id not found");
             }
-            var dto = new ApplicationDTO()
-            {
-                //Id = application.Id,
-                // CompanyName = application.CompanyName,
-                // UserName = application.UserName,
-                // JobName = application.JobName,
-                JobId = application.JobId,
-                // UserEmail = application.UserEmail,
-                // Submited = application.Submitted,
-                FileContent = application.FileContent,
-                FileName = application.FileName,
-                ContentType = application.ContentType,
-            };
+            var dto = _mapper.Map<ApplicationDTO>(application);
             return Result<ApplicationDTO>.Success(dto);
         }
 
         public async Task<IList<ApplicationDTO>> GetApplications()
         {
             var applications = await _applicationRepository.GetAllAsync();
-            var dtos = applications.Select(x => new ApplicationDTO()
+            var dtos = applications.Select(x => _mapper.Map<ApplicationDTO>(x)).ToList();
+            for (int i = 0; i < applications.Count(); i++)
             {
-                Id = x.Id,
-                // CompanyName = x.CompanyName,
-                // UserName = x.UserName,
-                // JobName = x.JobName,
-                JobId = x.JobId,
-                // UserEmail = x.UserEmail,
-                // Submited = x.Submitted,
-                FileContent = x.FileContent,
-                FileName = x.FileName,
-                ContentType = x.ContentType,
-            }).ToList();
+                var application = applications.ElementAt(i);
+                var dto = dtos[i];
+                var company = await _companyRepository.GetByIdAsync(application.CompanyId);
+                var companyUser = await _userRepository.GetByIdAsync(company.UserId);
+                dto.CompanyName = companyUser.Name;
+
+                var userApplicant = await _userRepository.GetByIdAsync(application.UserId);
+                dto.UserName = userApplicant.Name;
+                dto.UserEmail = userApplicant.Email;
+
+                var job = await _jobRepository.GetByIdAsync(application.JobId);
+                dto.JobName = job.Title;
+            }
             return dtos;
         }
 
@@ -96,20 +95,22 @@ namespace JobFinder.BLL.Services
             var applications = await _applicationRepository.GetAllAsync();
 
             var companyApp = applications.Where(app => app.CompanyId == id).ToList();
-            var dtos = companyApp.Select(x => new ApplicationDTO()
+            var dtos = companyApp.Select(x => _mapper.Map<ApplicationDTO>(x)).ToList();
+            for (int i = 0; i < dtos.Count(); i++)
             {
-                Id = x.Id,
-                // CompanyName = x.CompanyName,
-                // UserName = x.UserName,
-                // JobName = x.JobName,
-                JobId = x.JobId,
-                // UserEmail = x.UserEmail,
-                // Submited = x.Submitted,
-                FileContent = x.FileContent,
-                FileName = x.FileName,
-                ContentType = x.ContentType,
+                var application = applications.ElementAt(i);
+                var dto = dtos[i];
+                var company = await _companyRepository.GetByIdAsync(application.CompanyId);
+                var companyUser = await _userRepository.GetByIdAsync(company.UserId);
+                dto.CompanyName = companyUser.Name;
 
-            }).ToList();
+                var userApplicant = await _userRepository.GetByIdAsync(application.UserId);
+                dto.UserName = userApplicant.Name;
+                dto.UserEmail = userApplicant.Email;
+
+                var job = await _jobRepository.GetByIdAsync(application.JobId);
+                dto.JobName = job.Title;
+            }
             return dtos;
         }
 

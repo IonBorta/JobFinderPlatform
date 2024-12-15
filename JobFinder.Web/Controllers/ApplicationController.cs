@@ -1,7 +1,9 @@
-﻿using JobFinder.BLL.Interfaces;
+﻿using AutoMapper;
+using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
 using JobFinder.Core.DTOs;
 using JobFinder.Web.Models;
+using JobFinder.Web.Models.Application;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobFinder.Web.Controllers
@@ -9,9 +11,11 @@ namespace JobFinder.Web.Controllers
     public class ApplicationController : Controller
     {
         private readonly IApplicationService _applicationService;
-        public ApplicationController(IApplicationService applicationService)
+        private readonly IMapper _mapper;
+        public ApplicationController(IApplicationService applicationService, IMapper mapper)
         {
             _applicationService = applicationService;
+            _mapper = mapper;
         }
         public IActionResult Index()
         {
@@ -57,29 +61,13 @@ namespace JobFinder.Web.Controllers
         public async Task<IActionResult> UserApplications()
         {
             var applications = await _applicationService.GetApplications();
-            var viewmodels = applications.Select(app => new ApplicationViewModel()
-            {
-                Id = app.Id,
-                CompanyName = app.CompanyName,
-                UserEmail = app.UserEmail,
-                UserName = app.UserName,
-                JobName = app.JobName,
-                Submited = app.Submited,
-            }).ToList();
+            var viewmodels = applications.Select(app => _mapper.Map<GetApplicationViewModel>(app)).ToList();
             return View(viewmodels);
         }
         public async Task<IActionResult> CompanyApplications(int id)
         {
             var dtos = await _applicationService.GetApplicationsByCompany(id);
-            var models = dtos.Select(dto => new ApplicationViewModel()
-            {
-                Id = dto.Id,
-                CompanyName = dto.CompanyName,
-                UserEmail = dto.UserEmail,
-                UserName = dto.UserName,
-                JobName = dto.JobName,
-                Submited = dto.Submited,
-            }).ToList();
+            var models = dtos.Select(dto => _mapper.Map<GetApplicationViewModel>(dto)).ToList();
             return View(models);
         }
         public async Task<IActionResult> ViewPDF(int id)

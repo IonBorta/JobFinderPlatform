@@ -7,6 +7,7 @@ using JobFinder.DAL.AbstractFactory.Concrete.Factory;
 using JobFinder.DAL.Context;
 using JobFinder.DAL.Entities;
 using JobFinder.DAL.Repositories;
+using JobFinder.Web.Models.Job;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
@@ -74,6 +75,8 @@ builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddScoped<ICompanyService, CompanyService>();
 //builder.Services.AddScoped<IRepository<Company>, CompanyRepository>();
 //builder.Services.AddScoped<IGetByUserRepository<Company>, CompanyRepository>();
+
+builder.Services.AddScoped<JobPageViewModel>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 

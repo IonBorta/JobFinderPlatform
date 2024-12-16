@@ -3,6 +3,7 @@ using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
+using JobFinder.Core.Enums;
 using JobFinder.DAL.Entities;
 using JobFinder.DAL.Repositories;
 using JobFinder.Web.Models;
@@ -16,18 +17,40 @@ namespace JobFinder.Web.Controllers
     {
         private readonly IJobService _jobService;
         private readonly IMapper _mapper;
+        private readonly JobPageViewModel _jobPageViewModel;
 
-        public JobController(IJobService jobService, IMapper mapper)
+        public JobController(IJobService jobService, IMapper mapper, JobPageViewModel jobPageViewModel)
         {
             _jobService = jobService;
             _mapper = mapper;
+            _jobPageViewModel = jobPageViewModel;//new JobPageViewModel();
         }
-        public async Task<IActionResult> Jobs()
+        public async Task<IActionResult> SortJobs(JobPageViewModel model, SortCriteria sortCriteria, int value)
         {
+
+/*            var filteredJobs = await _jobService.SortJobs(sortCriteria, value);
+            var jobViewModels = filteredJobs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
+            return RedirectToAction("Jobs", new { getJobViewModels = jobViewModels });*/
+            return RedirectToAction("Jobs", new { sortCriteria, value });
+        }
+        public async Task<IActionResult> Jobs(JobPageViewModel? model = null /*,SortCriteria? sortCriteria = null, int? value = null*/)
+        {
+            //_jobPageViewModel.WorkTypeFilter = model.WorkTypeFilter;            //if (sortCriteria.HasValue && value.HasValue)
+            if(model != null && model.SortCriteria != SortCriteria.None)
+            {
+                int sortCriteria = (int)model.SortCriteria;
+                bool[] param = model.FilterParams[sortCriteria];
+                var filteredJobs = await _jobService.SortJobs(model.SortCriteria, param);
+                var jobs = filteredJobs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
+                model.Jobs = jobs;
+                return View(model);
+            }
+
             var jobDTOs = await _jobService.GetAll();
             var jobViewModels = jobDTOs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
+            _jobPageViewModel.Jobs = jobViewModels;
+            return View(_jobPageViewModel);
 
-            return View(jobViewModels);
         }
         public async Task<IActionResult> JobsByCompany(int id)
         {

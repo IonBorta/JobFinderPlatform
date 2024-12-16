@@ -84,7 +84,7 @@ namespace JobFinder.Web.Controllers
         // GET: CompanyController/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
-            var result = await _companyService.GetCompanyByUserId(id);
+            var result = await _companyService.GetById(id);
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.ErrorMessage);

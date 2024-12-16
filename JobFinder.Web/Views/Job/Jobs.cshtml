@@ -9,7 +9,12 @@
         </div>
     </div>
 </div> *@
-@model IList<JobFinder.Web.Models.Job.GetJobViewModel>
+@using JobFinder.Core.Enums
+@* @model IList<JobFinder.Web.Models.Job.GetJobViewModel> *@
+@model JobFinder.Web.Models.Job.JobPageViewModel
+@{
+    //var model = Model.FirstOrDefault();
+}
 <main>
 
 @*     <!-- Hero Area Start-->
@@ -66,32 +71,43 @@
                                 </select>
                             </div>
                             <!--  Select job items End-->
-                            <!-- select-Categories start -->
-                            <div class="select-Categories pt-80 pb-50">
-                                <div class="small-section-tittle2">
-                                    <h4>Job Type</h4>
+                            <form asp-action="Jobs" method="get" id="filterForm">
+                                <div class="select-Categories pt-80 pb-50">
+                                    <div class="small-section-tittle2">
+                                        <h4>Job Type</h4>
+                                    </div>
+                                    <!-- Hidden field for SortCriteria -->
+                                    <input type="hidden" name="sortCriteria" value="@SortCriteria.WorkingType" />
+                                    <label class="container">
+                                        Full Time
+                                        <!-- Checkbox for Full Time -->
+                                        @* <input type="checkbox" id="fullTimeCheckbox" name="value" value="0" onchange="submitForm()" /> *@
+                                        @Html.CheckBoxFor(m => Model.FilterParams[0][0], new { onchange = "submitForm()" })
+                                        @* @Html.CheckBoxFor(m => Model.WorkTypeFilter.IsFullTime, new { id = "fullTimeCheckbox", onchange = "updateValueAndSubmit('0', this)" }) *@
+                                        
+                                        <span class="checkmark"></span>
+                                        
+                                    </label>
+
+                                    <label class="container">
+                                        Part Time
+                                        <!-- Checkbox for Part Time -->
+                                        @* <input type="checkbox" id="partTimeCheckbox" name="value" value="1" onchange="submitForm()" /> *@
+                                        @* @Html.CheckBoxFor(m => Model.WorkTypeFilter[1], new { onchange = "submitForm()" }) *@
+                                        @Html.CheckBoxFor(m => Model.FilterParams[0][1], new { onchange = "submitForm()" })
+                                        <span class="checkmark"></span>
+                                    </label>
+
+                                    <label class="container">
+                                        Remote
+                                        <!-- Checkbox for Remote -->
+                                        @* <input type="checkbox" id="remoteCheckbox" name="value" value="2" onchange="submitForm()" /> *@
+                                        @Html.CheckBoxFor(m => Model.FilterParams[0][2], new { onchange = "submitForm()" })
+                                        <span class="checkmark"></span>
+                                    </label>
                                 </div>
-                                <label class="container">
-                                    Full Time
-                                    <input type="checkbox">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <label class="container">
-                                    Part Time
-                                    <input type="checkbox" checked="checked active">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <label class="container">
-                                    Remote
-                                    <input type="checkbox">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <label class="container">
-                                    Freelance
-                                    <input type="checkbox">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
+                            </form>
+                            <!-- select-Categories start -->
                             <!-- select-Categories End -->
                         </div>
                         <!-- single two -->
@@ -116,7 +132,12 @@
                                     <h4>Experience</h4>
                                 </div>
                                 <label class="container">
-                                    1-2 Years
+                                    No Experience
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container">
+                                    1 Year
                                     <input type="checkbox">
                                     <span class="checkmark"></span>
                                 </label>
@@ -215,7 +236,7 @@
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div class="count-job mb-35">
-                                        <span>@Model.Count Jobs found</span>
+                                        <span>@Model.Jobs.Count Jobs found</span>
                                         <!-- Select job items start -->
                                         <div class="select-job-items">
                                             <span>Sort by</span>
@@ -231,9 +252,9 @@
                                 </div>
                             </div>
                             <!-- Count of Job list End -->
-                            @if (Model.Any())
+                            @if (Model.Jobs.Any())
                             {
-                                foreach(var job in Model)
+                                foreach (var job in Model.Jobs)
                                 {
                                     <div class="single-job-items mb-30">
                                         <div class="job-items">
@@ -446,3 +467,34 @@
     <!--Pagination End  -->
 
 </main>
+<script>
+    // Trigger form submission when a checkbox state changes
+    function submitForm(value) {
+        document.getElementById("filterForm").submit();
+        
+    }
+        function updateValueAndSubmit(value, checkbox) {
+        // Check if the checkbox is checked
+        const form = document.getElementById('filterForm');
+        if (checkbox.checked) {
+            // Set the value in the hidden input
+            document.getElementById('filterValue').value = value;
+            // Submit the form
+            form.submit();
+        }
+    }
+</script>
+@* <script>
+    function updateValueAndSubmit(value, checkbox) {
+        // Check if the checkbox is checked
+        if (checkbox.checked) {
+            // Set the value in the hidden input
+            document.getElementById('filterValue').value = value;
+            // Submit the form
+            document.getElementById('filterForm').submit();
+        } else {
+            // Clear the value if unchecked
+            document.getElementById('filterValue').value = '';
+        }
+    }
+</script> *@

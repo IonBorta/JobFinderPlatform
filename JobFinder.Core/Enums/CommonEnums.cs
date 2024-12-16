@@ -7,6 +7,13 @@ using System.Threading.Tasks;
 
 namespace JobFinder.Core.Enums
 {
+    public enum SortCriteria
+    {
+        WorkingType,
+        Experience,
+        Studies,
+        None
+    }
     public enum StudiesLevel
     {
         NoStudies,
@@ -31,11 +38,14 @@ namespace JobFinder.Core.Enums
         [Display(Name = "1 Year")]
         OneYear,
 
-        [Display(Name = "2 Years")]
-        TwoYears,
+        [Display(Name = "2-3 Years")]
+        TwoThreeYears,
 
-        [Display(Name = "3 Years")]
-        ThreeYears
+        [Display(Name = "3-6 Years")]
+        ThreeSixYears,
+
+        [Display(Name = "6+ Years")]
+        SixYearsAndMore
     }
     public enum UserType
     {

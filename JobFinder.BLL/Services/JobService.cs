@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using JobFinder.BLL.FactoryMethod;
 using JobFinder.BLL.Interfaces;
+using JobFinder.BLL.Strategy.Interface;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
+using JobFinder.Core.Enums;
 using JobFinder.DAL.AbstractFactory.Abstract.Factory;
 using JobFinder.DAL.AbstractFactory.Abstract.Product;
 using JobFinder.DAL.Entities;
@@ -22,6 +25,8 @@ namespace JobFinder.BLL.Services
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        private readonly IFilterStrategyFactory _filterFactory;
+        private IJobFilterStrategy _jobFilterStrategy;
 
         public JobService(
             IMapper mapper,
@@ -32,6 +37,7 @@ namespace JobFinder.BLL.Services
             _companyRepository = repositoryFactory.CreateCompanyRepository();
             _userRepository = repositoryFactory.CreateUserRepository();
             _mapper = mapper;
+            _filterFactory = new JobFilterStrategyFactory();
         }
         public async Task<Result> Add(JobDTO jobDTO)
         {
@@ -103,6 +109,15 @@ namespace JobFinder.BLL.Services
             var job = _mapper.Map<Job>(jobDTO);
             var updated = await _jobRepository.UpdateAsync(job);
             return updated ? Result.Success() : Result.Failure($"Failed to update {jobDTO.Title} job");
+        }
+
+        public async Task<IList<JobDTO>> SortJobs(SortCriteria sortCriteria, bool[] param)
+        {
+            _jobFilterStrategy = _filterFactory.CreateFilteringStrategy(sortCriteria);
+            var jobs = await _jobRepository.GetAllAsync();
+            var sortedJobs = _jobFilterStrategy.Filter(jobs, param);
+            var jobsDto = sortedJobs.Select(job => _mapper.Map<JobDTO>(job));
+            return jobsDto.ToList();
         }
     }
 }

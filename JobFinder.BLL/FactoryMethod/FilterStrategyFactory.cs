@@ -10,6 +10,6 @@ namespace JobFinder.BLL.FactoryMethod
 {
     public interface IFilterStrategyFactory
     {
-        IJobFilterStrategy CreateFilteringStrategy(SortCriteria sortCriteria);
+        IJobFilterStrategy CreateFilteringStrategy(FilterCriteria filterCriteria);
     }
 }

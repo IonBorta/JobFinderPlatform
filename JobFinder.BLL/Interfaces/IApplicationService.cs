@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace JobFinder.BLL.Interfaces
 {
-    public interface IApplicationService: IBaseService<ApplicationDTO>
+    public interface IApplicationService: IBaseService<ApplicationDTO, ApplicationDTO, ApplicationDTO>
     {
         Task<IList<ApplicationDTO>> GetApplicationsByCompany(int id);
     }

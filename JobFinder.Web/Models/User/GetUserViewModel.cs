@@ -1,7 +1,9 @@
-﻿namespace JobFinder.Web.Models.User
+﻿using JobFinder.Core.Enums;
+
+namespace JobFinder.Web.Models.User
 {
-    public class GetUserViewModel: CreateUserViewModel
+    public class GetUserViewModel: EditUserViewModel
     {
-        public int Id { get; set; }
+        public UserType UserType { get; set; }
     }
 }

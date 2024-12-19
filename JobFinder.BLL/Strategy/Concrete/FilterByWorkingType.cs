@@ -12,15 +12,6 @@ namespace JobFinder.BLL.Strategy.Concrete
 {
     public class FilterByWorkingType : IJobFilterStrategy
     {
-        /*        public IEnumerable<Job> Filter<T>(IEnumerable<Job> jobs, T param) where T : struct, Enum
-                {
-                    if (param is WorkingType workingType)
-                    {
-                        return jobs.Where(job => job.WorkingType == workingType);
-                    }
-
-                    throw new ArgumentException("Invalid parameter type");
-                }*/
         public IList<Job> Filter(IEnumerable<Job> jobs, bool[] param)
         {
             int falseCount = 0;
@@ -43,6 +34,5 @@ namespace JobFinder.BLL.Strategy.Concrete
             // Ensure unique jobs if they matched multiple criteria
             return filteredJobs.Distinct().ToList();
         }
-
     }
 }

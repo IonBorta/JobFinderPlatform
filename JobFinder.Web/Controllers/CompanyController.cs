@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
-using JobFinder.Core.DTOs;
+using JobFinder.Core.Common;
+using JobFinder.Core.DTOs.Company;
+using JobFinder.Core.Enums;
 using JobFinder.Web.Models;
 using JobFinder.Web.Models.Company;
 using Microsoft.AspNetCore.Http;
@@ -38,13 +40,21 @@ namespace JobFinder.Web.Controllers
         // GET: CompanyController/Details/5
         public async Task<ActionResult> Details(int id,bool byUserId = false)
         {
-            var result = await _companyService.GetCompanyByUserId(id,byUserId);
+            Result<GetCompanyDTO> result = null;
+            if (byUserId == true)
+            {
+                result = await _companyService.GetCompanyByUserId(id, byUserId);
+            }
+            else
+            {
+                result = await _companyService.GetById(id);
+            }
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                TempData["Message"] = result.ErrorMessage;
                 return View("Error");
             }
-            CompanyDTO companyDTO = result.Data;
+            GetCompanyDTO companyDTO = result.Data;
             var company = _mapper.Map<GetCompanyViewModel>(companyDTO);
 
             return View(company);
@@ -68,7 +78,7 @@ namespace JobFinder.Web.Controllers
                     ModelState.AddModelError("ConfirmPassword", "Password is not the same");
                     return View(registerCompanyViewModel);
                 }
-                var companyDTO = _mapper.Map<CompanyDTO>(registerCompanyViewModel);
+                var companyDTO = _mapper.Map<CreateCompanyDTO>(registerCompanyViewModel);
                 var result = await _companyService.Add(companyDTO);
 
                 if (!result.IsSuccess)
@@ -84,13 +94,16 @@ namespace JobFinder.Web.Controllers
         // GET: CompanyController/Edit/5
         public async Task<ActionResult> Edit(int id)
         {
+            var userRole = HttpContext.Session.GetInt32("UserRole");
+            if (userRole != (int)UserType.Employer) return Unauthorized();
+
             var result = await _companyService.GetById(id);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                TempData["Message"] = result.ErrorMessage;
                 return View("Error");
             }
-            CompanyDTO companyDTO = result.Data;
+            GetCompanyDTO companyDTO = result.Data;
             var company = _mapper.Map<EditCompanyViewModel>(companyDTO);
 
             return View(company);
@@ -103,11 +116,12 @@ namespace JobFinder.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var company = _mapper.Map<CompanyDTO>(companyViewModel);
+                var company = _mapper.Map<UpdateCompanyDTO>(companyViewModel);
                 var result = await _companyService.Update(company);
                 if (!result.IsSuccess)
                 {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    //ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    TempData["Message"] = result.ErrorMessage; // Pass the error message
                     return View(companyViewModel);
                 }
                 return RedirectToAction("Details", new { id = companyViewModel.Id });

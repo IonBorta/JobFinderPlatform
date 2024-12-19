@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using JobFinder.Core.DTOs;
+using JobFinder.Core.DTOs.Company;
 using JobFinder.DAL.Entities;
 using JobFinder.Web.Models.Company;
 using JobFinder.Web.Models.Job;
@@ -11,25 +11,30 @@ namespace JobFinder.Web.AutoMapperProfiles
         public CompanyProfile()
         {
             // ViewModel to DTO
-            CreateMap<CreateCompanyViewModel, CompanyDTO>()
-                .ForPath(dest => dest.UserDTO.Email, opt => opt.MapFrom(src => src.Email))
-                .ForPath(dest => dest.UserDTO.Name, opt => opt.MapFrom(src => src.Name))
-                .ForPath(dest => dest.UserDTO.Password, opt => opt.MapFrom(src => src.Password))
-                .ForPath(dest => dest.UserDTO.UserType, opt => opt.MapFrom(src => src.UserType));
-            CreateMap<EditCompanyViewModel, CompanyDTO>()
+            CreateMap<CreateCompanyViewModel, CreateCompanyDTO>()
+                .ForPath(dest => dest.CreateUser.Email, opt => opt.MapFrom(src => src.Email))
+                .ForPath(dest => dest.CreateUser.Name, opt => opt.MapFrom(src => src.Name))
+                .ForPath(dest => dest.CreateUser.Password, opt => opt.MapFrom(src => src.Password))
+                .ForPath(dest => dest.CreateUser.UserType, opt => opt.MapFrom(src => src.UserType));
+            CreateMap<EditCompanyViewModel, UpdateCompanyDTO>()
                 .ForMember(dest => dest.WorkersCount, opt => opt.MapFrom(src => src.Workers))
-                .ForMember(dest => dest.UserDTO, opt => opt.MapFrom(src => src.User));
+                .ForMember(dest => dest.UpdateUser, opt => opt.MapFrom(src => src.User));
             // DTO to Entity
-            CreateMap<CompanyDTO, Company>();
+            CreateMap<CreateCompanyDTO, Company>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.CreateUser.Id));
+            CreateMap<UpdateCompanyDTO, Company>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UpdateUser.Id));
             // Entity to DTO
-            CreateMap<Company, CompanyDTO>();
+            CreateMap<Company, GetCompanyDTO>();
             // DTO to ViewModel
-            CreateMap<CompanyDTO, EditCompanyViewModel>()
+            CreateMap<GetCompanyDTO, EditCompanyViewModel>()
                 .ForMember(dest => dest.Workers, opt => opt.MapFrom(src => src.WorkersCount))
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.UserDTO));
-            CreateMap<CompanyDTO, GetCompanyViewModel>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.UpdateUser));
+            CreateMap<GetCompanyDTO, GetCompanyViewModel>()
                 .ForMember(dest => dest.Workers, opt => opt.MapFrom(src => src.WorkersCount))
-                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.UserDTO));
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.UpdateUser))
+                .ForPath(dest => dest.User.UserType, opt => opt.MapFrom(src => src.UserType));
         }
     }
 }
+

@@ -5,7 +5,7 @@ using JobFinder.Web.Models.Auth;
 
 namespace JobFinder.Web.Models.Company
 {
-    public class CreateCompanyViewModel : RegisterViewModel
+    public class CreateCompanyViewModel : CreateUserViewModel
     {
         public CreateCompanyViewModel()
         {

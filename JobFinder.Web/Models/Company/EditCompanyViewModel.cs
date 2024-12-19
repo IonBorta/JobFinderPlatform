@@ -4,9 +4,8 @@ using JobFinder.Web.Models.User;
 
 namespace JobFinder.Web.Models.Company
 {
-    public class EditCompanyViewModel:BaseViewModel
+    public class EditCompanyViewModel: BaseViewModel
     {
-        public int Id { get; set; }
         [Required(ErrorMessage = "A description for company is required")]
         public string Description { get; set; }
         [Required(ErrorMessage = "Nr. of workers is required")]
@@ -16,7 +15,7 @@ namespace JobFinder.Web.Models.Company
         [Required(ErrorMessage = "Domain is required")]
         public CompanyDomains Domain { get; set; }
         public string City { get; set; }
-        public string Logo { get; set; }
-        public GetUserViewModel User { get; set; }
+        public string Logo { get; set; } = "https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png";
+        public GetUserViewModel User {  get; set; }
     }
 }

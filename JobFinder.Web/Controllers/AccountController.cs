@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using JobFinder.BLL.Interfaces;
-using JobFinder.Core.DTOs;
+using JobFinder.Core.DTOs.User;
 using JobFinder.DAL.Entities;
 using JobFinder.Web.Models;
 using JobFinder.Web.Models.Auth;
+using JobFinder.Web.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -67,25 +68,25 @@ namespace JobFinder.Web.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> RegisterUser(RegisterViewModel registerViewModel)
+        public async Task<IActionResult> RegisterUser(CreateUserViewModel createUserViewModel)
         {
             if (ModelState.IsValid)
             {
-                if(registerViewModel.Password != registerViewModel.ConfirmPassword)
+                if(createUserViewModel.Password != createUserViewModel.ConfirmPassword)
                 {
                     ModelState.AddModelError("ConfirmPassword", "Password is not the same");
-                    return View(registerViewModel);
+                    return View(createUserViewModel);
                 }
-                var userDTO = _mapper.Map<UserDTO>(registerViewModel);
+                var userDTO = _mapper.Map<CreateUserDTO>(createUserViewModel);
                 var result = await _accountService.Add(userDTO);
 
                 if (!result.IsSuccess)
                 {
                     ModelState.AddModelError("Email", result.ErrorMessage);
-                    return View(registerViewModel);
+                    return View(createUserViewModel);
                 }
             }
-            return View(registerViewModel);
+            return View(createUserViewModel);
         }
     }
 }

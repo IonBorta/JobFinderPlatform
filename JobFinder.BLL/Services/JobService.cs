@@ -4,11 +4,11 @@ using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Strategy.Interface;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
+using JobFinder.Core.DTOs.Job;
 using JobFinder.Core.Enums;
 using JobFinder.DAL.AbstractFactory.Abstract.Factory;
 using JobFinder.DAL.AbstractFactory.Abstract.Product;
 using JobFinder.DAL.Entities;
-using JobFinder.DAL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +39,7 @@ namespace JobFinder.BLL.Services
             _mapper = mapper;
             _filterFactory = new JobFilterStrategyFactory();
         }
-        public async Task<Result> Add(JobDTO jobDTO)
+        public async Task<Result> Add(CreateJobDTO jobDTO)
         {
             var existingJob = await _jobRepository.GetJobByNameAsync(jobDTO.Title);
             if (existingJob != null)
@@ -57,31 +57,31 @@ namespace JobFinder.BLL.Services
             throw new NotImplementedException();
         }
 
-        public async Task<Result<JobDTO>> GetById(int id)
+        public async Task<Result<GetJobDTO>> GetById(int id)
         {
             var job  = await _jobRepository.GetByIdAsync(id);
             if (job == null)
             {
-                return Result<JobDTO>.Failure($"Job with {id} id not found");
+                return Result<GetJobDTO>.Failure($"Job with {id} id not found");
             }
             var company = await _companyRepository.GetByIdAsync(job.CompanyId);
             if (company == null)
             {
-                return Result<JobDTO>.Failure($"Company with {job.CompanyId} id for job with {id} id not found");
+                return Result<GetJobDTO>.Failure($"Company with {job.CompanyId} id for job with {id} id not found");
             }
-            var jobDTO = _mapper.Map<JobDTO>(job);
+            var jobDTO = _mapper.Map<GetJobDTO>(job);
             jobDTO.City = company.City;
 
             var user = await _userRepository.GetByIdAsync(company.UserId);
             jobDTO.CompanyName = user.Name;
-            return Result<JobDTO>.Success(jobDTO);
+            return Result<GetJobDTO>.Success(jobDTO);
         }
 
-        public async Task<IList<JobDTO>> GetAll()
+        public async Task<IList<GetJobDTO>> GetAll()
         {
             var jobs = await _jobRepository.GetAllAsync();
             
-            var jobsDTOs = jobs.Select(job => _mapper.Map<JobDTO>(job)).ToList();
+            var jobsDTOs = jobs.Select(job => _mapper.Map<GetJobDTO>(job)).ToList();
             foreach (var job in jobsDTOs)
             {
                 var company = await _companyRepository.GetByIdAsync(job.CompanyId);
@@ -92,14 +92,14 @@ namespace JobFinder.BLL.Services
             return jobsDTOs;
         }
 
-        public async Task<IList<JobDTO>> GetJobsByCompany(int id)
+        public async Task<IList<GetJobDTO>> GetJobsByCompany(int id)
         {
             var jobs = await GetAll();
             jobs = jobs.Where(job => job.CompanyId ==  id).ToList();
             return jobs;
         }
 
-        public async Task<Result> Update(JobDTO jobDTO)
+        public async Task<Result> Update(UpdateJobDTO jobDTO)
         {
             var existingJob = await _jobRepository.GetByIdAsync(jobDTO.Id);
             if (existingJob == null)
@@ -107,16 +107,24 @@ namespace JobFinder.BLL.Services
                 return Result.Failure($"Job not found");
             }
             var job = _mapper.Map<Job>(jobDTO);
-            var updated = await _jobRepository.UpdateAsync(job);
+            var toUpdateJob = existingJob.Update(job);
+            if (toUpdateJob == false)
+            {
+                return Result.Failure($"No updates, You have not changed anything.");
+            }
+            var updated = false;
+            if (toUpdateJob) { 
+                updated = await _jobRepository.UpdateAsync(job); 
+            }
             return updated ? Result.Success() : Result.Failure($"Failed to update {jobDTO.Title} job");
         }
 
-        public async Task<IList<JobDTO>> SortJobs(SortCriteria sortCriteria, bool[] param)
+        public async Task<IList<GetJobDTO>> SortJobs(FilterCriteria filterCriteria, bool[] param)
         {
-            _jobFilterStrategy = _filterFactory.CreateFilteringStrategy(sortCriteria);
+            _jobFilterStrategy = _filterFactory.CreateFilteringStrategy(filterCriteria);
             var jobs = await _jobRepository.GetAllAsync();
             var sortedJobs = _jobFilterStrategy.Filter(jobs, param);
-            var jobsDto = sortedJobs.Select(job => _mapper.Map<JobDTO>(job));
+            var jobsDto = sortedJobs.Select(job => _mapper.Map<GetJobDTO>(job));
             return jobsDto.ToList();
         }
     }

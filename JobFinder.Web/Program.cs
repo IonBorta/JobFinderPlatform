@@ -1,13 +1,12 @@
 using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
 using JobFinder.Core.DTOs;
-using JobFinder.Core.Interfaces;
 using JobFinder.DAL.AbstractFactory.Abstract.Factory;
 using JobFinder.DAL.AbstractFactory.Concrete.Factory;
 using JobFinder.DAL.Context;
 using JobFinder.DAL.Entities;
-using JobFinder.DAL.Repositories;
 using JobFinder.Web.Models.Job;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;

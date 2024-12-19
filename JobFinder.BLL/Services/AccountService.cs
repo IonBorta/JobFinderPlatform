@@ -2,6 +2,7 @@
 using JobFinder.BLL.Interfaces;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
+using JobFinder.Core.DTOs.User;
 using JobFinder.DAL.AbstractFactory.Abstract.Factory;
 using JobFinder.DAL.AbstractFactory.Abstract.Product;
 using JobFinder.DAL.AbstractFactory.Concrete.Repositories;
@@ -26,7 +27,7 @@ namespace JobFinder.BLL.Services
             _userRepository = repositoryFactory.CreateUserRepository();
             _mapper = mapper;
         }
-        public async Task<Result> Add(UserDTO userDTO)
+        public async Task<Result> Add(CreateUserDTO userDTO)
         {
             var existingUser = await _userRepository.GetUserByEmailAsync( userDTO.Email );
             if (existingUser != null)
@@ -43,40 +44,40 @@ namespace JobFinder.BLL.Services
             throw new NotImplementedException();
         }
 
-        public async Task<UserDTO> GetByEmail(string email)
+        public async Task<GetUserDTO> GetByEmail(string email)
         {
             User user = await _userRepository.GetUserByEmailAsync(email);
             if (user == null) return null;
-            var userDTO = _mapper.Map<UserDTO>(user);
+            var userDTO = _mapper.Map<GetUserDTO>(user);
             return userDTO;
         }
 
-        public Task<Result<UserDTO>> GetById(int id)
+        public Task<Result<GetUserDTO>> GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IList<UserDTO>> GetAll()
+        public Task<IList<GetUserDTO>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public async Task<Result<UserDTO>> LoginUser(string username, string password)
+        public async Task<Result<GetUserDTO>> LoginUser(string username, string password)
         {
             var existingUser = await _userRepository.GetUserByEmailAsync(username);
             if (existingUser == null)
             {
-                return Result<UserDTO>.Failure("This email is invalid.");
+                return Result<GetUserDTO>.Failure("This email is invalid.");
             }
             if(existingUser != null && existingUser.Password != password)
             {
-                return Result<UserDTO>.Failure("Password is invalid.");
+                return Result<GetUserDTO>.Failure("Password is invalid.");
             }
-            var userDTO = _mapper.Map<UserDTO>(existingUser);
-            return Result<UserDTO>.Success(userDTO);
+            var userDTO = _mapper.Map<GetUserDTO>(existingUser);
+            return Result<GetUserDTO>.Success(userDTO);
         }
 
-        public Task<Result> Update(UserDTO userDTO)
+        public Task<Result> Update(UpdateUserDTO updateUserDTO)
         {
             throw new NotImplementedException();
         }

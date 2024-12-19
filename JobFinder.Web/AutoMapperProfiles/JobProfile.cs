@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using JobFinder.Core.DTOs;
+using JobFinder.Core.DTOs.Job;
 using JobFinder.DAL.Entities;
 using JobFinder.Web.Models.Job;
 
@@ -10,14 +11,16 @@ namespace JobFinder.Web.AutoMapperProfiles
         public JobProfile()
         {
             // ViewModel to DTO
-            CreateMap<CreateJobViewModel, JobDTO>();
-            CreateMap<EditJobViewModel, JobDTO>();
+            CreateMap<CreateJobViewModel, CreateJobDTO>();
+            CreateMap<EditJobViewModel, UpdateJobDTO>();
             // DTO to Entity
-            CreateMap<JobDTO, Job>();
+            CreateMap<UpdateJobDTO, Job>();
+            CreateMap<CreateJobDTO, Job>();
             // Entity to DTO
-            CreateMap<Job, JobDTO>();
+            CreateMap<Job, GetJobDTO>();
             // DTO to ViewModel
-            CreateMap<JobDTO, GetJobViewModel>();
+            CreateMap<GetJobDTO, GetJobViewModel>();
+            CreateMap<GetJobDTO, EditJobViewModel>();
         }
     }
 }

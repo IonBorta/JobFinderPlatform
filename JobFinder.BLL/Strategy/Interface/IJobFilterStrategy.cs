@@ -8,10 +8,8 @@ using JobFinder.DAL.Entities;
 
 namespace JobFinder.BLL.Strategy.Interface
 {
-    public interface IJobFilterStrategy/*<T> where T : struct,IConvertible*/
+    public interface IJobFilterStrategy
     {
-        //IEnumerable<Job> Filter(IEnumerable<Job> jobs, T param);
-        //IEnumerable<Job> Filter<T>(IEnumerable<Job> jobs, T param) where T : struct, Enum;
         IList<Job> Filter(IEnumerable<Job> jobs, bool[] param);
     }
 }

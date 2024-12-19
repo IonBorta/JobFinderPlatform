@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace JobFinder.Core.Enums
 {
-    public enum SortCriteria
+    public enum FilterCriteria
     {
         WorkingType,
         Experience,

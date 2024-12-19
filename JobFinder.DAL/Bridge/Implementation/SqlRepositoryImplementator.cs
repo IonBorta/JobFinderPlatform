@@ -43,6 +43,11 @@ namespace JobFinder.DAL.Bridge.Implementation
         public async Task<T> GetById(int id)
         {
             var entity = await _context.Set<T>().FindAsync(id);
+            if (entity == null)
+            {
+                // Handle the null case, e.g., throw a custom exception or return null
+                throw new Exception($"Entity of type {typeof(T).Name} with ID {id} not found.");
+            }
             return entity;
         }
 
@@ -59,8 +64,9 @@ namespace JobFinder.DAL.Bridge.Implementation
 
         public async Task<bool> Update(T entity)
         {
-            // Attach the entity to the context if it is not already tracked
-            _context.Set<T>().Update(entity);
+            _context.Set<T>().Attach(entity);
+          
+            _context.Entry(entity).State = EntityState.Modified;
 
             // Save the changes to the database
             return await _context.SaveChangesAsync() > 0;

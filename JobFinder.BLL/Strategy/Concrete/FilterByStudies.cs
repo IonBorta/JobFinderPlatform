@@ -12,15 +12,6 @@ namespace JobFinder.BLL.Strategy.Concrete
 {
     public class FilterByStudies : IJobFilterStrategy
     {
-        /*        public IEnumerable<Job> Filter<T>(IEnumerable<Job> jobs, T param) where T : struct, Enum
-                {
-                    if (param is StudiesLevel studiesLevel)
-                    {
-                        return jobs.Where(job => job.Studies == studiesLevel);
-                    }
-
-                    throw new ArgumentException("Invalid parameter type");
-                }*/
         public IList<Job> Filter(IEnumerable<Job> jobs, bool[] param)
         {
             for (int i = 0; i < param.Length; i++)

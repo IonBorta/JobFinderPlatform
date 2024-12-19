@@ -13,15 +13,15 @@ namespace JobFinder.BLL.FactoryMethod
 {
     public class JobFilterStrategyFactory : IFilterStrategyFactory
     {
-        public IJobFilterStrategy CreateFilteringStrategy(SortCriteria sortCriteria)
+        public IJobFilterStrategy CreateFilteringStrategy(FilterCriteria filterCriteria)
         {
-            return sortCriteria switch
+            return filterCriteria switch
             {
-                //SortCriteria.Salary => new FilterBySalary(),
-                SortCriteria.Experience => new FilterByExperience(),
-                SortCriteria.Studies => new FilterByStudies(),
-                SortCriteria.WorkingType => new FilterByWorkingType(),
-                _ => throw new ArgumentException("Invalid sorting criterion")
+                //FilterCriteria.Salary => new FilterBySalary(),
+                FilterCriteria.Experience => new FilterByExperience(),
+                FilterCriteria.Studies => new FilterByStudies(),
+                FilterCriteria.WorkingType => new FilterByWorkingType(),
+                _ => throw new ArgumentException("Invalid filtering criterion")
             };
         }
     }

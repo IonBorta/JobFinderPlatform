@@ -7,7 +7,6 @@ using JobFinder.DAL.AbstractFactory.Abstract.Factory;
 using JobFinder.DAL.AbstractFactory.Abstract.Product;
 using JobFinder.DAL.Bridge.Implementation;
 using JobFinder.DAL.Entities;
-using JobFinder.DAL.Repositories;
 
 namespace JobFinder.DAL.AbstractFactory.Concrete.Factory
 {

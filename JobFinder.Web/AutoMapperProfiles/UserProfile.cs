@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using JobFinder.Core.DTOs;
+using JobFinder.Core.DTOs.User;
 using JobFinder.DAL.Entities;
 using JobFinder.Web.Models.Auth;
 using JobFinder.Web.Models.User;
@@ -11,14 +11,17 @@ namespace JobFinder.Web.AutoMapperProfiles
         public UserProfile() 
         {
             // ViewModel to DTOs
-            CreateMap<RegisterViewModel, UserDTO>(); // Register inherits CreateUser
-            CreateMap<GetUserViewModel, UserDTO>();
+            CreateMap<CreateUserViewModel, CreateUserDTO>();
+            CreateMap<GetUserViewModel, UpdateUserDTO>();
             // DTO to Entity
-            CreateMap<UserDTO, User>();
+            CreateMap<CreateUserDTO, User>();
+            CreateMap<UpdateUserDTO, User>();
             // Entity to DTO
-            CreateMap<User, UserDTO>();
+            CreateMap<User, GetUserDTO>();
+            CreateMap<User, UpdateUserDTO>();
             // DTO to ViewModel
-            CreateMap<UserDTO, GetUserViewModel>();
+            CreateMap<GetUserDTO, GetUserViewModel>();
+            CreateMap<UpdateUserDTO, GetUserViewModel>();
         }
     }
 }

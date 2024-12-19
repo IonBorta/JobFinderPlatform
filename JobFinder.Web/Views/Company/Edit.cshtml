@@ -8,6 +8,7 @@
         { "byUserId", true }
     };
 }
+<partial name="_ModalError" />
 <div class="container">
     <form method="post" asp-action="Edit" asp-controller="Company">
     <main role="main" class="pb-3">
@@ -20,6 +21,7 @@
                             <div class="p-5">
                                 <img src="https://icons.veryicon.com/png/o/miscellaneous/zr_icon/company-23.png" height="150" />
                             </div>
+                            <input type="hidden" name="Id" value="@Model.Id" />
                             <input type="hidden" name="User.Id" value="@Model.User.Id" />
                             <input type="hidden" name="User.UserType" value="@Model.User.UserType" />
                             <div class="col">
@@ -97,5 +99,4 @@
     </main>
     </form>
 </div>
-
 

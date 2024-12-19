@@ -2,10 +2,7 @@
 {
     public abstract class BaseViewModel
     {
-        public BaseViewModel()
-        {
-            Created = DateTime.UtcNow;
-        }
+        public int Id { get; set; }
         public DateTime Created { get; set; }
     }
 }

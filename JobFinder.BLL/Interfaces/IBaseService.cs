@@ -7,12 +7,12 @@ using JobFinder.Core.Common;
 
 namespace JobFinder.BLL.Interfaces
 {
-    public interface IBaseService<T> where T : class
+    public interface IBaseService<TCreate, TUpdate, TGet>//<T> where T : class
     {
-        Task<Result<T>> GetById(int id);
-        Task<IList<T>> GetAll();
-        Task<Result> Add(T dto);
-        Task<Result> Update(T dto);
+        Task<Result<TGet>> GetById(int id);
+        Task<IList<TGet>> GetAll();
+        Task<Result> Add(TCreate dto);
+        Task<Result> Update(TUpdate dto);
         Task<Result> Delete(int id);
     }
 }

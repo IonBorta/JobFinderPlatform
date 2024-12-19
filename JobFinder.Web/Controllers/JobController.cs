@@ -3,9 +3,9 @@ using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
+using JobFinder.Core.DTOs.Job;
 using JobFinder.Core.Enums;
 using JobFinder.DAL.Entities;
-using JobFinder.DAL.Repositories;
 using JobFinder.Web.Models;
 using JobFinder.Web.Models.Job;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +25,7 @@ namespace JobFinder.Web.Controllers
             _mapper = mapper;
             _jobPageViewModel = jobPageViewModel;//new JobPageViewModel();
         }
-        public async Task<IActionResult> SortJobs(JobPageViewModel model, SortCriteria sortCriteria, int value)
+        public async Task<IActionResult> SortJobs(JobPageViewModel model, FilterCriteria sortCriteria, int value)
         {
 
 /*            var filteredJobs = await _jobService.SortJobs(sortCriteria, value);
@@ -36,11 +36,11 @@ namespace JobFinder.Web.Controllers
         public async Task<IActionResult> Jobs(JobPageViewModel? model = null /*,SortCriteria? sortCriteria = null, int? value = null*/)
         {
             //_jobPageViewModel.WorkTypeFilter = model.WorkTypeFilter;            //if (sortCriteria.HasValue && value.HasValue)
-            if(model != null && model.SortCriteria != SortCriteria.None)
+            if(model != null && model.FilterCriteria != FilterCriteria.None)
             {
-                int sortCriteria = (int)model.SortCriteria;
+                int sortCriteria = (int)model.FilterCriteria;
                 bool[] param = model.FilterParams[sortCriteria];
-                var filteredJobs = await _jobService.SortJobs(model.SortCriteria, param);
+                var filteredJobs = await _jobService.SortJobs(model.FilterCriteria, param);
                 var jobs = filteredJobs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
                 model.Jobs = jobs;
                 return View(model);
@@ -48,8 +48,8 @@ namespace JobFinder.Web.Controllers
 
             var jobDTOs = await _jobService.GetAll();
             var jobViewModels = jobDTOs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
-            _jobPageViewModel.Jobs = jobViewModels;
-            return View(_jobPageViewModel);
+            model.Jobs = jobViewModels;
+            return View(model);
 
         }
         public async Task<IActionResult> JobsByCompany(int id)
@@ -63,7 +63,7 @@ namespace JobFinder.Web.Controllers
             var result = await _jobService.GetById(id);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                TempData["Message"] = result.ErrorMessage;
                 return View("Error");
             }
             var jobDTO = result.Data;
@@ -83,13 +83,13 @@ namespace JobFinder.Web.Controllers
             if (ModelState.IsValid)
             {
                 int companyId = Convert.ToInt32(TempData["CompanyId"]);
-                var jobDto = _mapper.Map<JobDTO>(createJobViewModel);
+                var jobDto = _mapper.Map<CreateJobDTO>(createJobViewModel);
                 jobDto.CompanyId = companyId;
 
                 var result = await _jobService.Add(jobDto);
                 if (!result.IsSuccess)
                 {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    TempData["Message"] = result.ErrorMessage;
                     return View(createJobViewModel);
                 }
 
@@ -102,11 +102,11 @@ namespace JobFinder.Web.Controllers
             var result = await _jobService.GetById(id);
             if (!result.IsSuccess)
             {
-                ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                TempData["Message"] = result.ErrorMessage;
                 return View("Error");
             }
-            JobDTO jobDTO = result.Data;
-            var job = _mapper.Map<GetJobViewModel>(jobDTO);
+            GetJobDTO jobDTO = result.Data;
+            var job = _mapper.Map<EditJobViewModel>(jobDTO);
             return View(job);
         }
         [HttpPost]
@@ -115,11 +115,11 @@ namespace JobFinder.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var job = _mapper.Map<JobDTO>(editJobViewModel);
+                var job = _mapper.Map<UpdateJobDTO>(editJobViewModel);
                 var result = await _jobService.Update(job);
                 if (!result.IsSuccess)
                 {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    TempData["Message"] = result.ErrorMessage;
                     return View(editJobViewModel);
                 }
                 return RedirectToAction("JobDetails", new {id = job.Id});

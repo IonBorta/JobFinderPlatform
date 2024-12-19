@@ -6,7 +6,7 @@ namespace JobFinder.Web.Models.Job
     public class JobPageViewModel
     {
         public IList<GetJobViewModel> Jobs { get; set; }
-        public SortCriteria SortCriteria { get; set; } = SortCriteria.None;
+        public FilterCriteria FilterCriteria { get; set; } = FilterCriteria.None;
         //public JobWorkTypeFilter WorkTypeFilter { get; set; } = new JobWorkTypeFilter();
         public bool[][] FilterParams { get; set; } = new bool[][] { 
             new bool[Enum.GetValues(typeof(WorkingType)).Length], 

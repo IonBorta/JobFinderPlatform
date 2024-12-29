@@ -7,7 +7,7 @@ using JobFinder.Core.Common;
 
 namespace JobFinder.BLL.Interfaces
 {
-    public interface IBaseService<TCreate, TUpdate, TGet>//<T> where T : class
+    public interface IBaseService<TCreate, TUpdate, TGet>
     {
         Task<Result<TGet>> GetById(int id);
         Task<IList<TGet>> GetAll();

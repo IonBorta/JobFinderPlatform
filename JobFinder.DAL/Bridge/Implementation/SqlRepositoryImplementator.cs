@@ -46,7 +46,7 @@ namespace JobFinder.DAL.Bridge.Implementation
             if (entity == null)
             {
                 // Handle the null case, e.g., throw a custom exception or return null
-                throw new Exception($"Entity of type {typeof(T).Name} with ID {id} not found.");
+                //throw new Exception($"Entity of type {typeof(T).Name} with ID {id} not found.");
             }
             return entity;
         }

@@ -14,7 +14,6 @@ namespace JobFinder.BLL.Interfaces
     public interface IJobService:IBaseService<CreateJobDTO,UpdateJobDTO,GetJobDTO>
     {
         Task<IList<GetJobDTO>> GetJobsByCompany(int id);
-        //Task<IList<JobDTO>> SortJobs<T>(SortCriteria sortCriteria, T param) where T : struct, Enum;
         Task<IList<GetJobDTO>> SortJobs(FilterCriteria filterCriteria, bool[] param);
     }
 }

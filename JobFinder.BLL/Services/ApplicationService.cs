@@ -2,9 +2,11 @@
 using JobFinder.BLL.Interfaces;
 using JobFinder.Core.Common;
 using JobFinder.Core.DTOs;
+using JobFinder.Core.Enums;
 using JobFinder.DAL.AbstractFactory.Abstract.Factory;
 using JobFinder.DAL.AbstractFactory.Abstract.Product;
 using JobFinder.DAL.Entities;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -92,11 +94,11 @@ namespace JobFinder.BLL.Services
         {
             var applications = await _applicationRepository.GetAllAsync();
 
-            var companyApp = applications.Where(app => app.CompanyId == id).ToList();
-            var dtos = companyApp.Select(x => _mapper.Map<ApplicationDTO>(x)).ToList();
+            var companyApps = applications.Where(app => app.CompanyId == id).ToList();
+            var dtos = companyApps.Select(x => _mapper.Map<ApplicationDTO>(x)).ToList();
             for (int i = 0; i < dtos.Count(); i++)
             {
-                var application = applications.ElementAt(i);
+                var application = companyApps.ElementAt(i);
                 var dto = dtos[i];
                 var company = await _companyRepository.GetByIdAsync(application.CompanyId);
                 var companyUser = await _userRepository.GetByIdAsync(company.UserId);
@@ -112,9 +114,111 @@ namespace JobFinder.BLL.Services
             return dtos;
         }
 
-        public Task<Result> Update(ApplicationDTO applicationDTO)
+        public async Task<Result> Update(ApplicationDTO applicationDTO)
         {
-            throw new NotImplementedException();
+            var existingJobApplication = await _applicationRepository.GetByIdAsync(applicationDTO.Id);
+            if(existingJobApplication == null)
+            {
+                return Result.Failure($"Job application with {applicationDTO.Id} not found");
+            }
+
+/*            if((existingJobApplication.State != Core.Enums.ApplicationJobStates.Pending && applicationDTO.State == Core.Enums.ApplicationJobStates.Withdrawn)
+                || (existingJobApplication.State == Core.Enums.ApplicationJobStates.Seen && applicationDTO.State != Core.Enums.ApplicationJobStates.Accepted)
+                || (existingJobApplication.State == Core.Enums.ApplicationJobStates.Seen && applicationDTO.State != Core.Enums.ApplicationJobStates.Rejected)
+                || (existingJobApplication.State == Core.Enums.ApplicationJobStates.Withdrawn && applicationDTO.State != Core.Enums.ApplicationJobStates.Pending)
+                )
+            {
+                return Result.Failure($"Failed to update job application from {existingJobApplication.State} to {applicationDTO.State}. Only Pending to Seen, Seen to Accepted or Rejected");
+            }*/
+            var currentJobApplication = _mapper.Map<ApplicationEntity>(applicationDTO);
+            var toUpdate = existingJobApplication.Update(currentJobApplication);
+            var updated = true;
+            if (toUpdate == false)
+            {
+                return Result.Failure($"No updates, You have not changed anything.");
+            }
+            else{
+                updated = await _applicationRepository.UpdateAsync(existingJobApplication);
+            }
+            return updated ? Result.Success() : Result.Failure($"Failed to update {existingJobApplication.Id} job application");
+        }
+        public async Task<Result<ApplicationDTO>> See(int jobApplicationId)
+        {
+            var result = await CheckExistingEntity(jobApplicationId);
+            if (result.IsSuccess)
+            {
+                var existingEntity = result.Data;
+                var updated = existingEntity.See();
+                if (updated.IsSuccess)
+                {
+                    var dto = _mapper.Map<ApplicationDTO>(existingEntity);
+                    return await _applicationRepository.UpdateAsync(existingEntity)
+                        ? Result<ApplicationDTO>.Success(dto)
+                        : Result<ApplicationDTO>.Failure($"Failed to update {existingEntity.Id} job application");
+                }
+                else return Result<ApplicationDTO>.Failure(updated.ErrorMessage);
+            }
+            return Result<ApplicationDTO>.Failure($"Not found {jobApplicationId} job application");
+        }
+        public async Task<Result> Withdraw(int jobApplicationId)
+        {
+            var result = await CheckExistingEntity(jobApplicationId);
+            if (result.IsSuccess)
+            {
+                var existingEntity = result.Data;
+                var updated = existingEntity.Withdraw();
+                if (updated.IsSuccess)
+                {
+                    return await _applicationRepository.UpdateAsync(existingEntity)
+                        ? Result.Success()
+                        : Result.Failure($"Failed to update {existingEntity.Id} job application");
+                }
+                else return updated;
+            }
+            return Result.Failure($"Not found {jobApplicationId} job application");
+        }
+        public async Task<Result> Answer(int jobApplicationId,int state)
+        {
+            var result = await CheckExistingEntity(jobApplicationId);
+            if (result.IsSuccess)
+            {
+                var existingEntity = result.Data;
+                var updated = existingEntity.Answer((ApplicationJobStates)state);
+                if (updated.IsSuccess)
+                {
+                    return await _applicationRepository.UpdateAsync(existingEntity)
+                        ? Result.Success()
+                        : Result.Failure($"Failed to update {existingEntity.Id} job application");
+                }
+                else return updated;
+            }
+            return Result.Failure($"Not found {jobApplicationId} job application");
+        }
+        public async Task<Result> Reaply(int jobApplicationId, IFormFile cvFile)
+        {
+            var result = await CheckExistingEntity(jobApplicationId);
+            if (result.IsSuccess)
+            {
+                var existingEntity = result.Data;
+                var updated = await existingEntity.Reaply(cvFile);
+                if (updated.IsSuccess)
+                {
+                    return await _applicationRepository.UpdateAsync(existingEntity)
+                        ? Result.Success()
+                        : Result.Failure($"Failed to update {existingEntity.Id} job application");
+                }
+                else return updated;
+            }
+            return Result.Failure($"Not found {jobApplicationId} job application");
+        }
+        private async Task<Result<ApplicationEntity>> CheckExistingEntity(int id)
+        {
+            var existingJobApplication = await _applicationRepository.GetByIdAsync(id);
+            if (existingJobApplication == null)
+            {
+                return Result<ApplicationEntity>.Failure($"Job application with {id} not found");
+            }
+            return Result<ApplicationEntity>.Success(existingJobApplication);
         }
     }
 }

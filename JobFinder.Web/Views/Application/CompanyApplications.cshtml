@@ -4,6 +4,7 @@
     var companyName = @HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Unknown";
     var userType = @HttpContextAccessor.HttpContext.Session.GetInt32("UserRole") ?? -1;
 }
+<partial name="_ModalError" />
 <div class="container">
     <main role="main" class="pb-3">
         <div class="row">

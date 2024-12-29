@@ -1,23 +1,28 @@
 ﻿@model IList<JobFinder.Web.Models.Application.GetApplicationViewModel>
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using JobFinder.Core.Enums
 @{
     var userName = @HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Unknown";
     var userType = @HttpContextAccessor.HttpContext.Session.GetInt32("UserRole") ?? -1;
+    var refresh = true;
 }
+<partial name="_ModalError" />
 @if (Model.Any())
 {
-    <table class="table table-striped">
+    <table class="table table-striped text-center">
         <thead>
             <tr>
-                <th>Company Name</th>
-                <th>Job Name</th>
+                <th class="align-middle">Company Name</th>
+                <th class="align-middle">Job Name</th>
                 @if(userType == 1)
                 {
-                    <th>User Name</th>
-                    <th>User Email</th>
+                    <th class="align-middle">User Name</th>
+                    <th class="align-middle">User Email</th>
                 }
-                <th>Applied on</th>
-                <th>Actions</th>
+                <th class="align-middle">Applied on</th>
+                <th class="align-middle"></th>
+                <th class="align-middle">State</th>
+                <th class="align-middle">Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -32,9 +37,91 @@
                         <td class="align-middle">@app.UserEmail</td>
                     }
                     <td class="align-middle">@app.Created.ToString("dd MMMM yyyy")</td>
-                    <td>
-                        <a asp-action="ViewPDF" asp-route-id="@app.Id" target="_blank" class="genric-btn danger@* btn btn-info btn-sm *@">View PDF</a>
-                        <a asp-action="DownloadPDF" asp-route-id="@* @app.ApplicationId *@" class="genric-btn danger@* btn btn-primary btn-sm *@">Download PDF</a>
+                    <td class="align-middle">
+                        <a 
+                        asp-action="ViewPDF" 
+                        asp-route-id="@app.Id" 
+                        asp-route-userId="@app.UserId" 
+                        asp-route-companyId="@app.CompanyId" 
+                        target="_blank" 
+                        class="genric-btn btn btn-info btn-sm"
+                        onclick="refreshParentAfterOpen(this)">View CV</a>
+                    </td>
+                    <td class="align-middle">
+                        <div class="border border-secondary rounded-pill pt-2 pb-2 pr-4 pl-4">
+                            @app.State.ToString()
+                        </div>
+
+                    </td>
+                    <td class="align-middle text-center">
+                        @if (userType == (int)UserType.Employee)
+                        {
+                            if (app.State == ApplicationJobStates.Withdrawn)
+                            {
+                                <div class="apply-btn2">
+                                    <button class="genric-btn danger btn btn-info btn-sm" id="applyNowBtn">Apply</button>
+                                </div>
+                                <partial name="_ApplyModal" model="new ApplyModalModel { JobId = app.JobId, CompanyId = app.CompanyId, ApplicationId = app.Id }" />
+@*                                 <!-- Modal -->
+                                <div class="modal fade" id="applyModal" tabindex="-1" role="dialog" aria-labelledby="applyModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title text-center" id="applyModalLabel">Upload your CV</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="applyForm" method="post" enctype="multipart/form-data" action="@Url.Action("Apply", "Application")">
+                                                    <input type="hidden" name="jobId" value="@app.JobId" />
+                                                    <input type="hidden" name="companyId" value="@app.CompanyId" />
+                                                    <input type="hidden" name="applicationId" value="@app.Id" />
+                                                    <div class="form-group">
+                                                        <label for="pdfFile">Upload PDF:</label>
+                                                        <input type="file" id="pdfFile" name="pdfFile" class="form-control" accept=".pdf" required />
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary text-center">Submit CV</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> *@
+                            }
+                            else
+                            {
+                                <a 
+                                asp-controller="Application" 
+                                asp-action="Withdraw" 
+                                asp-route-id="@app.Id" 
+                                asp-route-userId="@app.UserId" 
+                                class="genric-btn danger btn btn-info btn-sm
+                                @(app.State != ApplicationJobStates.Pending ? "disabled" : "")"
+                                >Withdraw</a>
+                            }
+                        }
+                        else if (userType == (int)UserType.Employer)
+                        {
+                            <div class="d-flex justify-content-center gap-2">
+                                <a 
+                                    asp-controller="Application" 
+                                    asp-action="Accept" 
+                                    asp-route-id="@app.Id" 
+                                    asp-route-userId="@app.UserId" 
+                                    asp-route-companyId="@app.CompanyId" 
+                                    class="genric-btn danger btn btn-info btn-sm 
+                                    @((app.State == ApplicationJobStates.Pending || app.State == ApplicationJobStates.Seen) ? "" : "disabled")"
+                                    >Accept</a>
+                                <a 
+                                    asp-controller="Application" 
+                                    asp-action="Reject" 
+                                    asp-route-id="@app.Id"  
+                                    asp-route-userId="@app.UserId" 
+                                    asp-route-companyId="@app.CompanyId" 
+                                    class="genric-btn danger btn btn-primary btn-sm
+                                    @((app.State == ApplicationJobStates.Pending || app.State == ApplicationJobStates.Seen) ? "" : "disabled")">Reject</a>
+                            </div>
+                        }
                     </td>
                 </tr>
             }
@@ -45,3 +132,38 @@ else
 {
     <p class="text-center text-black">There are no applications</p>
 }
+
+<script>
+	function refreshParentAfterOpen(link) {
+		// Open the link in a new tab
+		///const url = link.href;
+		///window.open(url, '_blank');
+
+		// Refresh the current page
+		setTimeout(() => {
+			location.reload();
+		}, 500); // Adjust the delay if needed
+	}
+</script>
+@* <script>
+    document.getElementById("applyNowBtn").addEventListener("click", function () {
+        // AJAX request to check login
+        fetch("@Url.Action("CheckLogin", "Application")", {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.isLoggedIn) {
+                // Show modal if logged in
+                $('#applyModal').modal('show');
+            } else {
+                // Redirect to login page if not logged in
+                window.location.href = data.loginUrl;
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script> *@

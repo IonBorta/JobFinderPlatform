@@ -85,6 +85,7 @@ namespace JobFinder.Web.Controllers
                     ModelState.AddModelError("Email", result.ErrorMessage);
                     return View(createUserViewModel);
                 }
+                return RedirectToAction("Login");
             }
             return View(createUserViewModel);
         }

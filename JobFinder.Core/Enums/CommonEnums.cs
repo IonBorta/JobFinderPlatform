@@ -7,6 +7,14 @@ using System.Threading.Tasks;
 
 namespace JobFinder.Core.Enums
 {
+    public enum ApplicationJobStates
+    {
+        Pending,
+        Withdrawn,
+        Seen,
+        Accepted,
+        Rejected
+    }
     public enum FilterCriteria
     {
         WorkingType,

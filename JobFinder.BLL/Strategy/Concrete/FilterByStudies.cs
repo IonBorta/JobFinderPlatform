@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using JobFinder.BLL.Strategy.Interface;
 using JobFinder.Core.Common;
+using JobFinder.Core.DTOs.Job;
 using JobFinder.Core.Enums;
 using JobFinder.DAL.Entities;
 
@@ -12,17 +13,27 @@ namespace JobFinder.BLL.Strategy.Concrete
 {
     public class FilterByStudies : IJobFilterStrategy
     {
-        public IList<Job> Filter(IEnumerable<Job> jobs, bool[] param)
+        public IList<GetJobDTO> Filter(IEnumerable<GetJobDTO> jobs, bool[] param)
         {
+            int falseCount = 0;
+            var filteredJobs = new List<GetJobDTO>();
+
             for (int i = 0; i < param.Length; i++)
             {
                 if (param[i] == true)
                 {
-                    var sorted = jobs.Where(job => (int)job.Studies == i).ToList();
-                    return sorted;
+                    var matchedJobs = jobs.Where(job => (int)job.Studies == i);
+                    filteredJobs.AddRange(matchedJobs);
                 }
+                else falseCount++;
             }
-            return jobs.ToList();
+            if (falseCount == param.Length)
+            {
+                return jobs.ToList();
+            }
+
+            // Ensure unique jobs if they matched multiple criteria
+            return filteredJobs.Distinct().ToList();
         }
     }
 }

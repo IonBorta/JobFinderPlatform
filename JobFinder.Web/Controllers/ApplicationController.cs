@@ -167,7 +167,7 @@ namespace JobFinder.Web.Controllers
             if (authorization != null) return authorization;
 
             var result = await _applicationService.Answer(id, state);
-
+             
             if (!result.IsSuccess)
             {
                 TempData["Message"] = result.ErrorMessage; // Pass the error message

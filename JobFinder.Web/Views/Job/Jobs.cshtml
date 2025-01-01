@@ -77,12 +77,14 @@
                                         <h4>Job Type</h4>
                                     </div>
                                     <!-- Hidden field for SortCriteria -->
-                                    <input type="hidden" name="sortCriteria" value="@FilterCriteria.WorkingType" />
+                                    @* <input type="hidden" name="@Model.FilterCriteria" value="@FilterCriteria.WorkingType" /> *@
+                                    @Html.Hidden("FilterCriteria")
+                                    
                                     <label class="container">
                                         Full Time
                                         <!-- Checkbox for Full Time -->
                                         @* <input type="checkbox" id="fullTimeCheckbox" name="value" value="0" onchange="submitForm()" /> *@
-                                        @Html.CheckBoxFor(m => Model.FilterParams[0][0], new { onchange = "submitForm()" })
+                                        @Html.CheckBoxFor(m => Model.WorkingFilter[0], new { onchange = "submitForm()" })
                                         @* @Html.CheckBoxFor(m => Model.WorkTypeFilter.IsFullTime, new { id = "fullTimeCheckbox", onchange = "updateValueAndSubmit('0', this)" }) *@
                                         
                                         <span class="checkmark"></span>
@@ -94,7 +96,7 @@
                                         <!-- Checkbox for Part Time -->
                                         @* <input type="checkbox" id="partTimeCheckbox" name="value" value="1" onchange="submitForm()" /> *@
                                         @* @Html.CheckBoxFor(m => Model.WorkTypeFilter[1], new { onchange = "submitForm()" }) *@
-                                        @Html.CheckBoxFor(m => Model.FilterParams[0][1], new { onchange = "submitForm()" })
+                                        @Html.CheckBoxFor(m => Model.WorkingFilter[1], new { onchange = "submitForm()" })
                                         <span class="checkmark"></span>
                                     </label>
 
@@ -102,12 +104,48 @@
                                         Remote
                                         <!-- Checkbox for Remote -->
                                         @* <input type="checkbox" id="remoteCheckbox" name="value" value="2" onchange="submitForm()" /> *@
-                                        @Html.CheckBoxFor(m => Model.FilterParams[0][2], new { onchange = "submitForm()" })
+                                        @Html.CheckBoxFor(m => Model.WorkingFilter[2], new { onchange = "submitForm()" })
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+@*                             </form>
+                            <!-- select-Categories start -->
+                            <form asp-action="Jobs" method="get" id="filterFormStudiesLevel"> *@
+                                <div class="select-Categories pt-20 pb-50">
+                                    <div class="small-section-tittle2">
+                                        <h4>Studies</h4>
+                                    </div>
+                                    <!-- Hidden field for SortCriteria -->
+                                    @Html.Hidden("FilterCriteria")
+                                    <label class="container">
+                                        No studies
+                                        @Html.CheckBoxFor(m => Model.StudiesFilter[0], new { onchange = "submitForm()" })
+                                        <span class="checkmark"></span>
+                                    </label>
+
+                                    <label class="container">
+                                        High School
+                                        @Html.CheckBoxFor(m => Model.StudiesFilter[1], new { onchange = "submitForm()" })
+                                        <span class="checkmark"></span>
+                                    </label>
+
+                                    <label class="container">
+                                        Bachelor
+                                        @Html.CheckBoxFor(m => Model.StudiesFilter[2], new { onchange = "submitForm()" })
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="container">
+                                        Master
+                                        @Html.CheckBoxFor(m => Model.StudiesFilter[3], new { onchange = "submitForm()" })
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="container">
+                                        Doctorate
+                                        @Html.CheckBoxFor(m => Model.StudiesFilter[4], new { onchange = "submitForm()" })
                                         <span class="checkmark"></span>
                                     </label>
                                 </div>
                             </form>
-                            <!-- select-Categories start -->
                             <!-- select-Categories End -->
                         </div>
                         <!-- single two -->
@@ -349,94 +387,7 @@
                                     <span>7 hours ago</span>
                                 </div>
                             </div>
-                            <!-- single-job-content -->
-                            <div class="single-job-items mb-30">
-                                <div class="job-items">
-                                    <div class="company-img">
-                                        <a href="#"><img src="~/img/icon/job-list4.png" alt=""></a>
-                                    </div>
-                                    <div class="job-tittle job-tittle2">
-                                        <a href="#">
-                                            <h4>Digital Marketer</h4>
-                                        </a>
-                                        <ul>
-                                            <li>Creative Agency</li>
-                                            <li><i class="fas fa-map-marker-alt"></i>Athens, Greece</li>
-                                            <li>$3500 - $4000</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="items-link items-link2 f-right">
-                                    <a href="job_details.html">Full Time</a>
-                                    <span>7 hours ago</span>
-                                </div>
-                            </div>
-                            <!-- single-job-content -->
-                            <div class="single-job-items mb-30">
-                                <div class="job-items">
-                                    <div class="company-img">
-                                        <a href="#"><img src="~/img/icon/job-list1.png" alt=""></a>
-                                    </div>
-                                    <div class="job-tittle job-tittle2">
-                                        <a href="#">
-                                            <h4>Digital Marketer</h4>
-                                        </a>
-                                        <ul>
-                                            <li>Creative Agency</li>
-                                            <li><i class="fas fa-map-marker-alt"></i>Athens, Greece</li>
-                                            <li>$3500 - $4000</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="items-link items-link2 f-right">
-                                    <a href="job_details.html">Full Time</a>
-                                    <span>7 hours ago</span>
-                                </div>
-                            </div>
-                            <!-- single-job-content -->
-                            <div class="single-job-items mb-30">
-                                <div class="job-items">
-                                    <div class="company-img">
-                                        <a href="#"><img src="~/img/icon/job-list3.png" alt=""></a>
-                                    </div>
-                                    <div class="job-tittle job-tittle2">
-                                        <a href="#">
-                                            <h4>Digital Marketer</h4>
-                                        </a>
-                                        <ul>
-                                            <li>Creative Agency</li>
-                                            <li><i class="fas fa-map-marker-alt"></i>Athens, Greece</li>
-                                            <li>$3500 - $4000</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="items-link items-link2 f-right">
-                                    <a href="job_details.html">Full Time</a>
-                                    <span>7 hours ago</span>
-                                </div>
-                            </div>
-                            <!-- single-job-content -->
-                            <div class="single-job-items mb-30">
-                                <div class="job-items">
-                                    <div class="company-img">
-                                        <a href="#"><img src="~/img/icon/job-list4.png" alt=""></a>
-                                    </div>
-                                    <div class="job-tittle job-tittle2">
-                                        <a href="#">
-                                            <h4>Digital Marketer</h4>
-                                        </a>
-                                        <ul>
-                                            <li>Creative Agency</li>
-                                            <li><i class="fas fa-map-marker-alt"></i>Athens, Greece</li>
-                                            <li>$3500 - $4000</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div class="items-link items-link2 f-right">
-                                    <a href="job_details.html">Full Time</a>
-                                    <span>7 hours ago</span>
-                                </div>
-                            </div>
+                            
                         </div>
                     </section>
                     <!-- Featured_job_end -->
@@ -471,7 +422,16 @@
     // Trigger form submission when a checkbox state changes
     function submitForm(value) {
         document.getElementById("filterForm").submit();
-        
+    }
+    function submitFormWorkingType(value) {
+        const filterCriteriaInput = document.querySelector("#filterFormWorkingType input[name='FilterCriteria']");
+        filterCriteriaInput.value = 0;
+        document.getElementById("filterFormWorkingType").submit();  
+    }
+    function submitFormStudiesLevel(value) {
+        const filterCriteriaInput = document.querySelector("#filterFormStudiesLevel input[name='FilterCriteria']");
+        filterCriteriaInput.value = 2;
+        document.getElementById("filterFormStudiesLevel").submit();
     }
         function updateValueAndSubmit(value, checkbox) {
         // Check if the checkbox is checked

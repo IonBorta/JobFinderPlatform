@@ -119,13 +119,17 @@ namespace JobFinder.BLL.Services
             return updated ? Result.Success() : Result.Failure($"Failed to update {jobDTO.Title} job");
         }
 
-        public async Task<IList<GetJobDTO>> SortJobs(FilterCriteria filterCriteria, bool[] param)
+        public async Task<IList<GetJobDTO>> SortJobs(List<CriteriasToFilter> filterCriterias)
         {
-            _jobFilterStrategy = _filterFactory.CreateFilteringStrategy(filterCriteria);
-            var jobs = await _jobRepository.GetAllAsync();
-            var sortedJobs = _jobFilterStrategy.Filter(jobs, param);
-            var jobsDto = sortedJobs.Select(job => _mapper.Map<GetJobDTO>(job));
-            return jobsDto.ToList();
+            var sortedJobs = await GetAll();
+
+            foreach(var filter in filterCriterias)
+            {
+                _jobFilterStrategy = _filterFactory.CreateFilteringStrategy(filter.Type);
+                sortedJobs = _jobFilterStrategy.Filter(sortedJobs, filter.FilterParams);
+            }
+
+            return sortedJobs;
         }
     }
 }

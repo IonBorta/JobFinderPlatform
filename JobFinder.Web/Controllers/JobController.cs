@@ -17,32 +17,21 @@ namespace JobFinder.Web.Controllers
     {
         private readonly IJobService _jobService;
         private readonly IMapper _mapper;
-        private readonly JobPageViewModel _jobPageViewModel;
 
-        public JobController(IJobService jobService, IMapper mapper, JobPageViewModel jobPageViewModel)
+        public JobController(IJobService jobService, IMapper mapper)
         {
             _jobService = jobService;
             _mapper = mapper;
-            _jobPageViewModel = jobPageViewModel;//new JobPageViewModel();
         }
-        public async Task<IActionResult> SortJobs(JobPageViewModel model, FilterCriteria sortCriteria, int value)
+        public async Task<IActionResult> Jobs(JobPageViewModel? model = null)
         {
-
-/*            var filteredJobs = await _jobService.SortJobs(sortCriteria, value);
-            var jobViewModels = filteredJobs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
-            return RedirectToAction("Jobs", new { getJobViewModels = jobViewModels });*/
-            return RedirectToAction("Jobs", new { sortCriteria, value });
-        }
-        public async Task<IActionResult> Jobs(JobPageViewModel? model = null /*,SortCriteria? sortCriteria = null, int? value = null*/)
-        {
-            //_jobPageViewModel.WorkTypeFilter = model.WorkTypeFilter;            //if (sortCriteria.HasValue && value.HasValue)
-            if(model != null && model.FilterCriteria != FilterCriteria.None)
+            
+            if(model != null && model.ToFilter)
             {
-                int sortCriteria = (int)model.FilterCriteria;
-                bool[] param = model.FilterParams[sortCriteria];
-                var filteredJobs = await _jobService.SortJobs(model.FilterCriteria, param);
+                var filteredJobs = await _jobService.SortJobs(model.FilterCriterias);
                 var jobs = filteredJobs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
                 model.Jobs = jobs;
+
                 return View(model);
             }
 

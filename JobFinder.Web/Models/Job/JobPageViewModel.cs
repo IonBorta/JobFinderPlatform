@@ -16,8 +16,7 @@ namespace JobFinder.Web.Models.Job
         public bool ToFilter { 
             get 
             {
-                FilterCriterias.Clear();
-                if (!_toFilter)
+                 if (!_toFilter)
                 {
                     if (StudiesFilter.Any(val => val != false))
                     {

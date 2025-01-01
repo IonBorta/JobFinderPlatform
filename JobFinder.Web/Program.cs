@@ -1,3 +1,4 @@
+using JobFinder.BLL.Decorator;
 using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
 using JobFinder.Core.DTOs;
@@ -9,6 +10,7 @@ using JobFinder.Web.Models.Job;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Configuration;
 using System.Text;
 
@@ -59,7 +61,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register Concrete Factory
 builder.Services.AddScoped<IRepositoryFactory, SqlRepositoryFactory>();
 
-builder.Services.AddScoped<IJobService, JobService>();
+// Registering Serivices
+builder.Services.AddScoped<JobService>();
+builder.Services.AddScoped<IJobService>(sp =>
+{
+    var jobService = sp.GetRequiredService<JobService>();
+    var memoryCache = sp.GetRequiredService<IMemoryCache>();
+    return new CachedJobService(jobService, memoryCache);
+});
+//builder.Services.AddScoped<IJobService, JobService>();
 //builder.Services.AddScoped<IRepository<Job>, JobRepository>();
 //builder.Services.AddScoped<IJobRepository<Job>, JobRepository>();
 

@@ -4,10 +4,18 @@ namespace JobFinder.Web.Models.Resume.Sections
 {
     public class Education
     {
-        public required string SchoolName { get; set; }
-        public required string Specialty {  get; set; }
-        public required string Degree {  get; set; }
-        public required DateTime StartYear{ get; set; }
-        public required DateTime EndYear { get; set; }
+        [Required]
+        public string SchoolName { get; set; }
+        [Required]
+        public string Specialty {  get; set; }
+        [Required]
+        public string Degree {  get; set; }
+        [Required]
+        [Range(typeof(DateTime), "2000-01-01", "2030-12-31", ErrorMessage = "Start year must be between 2000 and 2030.")]
+        public DateTime StartYear { get; set; } = DateTime.Now;
+
+        [Required]
+        [Range(typeof(DateTime), "2000-01-01", "2030-12-31", ErrorMessage = "End year must be between 2000 and 2030.")]
+        public DateTime EndYear { get; set; } = DateTime.Now;
     }
 }

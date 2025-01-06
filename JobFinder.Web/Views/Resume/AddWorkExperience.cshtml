@@ -1,0 +1,106 @@
+﻿@{
+	ViewData["Title"] = "Add WorkExperience";
+}
+@model List<JobFinder.Web.Models.Resume.Sections.WorkExperience>
+<div class="container">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col-md-6 m-auto">
+				<form asp-action="AddWorkExperience" id="educationForm" method="post">
+					<h4 class="mb-3 text-center">Creating your CV</h4>
+					<h4 class="mb-5 text-center">Work Experience</h4>
+					<div id="workExperienceContainer">
+						@for (var i = 0; i < Model.Count; i++)
+						{
+							<div class="workExperience-entry" data-index="@i">
+								<div class="form-group d-flex">
+									<div class="form-floating mb-3 w-50 mr-1">
+										<input asp-for="@Model[i].JobName" class="form-control" placeholder="Job Name" />
+										<label asp-for="@Model[i].JobName">Job Name / Project Name</label>
+										<span asp-validation-for="@Model[i].JobName" class="text-danger"></span>
+									</div>
+									<div class="form-floating mb-3 w-50">
+										<input asp-for="@Model[i].Location" class="form-control" placeholder="Location" />
+										<label asp-for="@Model[i].Location">Company / School</label>
+										<span asp-validation-for="@Model[i].Location" class="text-danger"></span>
+									</div>
+								</div>
+								<div class="form-group d-flex">
+									<div class="form-floating mb-3 w-50 mr-1">
+										<input asp-for="@Model[i].StartYear" type="date" min="2000-01-01" class="form-control" />
+										<label asp-for="@Model[i].StartYear">Start</label>
+										<span asp-validation-for="@Model[i].StartYear" class="text-danger"></span>
+									</div>
+									<div class="form-floating mb-3 w-50">
+										<input asp-for="@Model[i].EndYear" type="date" min="2000-01-01" class="form-control" />
+										<label asp-for="@Model[i].EndYear">End</label>
+										<span asp-validation-for="@Model[i].EndYear" class="text-danger"></span>
+									</div>
+								</div>
+								<div class="mb-3">
+									<label asp-for="@Model[i].Description" class="control-label"></label>
+									<textarea asp-for="@Model[i].Description" class="form-control" style="min-height:150px"
+											  placeholder="Write something about your work / project"></textarea>
+									<span asp-validation-for="@Model[i].Description" class="text-danger"></span>
+								</div>
+							</div>
+						}
+					</div>
+					<div class="form-group d-flex">
+						<button type="button"
+								id="addMore"
+								class="btn-outline-danger rounded-circle m-auto">
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+					<div class="form-group d-flex mt-4">
+						<button asp-action="AddPersonalInfo" formmethod="get" class="btn btn-danger w-25 mr-1">
+							Back
+						</button>
+						<input type="submit" value="Save & Next" class="btn btn-primary w-75" />
+@* 						<button asp-action="AddEducation" formmethod="get" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button> *@
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+</div>
+
+<script>
+	document.getElementById('addMore').addEventListener('click', function () {
+		const container = document.getElementById('workExperienceContainer');
+		const index = container.children.length;
+		const template = `
+			<div class="workExperience-entry" data-index="${index}">
+				<div class="form-group d-flex">
+					<div class="form-floating mb-3 w-50 mr-1">
+						<input name="[${index}].JobName" class="form-control" />
+						<label for="[${index}].JobName">Job Name</label>
+					</div>
+					<div class="form-floating mb-3 w-50">
+						<input name="[${index}].Location" class="form-control" />
+						<label for="[${index}].Location">Location</label>
+					</div>
+				</div>
+				<div class="form-group d-flex">
+					<div class="form-floating mb-3 w-50 mr-1">
+						<input name="[${index}].StartYear" type="date" class="form-control" />
+						<label for="[${index}].StartYear">Start</label>
+					</div>
+					<div class="form-floating mb-3 w-50">
+						<input name="[${index}].EndYear" type="date" class="form-control" />
+						<label for="[${index}].EndYear">End</label>
+					</div>
+				</div>
+				<div class="mb-3">
+					<label for="[${index}].Description class="control-label">Description</label>
+					<textarea name="[${index}].Description" class="form-control" style="min-height:150px" placeholder="Write something about your work , project">
+					</textarea>
+				</div>
+			</div>
+		`;
+		container.insertAdjacentHTML('beforeend', template);
+	});
+</script>

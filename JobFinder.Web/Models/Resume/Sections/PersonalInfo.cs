@@ -6,6 +6,7 @@ namespace JobFinder.Web.Models.Resume.Sections
     {
         public string? Photo { get; set; }
         [Required]
+        [Display(Name = "Full Name")]
         public string Name { get; set; }
         [Required]
         public string Profession { get; set; }

@@ -1,0 +1,322 @@
+﻿@{
+	ViewData["Title"] = "Add Education";
+}
+@model List<JobFinder.Web.Models.Resume.Sections.Education>
+<div class="container">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col-md-6 m-auto">
+				<form asp-action="AddEducation" id="educationForm" method="post">
+					<h4 class="mb-3 text-center">Creating your CV</h4>
+					<h4 class="mb-5 text-center">Education</h4>
+					<div id="educationContainer">
+						@for (var i = 0; i < Model.Count; i++)
+						{
+							<div class="education-entry" data-index="@i">
+								<div class="form-floating mb-3">
+									<input asp-for="@Model[i].SchoolName" class="form-control" placeholder="School Name"/>
+									<label asp-for="@Model[i].SchoolName">School Name</label>
+									<span asp-validation-for="@Model[i].SchoolName" class="text-danger"></span>
+								</div>
+								<div class="form-floating mb-3">
+									<input asp-for="@Model[i].Specialty" class="form-control" placeholder="Specialty"/>
+									<label asp-for="@Model[i].Specialty">Specialty</label>
+									<span asp-validation-for="@Model[i].Specialty" class="text-danger"></span>
+								</div>
+								<div class="form-floating mb-3">
+									<input asp-for="@Model[i].Degree" class="form-control" placeholder="Degree"/>
+									<label asp-for="@Model[i].Degree">Degree</label>
+									<span asp-validation-for="@Model[i].Degree" class="text-danger"></span>
+								</div>
+								<div class="form-group d-flex">
+									<div class="form-floating mb-3 w-50 mr-1">
+										<input asp-for="@Model[i].StartYear" type="date" min="2000-01-01" class="form-control" />
+										<label asp-for="@Model[i].StartYear">Start</label>
+										<span asp-validation-for="@Model[i].StartYear" class="text-danger"></span>
+									</div>
+									<div class="form-floating mb-3 w-50">
+										<input asp-for="@Model[i].EndYear" type="date" min="2000-01-01" class="form-control" />
+										<label asp-for="@Model[i].EndYear">End</label>
+										<span asp-validation-for="@Model[i].EndYear" class="text-danger"></span>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+					<div class="form-group d-flex">
+						<button type="button"
+								id="addMore"
+								class="btn-outline-danger rounded-circle m-auto">
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+					<div class="form-group d-flex mt-4">
+						<button asp-action="AddWorkExperience" formmethod="get" class="btn btn-danger w-25 mr-1">
+							Back
+						</button>
+						<input type="submit" value="Save & Next" class="btn btn-primary w-50" />
+						<button asp-action="SkipEducation" formmethod="get" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+</div>
+
+<script>
+	document.getElementById('addMore').addEventListener('click', function () {
+		const container = document.getElementById('educationContainer');
+		const index = container.children.length;
+		const template = `
+			<div class="education-entry" data-index="${index}">
+				<div class="form-floating mb-3">
+					<input name="[${index}].SchoolName" class="form-control" />
+					<label for="[${index}].SchoolName">School Name</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input name="[${index}].Specialty" class="form-control" />
+					<label for="[${index}].Specialty">Specialty</label>
+				</div>
+				<div class="form-floating mb-3">
+					<input name="[${index}].Degree" class="form-control" />
+					<label for="[${index}].Degree">Degree</label>
+				</div>
+				<div class="form-group d-flex">
+					<div class="form-floating mb-3 w-50">
+						<input name="[${index}].StartYear" type="date" class="form-control" />
+						<label for="[${index}].StartYear">Start</label>
+					</div>
+					<div class="form-floating mb-3 w-50">
+						<input name="[${index}].EndYear" type="date" class="form-control" />
+						<label for="[${index}].EndYear">End</label>
+					</div>
+				</div>
+			</div>
+		`;
+		container.insertAdjacentHTML('beforeend', template);
+	});
+</script>
+
+@* @model List<JobFinder.Web.Models.Resume.Sections.Education>
+
+<div class="container">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col-md-6 m-auto">
+				<form asp-action="AddEducation" id="educationForm" method="post">
+					<h3 class="mb-5 text-center">Education</h3>
+					<div id="educationContainer">
+						<!-- Template for education entry -->
+						@for (var i = 0; i < Model.Count; i++)
+						{
+							<div class="education-entry" data-index="@i">
+								<div class="form-floating mb-3">
+									<input asp-for="@Model[i].SchoolName" type="text" class="form-control" placeholder="School Name" />
+									<label asp-for="@Model[i].SchoolName">School Name</label>
+									<span asp-validation-for="@Model[i].SchoolName" class="text-danger"></span>
+								</div>
+								<div class="form-floating mb-3">
+									<input asp-for="@Model[i].Specialty" type="text" class="form-control" placeholder="Specialty" />
+									<label asp-for="@Model[i].Specialty">Specialty</label>
+									<span asp-validation-for="@Model[i].Specialty" class="text-danger"></span>
+								</div>
+								<div class="form-floating mb-3">
+									<input asp-for="@Model[i].Degree" type="text" class="form-control" placeholder="Degree" />
+									<label asp-for="@Model[i].Degree">Degree</label>
+									<span asp-validation-for="@Model[i].Degree" class="text-danger"></span>
+								</div>
+								<div class="form-group d-flex">
+									<div class="form-floating mb-3 w-50">
+										<input asp-for="@Model[i].StartYear" type="date" class="form-control" />
+										<label asp-for="@Model[i].StartYear">Start</label>
+										<span asp-validation-for="@Model[i].StartYear" class="text-danger"></span>
+									</div>
+									<div class="form-floating mb-3 w-50">
+										<input asp-for="@Model[i].EndYear" type="date" class="form-control" />
+										<label asp-for="@Model[i].EndYear">End</label>
+										<span asp-validation-for="@Model[i].EndYear" class="text-danger"></span>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+					<div class="form-group d-flex">						
+						<button 
+							type="button" 
+							id="MoreButton" 
+							class="btn-outline-danger rounded-circle m-auto"
+								asp-action="AddEducation" formmethod="get"
+								asp-route-model="@Model"
+						>
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+					<div class="form-group d-flex">
+						<button asp-action="AddPersonalInfo" formmethod="get" class="btn btn-danger w-25 mr-1">
+							Back
+						</button>
+						<input type="submit" value="Save & Next" class="btn btn-primary w-50" />
+						<button asp-action="AddEducation" formmethod="get" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+</div>
+
+<script>
+	document.getElementById('addMoreButton').addEventListener('click', function () {
+		const container = document.getElementById('educationContainer');
+		const index = container.children.length;
+		const template = `
+			<div class="education-entry" data-index="${index}">
+				<div class="form-floating mb-3">
+					<input asp-for="[${index}].SchoolName" type="text" class="form-control" placeholder="School Name" />
+					<label asp-for="[${index}].SchoolName">School Name</label>
+					<span asp-validation-for="[${index}].SchoolName" class="text-danger"></span>
+				</div>
+				<div class="form-floating mb-3">
+									<input asp-for="[${index}].Specialty" type="text" class="form-control" placeholder="Specialty" />
+									<label asp-for="[${index}].Specialty">Specialty</label>
+									<span asp-validation-for="[${index}].Specialty" class="text-danger"></span>
+				</div>
+				<div class="form-floating mb-3">
+									<input asp-for="[${index}].Degree" type="text" class="form-control" placeholder="Degree" />
+									<label asp-for="[${index}].Degree">Degree</label>
+									<span asp-validation-for="[${index}].Degree" class="text-danger"></span>
+				</div>
+				<div class="form-group d-flex">
+					<div class="form-floating mb-3 w-50">
+										<input asp-for="[${index}].StartYear" type="date" class="form-control" />
+										<label asp-for="[${index}].StartYear">Start</label>
+										<span asp-validation-for="[${index}].StartYear" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3 w-50">
+										<input asp-for="[${index}].EndYear" type="date" class="form-control" />
+										<label asp-for="[${index}].EndYear">End</label>
+										<span asp-validation-for="[${index}].EndYear" class="text-danger"></span>
+					</div>
+				</div>
+			</div>`;
+		container.insertAdjacentHTML('beforeend', template);
+	});
+</script> *@
+@* @model List<JobFinder.Web.Models.Resume.Sections.Education>
+@{
+	var index = 0;
+}
+<div class="container">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col-md-6 m-auto">
+				<form asp-action="Addeducation" id="educationForm">
+					<h3 class="mb-5 text-center">Education</h3>
+					<div class="form-floating mb-3">
+						<input asp-for="@Model[index].SchoolName" type="text" class="form-control" id="floatingInput" placeholder="User Name">
+						<label asp-for="SchoolName">School Name</label>
+						<span asp-validation-for="SchoolName" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="Specialty" type="text" class="form-control" id="floatingInput" placeholder="Profession">
+						<label asp-for="Specialty">Specialty</label>
+						<span asp-validation-for="Specialty" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="Degree" type="text" class="form-control" id="floatingInput" placeholder="Chisinau">
+						<label asp-for="Degree">Degree</label>
+						<span asp-validation-for="Degree" class="text-danger"></span>
+					</div>
+					<div class="form-group d-flex">
+						<div class="form-floating mb-3 w-50">
+							<input asp-for="StartYear" type="date" class="form-control" id="floatingInput" placeholder="Email">
+							<label asp-for="StartYear">Start</label>
+							<span asp-validation-for="StartYear" class="text-danger"></span>
+						</div>
+						<div class="form-floating mb-3 w-50">
+							<input asp-for="EndYear" type="date" class="form-control" id="floatingInput" placeholder="Email">
+							<label asp-for="EndYear">End</label>
+							<span asp-validation-for="EndYear" class="text-danger"></span>
+						</div>
+					</div>
+					<div class="form-group d-flex">
+						<button class="btn btn-outline-primary w-25 m-auto">
+							One more
+						</button>
+					</div>
+					<div class="form-group d-flex">
+						<button asp-action="AddPersonalInfo" formmethod="get" class="btn btn-danger w-25 mr-1">
+							Back
+						</button>
+						<input type="submit" value="Save & Next" class="btn btn-primary w-50" />
+						<button asp-action="AddEducation" formmethod="get" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+</div> *@
+@* <div class="modal" id="educationModal" tabindex="-1" role="dialog" aria-labelledby="educationModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title w-50 m-auto" id="educationModalLabel">Education</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="Addeducation" id="educationForm">
+					<div class="form-floating mb-3">
+						<input asp-for="SchoolName" type="text" class="form-control" id="floatingInput" placeholder="User Name">
+						<label asp-for="SchoolName">School Name</label>
+						<span asp-validation-for="SchoolName" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="Specialty" type="text" class="form-control" id="floatingInput" placeholder="Profession">
+						<label asp-for="Specialty">Specialty</label>
+						<span asp-validation-for="Specialty" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="Degree" type="text" class="form-control" id="floatingInput" placeholder="Chisinau">
+						<label asp-for="Degree">Degree</label>
+						<span asp-validation-for="Degree" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="StartYear" type="date" class="form-control" id="floatingInput" placeholder="Email">
+						<label asp-for="StartYear">Start</label>
+						<span asp-validation-for="StartYear" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="EndYear" type="date" class="form-control" id="floatingInput" placeholder="Email">
+						<label asp-for="EndYear">End</label>
+						<span asp-validation-for="EndYear" class="text-danger"></span>
+					</div>
+					<div class="form-group d-flex">
+						<button asp-action="AddPersonalInfo" formmethod="get" class="btn btn-danger w-25 mr-1">
+							Back
+						</button>
+						<input type="submit" value="Save & Next" class="btn btn-primary w-50" />
+						<button asp-action="AddEducation" formmethod="get" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div> *@
+@* <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> *@
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+	$(document).ready(function () {
+		$('#educationModal').modal('show');
+	});
+</script>

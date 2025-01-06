@@ -1,0 +1,97 @@
+﻿@{
+	ViewData["Title"] = "Add Languages";
+}
+@model List<JobFinder.Web.Models.Resume.Sections.Languages>
+<div class="container">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col-md-6 m-auto">
+				<form asp-action="AddLanguages" id="languagesForm" method="post">
+					<h4 class="mb-3 text-center">Creating your CV</h4>
+					<h4 class="mb-5 text-center">Languages</h4>
+					<div id="languagesContainer">
+						@for (var i = 0; i < Model.Count; i++)
+						{
+							<div class="languages-entry" data-index="@i">
+								<div class="form-group d-flex">
+									<div class="form-floating mb-3 w-50 mr-1">
+@* 										<input asp-for="@Model[i].Language" class="form-control" placeholder="Language Name" />
+										<label asp-for="@Model[i].Language">Language Name</label>
+										<span asp-validation-for="@Model[i].Language" class="text-danger"></span> *@
+										@Html.DropDownListFor(
+																			model => Model[i].Language,
+																			new SelectList(Enum.GetValues(typeof(JobFinder.Web.Models.Resume.Sections.LanguageNames))),
+																			"-- Select Language --",
+																			new { @class = "form-control" })
+										<span asp-validation-for="@Model[i].Language" class="text-danger"></span>
+									</div>
+									<div class="form-floating mb-3 w-50">
+										@* <label asp-for="@Model[i].Level" class="control-label"></label> *@
+										@Html.DropDownListFor(
+																			model => Model[i].Level,
+																			new SelectList(Enum.GetValues(typeof(JobFinder.Web.Models.Resume.Sections.LanguageLevels))),
+																			"-- Select Level --",
+																			new { @class = "form-control" })
+										<span asp-validation-for="@Model[i].Level" class="text-danger"></span>
+									</div>
+								</div>
+							</div>
+						}
+					</div>
+					<div class="form-group d-flex">
+						<button type="button"
+								id="addMore"
+								class="btn-outline-danger rounded-circle m-auto">
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+					<div class="form-group d-flex mt-4">
+						<button asp-action="AddEducation" formmethod="get" class="btn btn-danger w-25 mr-1">
+							Back
+						</button>
+						<input type="submit" value="Save & Next" class="btn btn-primary w-50" />
+						<button asp-action="SkipLanguages" formmethod="post" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+</div>
+
+<script>
+	document.getElementById('addMore').addEventListener('click', function () {
+		const container = document.getElementById('languagesContainer');
+		const index = container.children.length;
+		const languageLevels = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(JobFinder.Web.Models.Resume.Sections.LanguageLevels))));
+		const options = languageLevels
+						.map(level => `<option value="${level}">${level}</option>`)
+						.join("");
+		const languageNames = @Html.Raw(Json.Serialize(Enum.GetNames(typeof(JobFinder.Web.Models.Resume.Sections.LanguageNames))));
+		const langOptions = languageNames
+						.map(l => `<option value="${l}">${l}</option>`)
+						.join("");
+		const template = `
+			<div class="education-entry" data-index="${index}">
+				<div class="form-group d-flex">
+					<div class="form-floating mb-3 w-50">
+						<select name="[${index}].Language" class="form-control">
+							<option value="">-- Select Language --</option>
+							${langOptions}
+						</select>
+						<span class="text-danger" data-valmsg-for="[${index}].Language" data-valmsg-replace="true"></span>
+					</div>
+					<div class="form-floating mb-3 w-50">
+						<select name="[${index}].Level" class="form-control">
+							<option value="">-- Select Level --</option>
+							${options}
+						</select>
+						<span class="text-danger" data-valmsg-for="[${index}].Level" data-valmsg-replace="true"></span>
+					</div>
+				</div>
+			</div>
+		`;
+		container.insertAdjacentHTML('beforeend', template);
+	});
+</script>

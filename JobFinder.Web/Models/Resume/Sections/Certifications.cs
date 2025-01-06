@@ -1,9 +1,14 @@
-﻿namespace JobFinder.Web.Models.Resume.Sections
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JobFinder.Web.Models.Resume.Sections
 {
     public class Certifications
     {
-        public required string CertificationName { get; set; }
-        public required DateTime Year { get; set; }
-        public required string From { get; set; }
+        [Required]
+        public string CertificationName { get; set; }
+        [Required]
+        public DateTime Year { get; set; }
+        [Required]
+        public string From { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using IronPdf.Extensions.Mvc.Core;
 using JobFinder.BLL.Decorator;
 using JobFinder.BLL.Interfaces;
 using JobFinder.BLL.Services;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Rotativa.AspNetCore;
 using System.Configuration;
 using System.Text;
 
@@ -88,8 +90,13 @@ builder.Services.AddScoped<ICompanyService, CompanyService>();
 builder.Services.AddScoped<JobPageViewModel>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
+// Register IRazorViewRenderer here
+builder.Services.AddSingleton<IRazorViewRenderer, RazorViewRenderer>();
 
 var app = builder.Build();
+
+// Configure Rotativa
+Rotativa.AspNetCore.RotativaConfiguration.Setup(app.Environment.WebRootPath, "Rotativa");
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -107,6 +114,6 @@ app.UseAuthentication();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Resume}/{action=AddPersonalInfo}/{id?}");
 
 app.Run();

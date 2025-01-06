@@ -1,0 +1,73 @@
+﻿@{
+	ViewData["Title"] = "Add Skills";
+}
+@model List<JobFinder.Web.Models.Resume.Sections.Skills>
+<div class="container">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col-md-6 m-auto">
+				<form asp-action="AddSkills" id="skillsForm" method="post">
+					<h4 class="mb-3 text-center">Creating your CV</h4>
+					<h4 class="mb-5 text-center">Skills</h4>
+					<div id="skillsContainer">
+						@for (var i = 0; i < Model.Count; i++)
+						{
+								<div class="skills-entry" data-index="@i">
+									<div class="form-group d-flex">
+										<div class="form-floating mb-3 w-50 mr-1">
+											<input asp-for="@Model[i].SkillName" class="form-control" placeholder="" />
+											<label asp-for="@Model[i].SkillName">Skill</label>
+											<span asp-validation-for="@Model[i].SkillName" class="text-danger"></span>
+										</div>
+										<div class="form-floating mb-3 w-50">
+											<input asp-for="@Model[i].Level" type="number" min="20" max="100" class="form-control" placeholder="20-100%" />
+											<label asp-for="@Model[i].Level">Level %</label>
+											<span asp-validation-for="@Model[i].Level" class="text-danger"></span>
+										</div>
+									</div>
+								</div>
+						}
+					</div>
+					<div class="form-group d-flex">
+						<button type="button"
+								id="addMore"
+								class="btn-outline-danger rounded-circle m-auto">
+							<i class="fas fa-plus"></i>
+						</button>
+					</div>
+					<div class="form-group d-flex mt-4">
+						<button asp-action="AddLanguages" formmethod="get" class="btn btn-danger w-25 mr-1">
+							Back
+						</button>
+						<input type="submit" value="Save" class="btn btn-primary w-50" />
+						<button asp-action="SkipSkills" formmethod="post" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+</div>
+
+<script>
+	document.getElementById('addMore').addEventListener('click', function () {
+		const container = document.getElementById('skillsContainer');
+		const index = container.children.length;
+		const template = `
+			<div class="education-entry" data-index="${index}">
+				<div class="form-group d-flex">
+					<div class="form-floating mb-3 w-50">
+						<input name="[${index}].SkillName" class="form-control" />
+						<label for="[${index}].SkillName">Skill Name</label>
+					</div>
+					<div class="form-floating mb-3 w-50">
+						<input name="[${index}].Level" type="number" placeholder="20-100%" class="form-control" />
+						<label for="[${index}].Level">Level %</label>
+					</div>
+				</div>
+			</div>
+		`;
+		container.insertAdjacentHTML('beforeend', template);
+	});
+</script>

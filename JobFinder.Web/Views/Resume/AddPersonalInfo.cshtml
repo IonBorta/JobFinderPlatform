@@ -1,0 +1,104 @@
+﻿@{
+	ViewData["Title"] = "Add Personal Info";
+}
+@model JobFinder.Web.Models.Resume.Sections.PersonalInfo
+<div class="container">
+	<main role="main" class="pb-3">
+		<div class="row">
+			<div class="col-md-6 m-auto">
+				<form asp-action="AddPersonalInfo" id="educationForm" method="post">
+					<h4 class="mb-3 text-center">Creating your CV</h4>
+					<h4 class="mb-5 text-center">Personal Info</h4>
+							<div class="form-floating mb-3">
+								<input asp-for="@Model.Name" class="form-control" placeholder="Full Name" />
+								<label asp-for="@Model.Name"></label>
+								<span asp-validation-for="@Model.Name" class="text-danger"></span>
+							</div>
+							<div class="form-floating mb-3">
+								<input asp-for="@Model.Profession" class="form-control" placeholder="Profession" />
+								<label asp-for="@Model.Profession"></label>
+								<span asp-validation-for="@Model.Profession" class="text-danger"></span>
+							</div>
+							<div class="form-floating mb-3">
+								<input asp-for="@Model.Location" class="form-control" placeholder="Chisinau" />
+								<label asp-for="@Model.Location"></label>
+								<span asp-validation-for="@Model.Location" class="text-danger"></span>
+							</div>
+							<div class="form-floating mb-3">
+								<input asp-for="@Model.Email" class="form-control" placeholder="email@gmail.com" />
+								<label asp-for="@Model.Email"></label>
+								<span asp-validation-for="@Model.Email" class="text-danger"></span>
+							</div>
+							<div class="form-floating mb-3">
+								<input asp-for="@Model.Phone" class="form-control" placeholder="012345678" />
+								<label asp-for="@Model.Phone"></label>
+								<span asp-validation-for="@Model.Phone" class="text-danger"></span>
+							</div>
+					<div class="form-group d-flex mt-4">
+						<input type="submit" value="Save & Next" class="btn btn-primary w-100" />
+@* 						<button asp-action="AddWorkExperience" formmethod="get" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button> *@
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+</div>
+@* @model JobFinder.Web.Models.Resume.Sections.PersonalInfo
+<div class="modal" id="personalInfoModal" tabindex="-1" role="dialog" aria-labelledby="personalInfoModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title w-50 m-auto" id="personalInfoModalLabel">Personal Information</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<form asp-action="AddPersonalInfo" id="personalInfoForm">
+					<div class="form-floating mb-3">
+						<input asp-for="Name" type="text" class="form-control" id="floatingInput" placeholder="User Name">
+						<label asp-for="Name">Full Name</label>
+						<span asp-validation-for="Name" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="Profession" type="text" class="form-control" id="floatingInput" placeholder="Profession">
+						<label asp-for="Profession">Profession</label>
+						<span asp-validation-for="Profession" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="Location" type="text" class="form-control" id="floatingInput" placeholder="Chisinau">
+						<label asp-for="Location">Address</label>
+						<span asp-validation-for="Location" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="Email" type="text" class="form-control" id="floatingInput" placeholder="Email">
+						<label asp-for="Email">Email</label>
+						<span asp-validation-for="Email" class="text-danger"></span>
+					</div>
+					<div class="form-floating mb-3">
+						<input asp-for="Phone" type="tel" class="form-control" id="floatingInput" placeholder="Email">
+						<label asp-for="Phone">Phone</label>
+						<span asp-validation-for="Phone" class="text-danger"></span>
+					</div>
+					<div class="form-group d-flex">
+						<input type="submit" value="Save & Next" class="btn btn-primary w-75" />
+						<button asp-action="AddEducation" formmethod="get" class="btn btn-danger w-25 ml-1">
+							Skip
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+	$(document).ready(function () {
+		$('#personalInfoModal').modal('show');
+	});
+</script> *@

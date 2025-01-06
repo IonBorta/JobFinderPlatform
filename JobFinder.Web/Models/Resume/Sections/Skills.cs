@@ -4,8 +4,10 @@ namespace JobFinder.Web.Models.Resume.Sections
 {
     public class Skills
     {
-        public required string SkillName { get; set; }
-        [Range(0, 100)]
-        public required int Percentage { get; set; }
+        [Required]
+        public string SkillName { get; set; }
+        [Required]
+        [Range(20, 100)]
+        public int Level { get; set; } = 20;
     }
 }

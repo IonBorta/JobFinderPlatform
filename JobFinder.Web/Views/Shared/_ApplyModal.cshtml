@@ -18,7 +18,11 @@
                         <label for="pdfFile">Upload PDF:</label>
                         <input type="file" id="pdfFile" name="pdfFile" class="form-control" accept=".pdf" required />
                     </div>
-                    <button type="submit" class="btn btn-primary text-center">Submit Application</button>
+                    <button type="submit" class="btn btn-primary text-center w-100">Submit Application</button>
+                    <div class="d-flex mt-2">
+                        <p class="text-center w-50 mt-15">Don't have a CV?</p>
+                        <button asp-action="AddPersonalInfo" asp-controller="Resume" id="createButton" class="btn btn-primary text-center w-50">Create</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -44,6 +48,19 @@
             }
         })
         .catch(error => console.error('Error:', error));
+    });
+    document.getElementById("createButton").addEventListener("click", function (e) {
+        // Prevent the default form submission
+        e.preventDefault();
+
+       // Disable the required attribute on the file input
+        const pdfFileInput = document.getElementById("pdfFile");
+        if (pdfFileInput) {
+            pdfFileInput.removeAttribute("required");
+        }
+
+        // Optionally, redirect to the 'Create' action
+        window.location.href = '@Url.Action("AddPersonalInfo", "Resume")';
     });
 </script>
 @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

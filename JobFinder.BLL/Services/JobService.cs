@@ -119,7 +119,7 @@ namespace JobFinder.BLL.Services
             return updated ? Result.Success() : Result.Failure($"Failed to update {jobDTO.Title} job");
         }
 
-        public async Task<IList<GetJobDTO>> SortJobs(List<CriteriasToFilter> filterCriterias)
+        public async Task<IList<GetJobDTO>> FilterJobs(List<CriteriasToFilter> filterCriterias)
         {
             var sortedJobs = await GetAll();
 
@@ -135,7 +135,7 @@ namespace JobFinder.BLL.Services
         {
             _jobFilterStrategy = _filterFactory.CreateFilteringStrategy(type);
         }
-        public IList<GetJobDTO> SortJobs(IList<GetJobDTO> jobs, bool[] filterParams)
+        public IList<GetJobDTO> FilterJobs(IList<GetJobDTO> jobs, bool[] filterParams)
         {
             return _jobFilterStrategy.Filter(jobs, filterParams);
         }

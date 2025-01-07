@@ -11,16 +11,10 @@ namespace JobFinder.Web.Builder
     {
         [JsonInclude]
         private ResumeViewModel _cv = new();
-        //private readonly HttpContext _httpContext;
-/*        public CvBuilder(HttpContext httpContext)
-        {
-            _httpContext = httpContext;
-        }*/
 
         public ICvBuilder AddPersonalInfo(PersonalInfo info)
         {
             _cv.PersonalInfo = info;
-            //SaveCVToSession();
             return this;
         }
 
@@ -53,27 +47,6 @@ namespace JobFinder.Web.Builder
             return this;
         }
         public ResumeViewModel Build() => _cv;
-
-        /*
-       private void SaveCVToSession()
-       {
-           var serializedCv = JsonSerializer.Serialize(_cv);
-           var cvBytes = System.Text.Encoding.UTF8.GetBytes(serializedCv);
-           _httpContext.Session.Set("Cv", cvBytes); // Save as byte array
-       }
-
-       private ResumeViewModel GetCVFromSession()
-       {
-           _httpContext.Session.TryGetValue("Cv", out var builderBytes);
-
-           if (builderBytes == null)
-           {
-               return new ResumeViewModel(); // Return a new instance if no data in session
-           }
-
-           var serializedBuilder = System.Text.Encoding.UTF8.GetString(builderBytes);
-           return JsonSerializer.Deserialize<ResumeViewModel>(serializedBuilder) ?? new ResumeViewModel();
-       }*/
     }
 
 }

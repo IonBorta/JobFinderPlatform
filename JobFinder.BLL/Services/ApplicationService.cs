@@ -121,15 +121,6 @@ namespace JobFinder.BLL.Services
             {
                 return Result.Failure($"Job application with {applicationDTO.Id} not found");
             }
-
-/*            if((existingJobApplication.State != Core.Enums.ApplicationJobStates.Pending && applicationDTO.State == Core.Enums.ApplicationJobStates.Withdrawn)
-                || (existingJobApplication.State == Core.Enums.ApplicationJobStates.Seen && applicationDTO.State != Core.Enums.ApplicationJobStates.Accepted)
-                || (existingJobApplication.State == Core.Enums.ApplicationJobStates.Seen && applicationDTO.State != Core.Enums.ApplicationJobStates.Rejected)
-                || (existingJobApplication.State == Core.Enums.ApplicationJobStates.Withdrawn && applicationDTO.State != Core.Enums.ApplicationJobStates.Pending)
-                )
-            {
-                return Result.Failure($"Failed to update job application from {existingJobApplication.State} to {applicationDTO.State}. Only Pending to Seen, Seen to Accepted or Rejected");
-            }*/
             var currentJobApplication = _mapper.Map<ApplicationEntity>(applicationDTO);
             var toUpdate = existingJobApplication.Update(currentJobApplication);
             var updated = true;

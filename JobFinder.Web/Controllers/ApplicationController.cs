@@ -8,6 +8,7 @@ using JobFinder.Core.Enums;
 using JobFinder.DAL.Entities;
 using JobFinder.Web.Models;
 using JobFinder.Web.Models.Application;
+using JobFinder.Web.Models.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -118,12 +119,11 @@ namespace JobFinder.Web.Controllers
 
             if (userRole == (int)UserType.Employer)
             {
-                var authorization = await AuthorizeCompany(userId, companyId);
-                if (authorization != null) return authorization;
-
                 var updateResult = await _applicationService.See(id);
                 if (!updateResult.IsSuccess)
                 {
+                    if (!updateResult.IsAuthorized) return Unauthorized();
+
                     TempData["Message"] = updateResult.ErrorMessage; // Pass the error message
                     return NotFound(updateResult.ErrorMessage);
                 }
@@ -133,12 +133,11 @@ namespace JobFinder.Web.Controllers
             }
             else
             {
-                var authorization = AuthorizeUser(userId);
-                if (authorization != null) return authorization;
-
                 var result = await _applicationService.GetById(id);
                 if (!result.IsSuccess)
                 {
+                    if (!result.IsAuthorized) return Unauthorized();
+
                     TempData["Message"] = result.ErrorMessage;
                     return NotFound(result.ErrorMessage);
                 }
@@ -150,26 +149,23 @@ namespace JobFinder.Web.Controllers
         }
         public async Task<IActionResult> Withdraw(int id, int userId)
         {
-            var authorization = AuthorizeUser(userId);
-            if (authorization != null) return authorization;
-
             var result = await _applicationService.Withdraw(id);
 
             if (!result.IsSuccess)
             {
+                if(!result.IsAuthorized) return Unauthorized();
+
                 TempData["Message"] = result.ErrorMessage; // Pass the error message
             }
             return RedirectToAction("UserApplications");
         }
         public async Task<IActionResult> Answer(int id, int state, int userId, int companyId)
         {
-            var authorization = await AuthorizeCompany(userId, companyId);
-            if (authorization != null) return authorization;
-
             var result = await _applicationService.Answer(id, state);
              
             if (!result.IsSuccess)
             {
+                if(!result.IsAuthorized) return Unauthorized();
                 TempData["Message"] = result.ErrorMessage; // Pass the error message
             }
             return RedirectToAction("CompanyApplications", new { id = companyId });
@@ -181,32 +177,6 @@ namespace JobFinder.Web.Controllers
         public async Task<IActionResult> Reject(int id, int userId, int companyId)
         {
             return await Answer(id, (int)ApplicationJobStates.Rejected, userId, companyId);
-        }
-        private IActionResult AuthorizeUser(int userId)
-        {
-            var userRole = HttpContext.Session.GetInt32("UserRole");
-            var currentUserId = HttpContext.Session.GetInt32("UserId");
-            if (userRole != (int)UserType.Employee && currentUserId != userId) return Unauthorized();
-            return null;
-        }
-        private async Task<IActionResult> AuthorizeCompany(int userId,int companyId)
-        {
-            var userRole = HttpContext.Session.GetInt32("UserRole");
-            var currentUserId = HttpContext.Session.GetInt32("UserId");
-            if (userRole != (int)UserType.Employer && currentUserId != userId) return Unauthorized();
-
-            var companyResult = await _companyService.GetCompanyByUserId(currentUserId ?? -1);
-            if (companyResult != null && companyResult.IsSuccess)
-            {
-                var company = companyResult.Data;
-                if (company != null && company.Id != companyId)
-                {
-                    return Unauthorized();
-                }
-                else if(company == null) return NotFound();
-            }
-            else if(companyResult == null) return NotFound();
-            return null;
         }
     }
 }

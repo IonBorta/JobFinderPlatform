@@ -1,6 +1,7 @@
 using IronPdf.Extensions.Mvc.Core;
 using JobFinder.BLL.Decorator;
 using JobFinder.BLL.Interfaces;
+using JobFinder.BLL.Proxy;
 using JobFinder.BLL.Services;
 using JobFinder.Core.DTOs;
 using JobFinder.DAL.AbstractFactory.Abstract.Factory;
@@ -42,7 +43,7 @@ builder.Services.AddControllersWithViews();
                 Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });*/
-
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddMemoryCache();
 builder.Services.AddDistributedMemoryCache();  // Required for session state
 builder.Services.AddSession(options =>
@@ -80,7 +81,16 @@ builder.Services.AddScoped<IAccountService, AccountService>();
 //builder.Services.AddScoped<IRepository<User>, AccountRepository>();
 //builder.Services.AddScoped<ILogRepository<User>, AccountRepository>();
 
-builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<ApplicationService>();
+// Register the proxy service
+builder.Services.AddScoped<IApplicationService>(provider => 
+{ 
+    var realService = provider.GetRequiredService<ApplicationService>();
+    var repositoryFactory = provider.GetRequiredService<IRepositoryFactory>();
+    var companyService = provider.GetRequiredService<ICompanyService>();
+    var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();  
+    return new ApplicationProxy(realService, repositoryFactory,companyService, httpContextAccessor); 
+});
 //builder.Services.AddScoped<IRepository<ApplicationEntity>, ApplicationRepository>();
 
 builder.Services.AddScoped<ICompanyService, CompanyService>();

@@ -131,5 +131,13 @@ namespace JobFinder.BLL.Services
 
             return sortedJobs;
         }
+        public void SetStrategy(FilterCriteria type)
+        {
+            _jobFilterStrategy = _filterFactory.CreateFilteringStrategy(type);
+        }
+        public IList<GetJobDTO> SortJobs(IList<GetJobDTO> jobs, bool[] filterParams)
+        {
+            return _jobFilterStrategy.Filter(jobs, filterParams);
+        }
     }
 }

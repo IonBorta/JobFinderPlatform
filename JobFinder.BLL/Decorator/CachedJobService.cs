@@ -57,7 +57,7 @@ namespace JobFinder.BLL.Decorator
             }
             return Result<GetJobDTO>.Success(cachedJob);
         }
-        public override async Task<IList<GetJobDTO>> SortJobs(List<CriteriasToFilter> filterCriterias)
+        public override async Task<IList<GetJobDTO>> FilterJobs(List<CriteriasToFilter> filterCriterias)
         {
             var sortedJobs = await GetAll();
 

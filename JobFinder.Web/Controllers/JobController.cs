@@ -28,8 +28,14 @@ namespace JobFinder.Web.Controllers
             
             if(model != null && model.ToFilter)
             {
-                var filteredJobs = await _jobService.SortJobs(model.FilterCriterias);
-                var jobs = filteredJobs.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
+                var jobsDTO = await _jobService.GetAll();
+                foreach (var filter in model.FilterCriterias)
+                {
+                    _jobService.SetStrategy(filter.Type);
+                    jobsDTO = _jobService.FilterJobs(jobsDTO, filter.FilterParams);
+                }
+                //var filteredJobs = await _jobService.SortJobs(model.FilterCriterias);
+                var jobs = jobsDTO.Select(job => _mapper.Map<GetJobViewModel>(job)).ToList();
                 model.Jobs = jobs;
 
                 return View(model);

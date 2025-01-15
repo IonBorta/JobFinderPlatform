@@ -89,7 +89,7 @@ namespace JobFinder.BLL.Services
                 job.CompanyName = user.Name;
                 job.City = company.City;
             }
-            return jobsDTOs;
+            return jobsDTOs.OrderBy(job => job.Created).ToList();
         }
 
         public async Task<IList<GetJobDTO>> GetJobsByCompany(int id)
@@ -104,17 +104,19 @@ namespace JobFinder.BLL.Services
             var existingJob = await _jobRepository.GetByIdAsync(jobDTO.Id);
             if (existingJob == null)
             {
-                return Result.Failure($"Job not found");
+                return Result<GetJobDTO>.Failure($"Job not found");
             }
             var job = _mapper.Map<Job>(jobDTO);
             var toUpdateJob = existingJob.Update(job);
             if (toUpdateJob == false)
             {
-                return Result.Failure($"No updates, You have not changed anything.");
+                return Result<GetJobDTO>.Failure($"No updates, You have not changed anything.");
             }
             var updated = false;
+            GetJobDTO dto = null;
             if (toUpdateJob) { 
-                updated = await _jobRepository.UpdateAsync(job); 
+                updated = await _jobRepository.UpdateAsync(existingJob);
+                dto = _mapper.Map<GetJobDTO>(existingJob);
             }
             return updated ? Result.Success() : Result.Failure($"Failed to update {jobDTO.Title} job");
         }

@@ -69,6 +69,16 @@ namespace JobFinder.BLL.Decorator
 
             return sortedJobs;
         }
+        public override async Task<Result> Update(UpdateJobDTO dto)
+        {
+            var result = await _jobService.Update(dto);
+            if (result.IsSuccess)
+            {
+                string cacheKey = $"Job_{dto.Id}";
+                _cache.Remove(cacheKey); // Invalidate the cache
+            }
+            return result;
+        }
 
 
     }

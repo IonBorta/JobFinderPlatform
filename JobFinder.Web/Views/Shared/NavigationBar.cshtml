@@ -25,7 +25,7 @@
                         <!-- Main-menu -->
                         <div class="main-menu">
                             <nav class="d-none d-lg-block">
-                                <ul id="navigation">
+                                <ul id="navigation" class="d-flex align-items-center">
                                     <li><a asp-controller="Home" asp-action="Index">Home</a></li>
                                     <li><a asp-controller="Job" asp-action="Jobs" asp-route-model="null">Find a Job </a></li>
                                     @if(userType == 0)
@@ -47,6 +47,12 @@
                                         </ul>
                                     </li> *@
                                     @* <li><a href="contact.html">Contact</a></li> *@
+                                    @if(userName != "Unknown"){
+                                        <li class="ms-auto d-flex align-items-center mr-3">
+                                            <i id="userIcon" class="fas fa-user-circle me-2" style="font-size: 1.5rem;"></i>
+                                            <h6 id="userName" class="mb-0">Hello, @userName</h6>
+                                        </li>
+                                    }
                                 </ul>
                             </nav>
                         </div>
@@ -54,8 +60,10 @@
                         @if (userName != "Unknown")
                         {
                             <div class="d-flex align-items-center">
-                                <i class="fas fa-user-circle me-2" style="font-size: 1.5rem;"></i>
-                                <h6 class="mb-0 me-3">Hello, @userName</h6>
+                               
+@*                                 <i id="userIcon" class="fas fa-user-circle me-2" style="font-size: 1.5rem;"></i>
+                                <h6 id="userName" class="mb-0 me-3">Hello, @userName</h6> *@
+                                
                                 <div class="header-btn d-none f-right d-sm-block">
                                     <a asp-controller="Account" asp-action="Logout" class="genric-btn danger">Logout</a>
                                 </div>

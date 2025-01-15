@@ -25,7 +25,7 @@ namespace JobFinder.BLL.Decorator
         public virtual Task<IList<GetJobDTO>> GetAll() => _jobService.GetAll();
         public virtual Task<IList<GetJobDTO>> GetJobsByCompany(int id) => _jobService.GetJobsByCompany(id);
         public virtual Task<IList<GetJobDTO>> FilterJobs(List<CriteriasToFilter> filterCriterias) => _jobService.FilterJobs(filterCriterias);
-        public Task<Result> Update(UpdateJobDTO dto) => _jobService.Update(dto);
+        public virtual Task<Result> Update(UpdateJobDTO dto) => _jobService.Update(dto);
 
         public IList<GetJobDTO> FilterJobs(IList<GetJobDTO> jobs, bool[] filterParams)
         {

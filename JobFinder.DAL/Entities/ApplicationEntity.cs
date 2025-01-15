@@ -47,7 +47,7 @@ namespace JobFinder.DAL.Entities
         }
 
         [NotMapped]
-        public IApplicationState ApplicationState 
+        private IApplicationState ApplicationState 
         {
             get
             {

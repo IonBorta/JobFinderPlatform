@@ -1,5 +1,5 @@
 ﻿@model JobFinder.Web.Models.Job.EditJobViewModel
-
+@using JobFinder.Core.Enums
 @{
     ViewData["Title"] = "Edit";
 }
@@ -29,7 +29,7 @@
 
                             @Html.DropDownListFor(
                                      model => model.Experience,
-                                     new SelectList(Enum.GetValues(typeof(JobFinder.Core.Enums.WorkExperience))),
+                                     new SelectList(EnumExtensions.GetSelectList<JobFinder.Core.Enums.WorkExperience>(), "Value", "Text"),
                                      "-- Select Experience --",
                                      new { @class = "form-control" })
                             <span asp-validation-for="Experience" class="text-danger"></span>

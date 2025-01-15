@@ -17,7 +17,6 @@ namespace JobFinder.BLL.FactoryMethod
         {
             return filterCriteria switch
             {
-                //FilterCriteria.Salary => new FilterBySalary(),
                 FilterCriteria.Experience => new FilterByExperience(),
                 FilterCriteria.Studies => new FilterByStudies(),
                 FilterCriteria.WorkingType => new FilterByWorkingType(),

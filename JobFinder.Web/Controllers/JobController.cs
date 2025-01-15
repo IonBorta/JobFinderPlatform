@@ -80,6 +80,7 @@ namespace JobFinder.Web.Controllers
                 int companyId = Convert.ToInt32(TempData["CompanyId"]);
                 var jobDto = _mapper.Map<CreateJobDTO>(createJobViewModel);
                 jobDto.CompanyId = companyId;
+                jobDto.Id = 0;
 
                 var result = await _jobService.Add(jobDto);
                 if (!result.IsSuccess)

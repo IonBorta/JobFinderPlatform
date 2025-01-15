@@ -1,5 +1,6 @@
 ﻿@model JobFinder.Web.Models.Job.GetJobViewModel
 @using Microsoft.AspNetCore.Http
+@using JobFinder.Core.Enums
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     var userName = @HttpContextAccessor.HttpContext.Session.GetString("UserName") ?? "Unknown";
@@ -86,7 +87,7 @@
                             <li>Vacancy : <span>02</span></li>
                             <li>Job nature : <span>@Model.WorkingType</span></li>
                             <li>Salary :  <span>$@Model.Salary monthly</span></li>
-                            <li>Exeperince :  <span>@Model.Experience</span></li>
+                            <li>Experince :  <span>@EnumExtensions.GetDisplayName(Model.Experience)</span></li>
                             <li>Studies :  <span>@Model.Studies</span></li>
                             @* <li>Application date : <span>12 Sep 2020</span></li> *@
                         </ul>

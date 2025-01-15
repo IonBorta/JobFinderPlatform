@@ -15,27 +15,20 @@ namespace JobFinder.DAL.State.Concrete
     {
         public Result Answer(ApplicationEntity jobApplication, ApplicationJobStates status)
         {
-            //throw new InvalidOperationException("Cannot answer to an unseen application");
             return Result.Failure($"Job application must be seen to answer to it");
         }
-
         public Task<Result> ReApply(ApplicationEntity jobApplication, IFormFile cvFile)
         {
-            //throw new NotImplementedException();
             return Task.FromResult(Result.Failure($"Job application must be withdrawn to reapply to it"));
         }
-
         public Result See(ApplicationEntity jobApplication)
         {
             jobApplication.State = ApplicationJobStates.Seen;
-            //jobApplication.State = new SeenState();
             return Result.Success();
         }
-
         public Result Withdraw(ApplicationEntity jobApplication)
         {
             jobApplication.State = ApplicationJobStates.Withdrawn;
-            //jobApplication.State = new WithdrawnState();
             return Result.Success();
         }
     }

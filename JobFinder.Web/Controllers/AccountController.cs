@@ -7,6 +7,7 @@ using JobFinder.Web.Models.Auth;
 using JobFinder.Web.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
@@ -36,22 +37,23 @@ namespace JobFinder.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel loginViewModel)
         {
-            if (ModelState.IsValid)
-            {
-                var result = await _accountService.LoginUser(loginViewModel.Email, loginViewModel.Password);
-                if (!result.IsSuccess)
-                {
-                    ModelState.AddModelError("Email", result.ErrorMessage);
-                    return View(loginViewModel);
-                }
-                // Stochează informațiile în sesiune
-                HttpContext.Session.SetString("UserName", result.Data.Name);
-                HttpContext.Session.SetString("UserEmail", result.Data.Email);
-                HttpContext.Session.SetInt32("UserId", result.Data.Id);
-                HttpContext.Session.SetInt32("UserRole", (int)result.Data.UserType);
-                return RedirectToAction("Index", "Home");
-            }
-            return View(loginViewModel);
+            return await LoginUser(loginViewModel);
+            /*            if (ModelState.IsValid)
+                        {
+                            var result = await _accountService.LoginUser(loginViewModel.Email, loginViewModel.Password);
+                            if (!result.IsSuccess)
+                            {
+                                ModelState.AddModelError("Email", result.ErrorMessage);
+                                return View(loginViewModel);
+                            }
+                            // Stochează informațiile în sesiune
+                            HttpContext.Session.SetString("UserName", result.Data.Name);
+                            HttpContext.Session.SetString("UserEmail", result.Data.Email);
+                            HttpContext.Session.SetInt32("UserId", result.Data.Id);
+                            HttpContext.Session.SetInt32("UserRole", (int)result.Data.UserType);
+                            return RedirectToAction("Index", "Home");
+                        }
+                        return View(loginViewModel);*/
         }
         public IActionResult Logout()
         {
@@ -85,9 +87,29 @@ namespace JobFinder.Web.Controllers
                     ModelState.AddModelError("Email", result.ErrorMessage);
                     return View(createUserViewModel);
                 }
-                return RedirectToAction("Login");
+                //return RedirectToAction("Login");
+                return await LoginUser(new LoginViewModel() { Email = createUserViewModel.Email, Password = createUserViewModel.Password });
             }
             return View(createUserViewModel);
+        }
+        private async Task<IActionResult> LoginUser(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.LoginUser(model.Email, model.Password);
+                if (!result.IsSuccess)
+                {
+                    ModelState.AddModelError("Email", result.ErrorMessage);
+                    return View("Login",model);
+                }
+                // Stochează informațiile în sesiune
+                HttpContext.Session.SetString("UserName", result.Data.Name);
+                HttpContext.Session.SetString("UserEmail", result.Data.Email);
+                HttpContext.Session.SetInt32("UserId", result.Data.Id);
+                HttpContext.Session.SetInt32("UserRole", (int)result.Data.UserType);
+                return RedirectToAction("Index", "Home");
+            }
+            return View("Login", model);
         }
     }
 }

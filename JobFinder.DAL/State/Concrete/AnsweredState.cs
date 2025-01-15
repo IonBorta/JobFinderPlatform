@@ -15,25 +15,18 @@ namespace JobFinder.DAL.State.Concrete
     {
         public Result Answer(ApplicationEntity jobApplication, ApplicationJobStates status)
         {
-            //throw new NotImplementedException();
             return Result.Failure($"You already answered to this job application");
         }
-
         public Task<Result> ReApply(ApplicationEntity jobApplication, IFormFile cvFile)
         {
-            //throw new NotImplementedException();
             return Task.FromResult(Result.Failure($"Can't reaply to an answered job application"));
         }
-
         public Result See(ApplicationEntity jobApplication)
         {
-            //throw new NotImplementedException();
             return Result.Success();
         }
-
         public Result Withdraw(ApplicationEntity jobApplication)
         {
-            //throw new NotImplementedException();
             return Result.Failure($"Can't withdraw an answered job application");
         }
     }

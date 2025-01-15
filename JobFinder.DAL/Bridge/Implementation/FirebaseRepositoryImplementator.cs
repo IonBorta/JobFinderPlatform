@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Cloud.Firestore;
 using JobFinder.DAL.AbstractFactory.Concrete.Factory;
 using JobFinder.DAL.Entities;
 
@@ -19,9 +20,12 @@ namespace JobFinder.DAL.Bridge.Implementation
             _collectionName = collectionName;
         }
 
-        public Task<bool> Add(T entity)
+        public async Task<bool> Add(T entity)
         {
-            throw new NotImplementedException();
+            var collectionRef = _firestoreDb.Collection(_collectionName);
+            var result = await collectionRef.AddAsync(entity);
+
+            return !string.IsNullOrEmpty(result.Id);
         }
 
         public Task<IList<T>> GetAll()
